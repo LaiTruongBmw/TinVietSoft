@@ -1,0 +1,252 @@
+<PUBLIC:COMPONENT tagName="Button" lightweight = true  >
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+    
+	<PUBLIC:METHOD name="SetFireEvent" />
+
+	<PUBLIC:PROPERTY  NAME="text"   PUT="setText" GET="getText"/>
+	
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >	
+		
+</PUBLIC:COMPONENT>
+
+<SCRIPT Language="Javascript">
+
+var text="";
+var obj = null;
+
+var dsoid = null; 
+var type = null;
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function GetData()
+{
+	return text;
+}
+
+function SetData( data )
+{
+	if ( data )
+		setText( data.text );
+	else
+		setText( "" );
+}
+
+function SetDataText( txt )
+{
+	setText ( txt );
+}
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+}
+
+function SetFireEvent( p_dsoid , p_type )
+{
+	dsoid = p_dsoid;
+	type = p_type;	
+	
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function setText (vValue)
+{
+  
+   text = vValue;
+   if ( obj ) obj.innerHTML = vValue;
+}
+
+function getText()
+{
+   	return text;
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+function fnOnClick()
+{
+	
+	if ( dsoid && !element.disabled )
+	{
+		ControlEventHandle( dsoid , type );
+	} 
+	
+	window.event.cancelBubble = ( element.disabled );
+	
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+function event_oncontentready()
+{
+    var img, alt, txt, html, styles = "", align="none";
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		return;
+	}
+	element.print = true;
+
+	if (element.img != undefined) {
+	    img = element.img;
+    }
+
+    if (element.alt != undefined) {
+        alt = element.alt;
+    } else { alt = img; }
+
+    if (element.styles != undefined) {
+        styles = element.styles;
+    }
+
+    if (element.text != undefined && element.text != "") {
+        txt = element.text;
+    } else { txt = img; }
+
+    if (element.align != undefined && element.align != "") {
+        align = element.align;
+    }
+
+
+    if (img == "save") {
+		html = "<div class='buttons' tp='"+img+"' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/save.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "delete") {
+		html = "<div class='buttons' tp='"+img+"' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='negative' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/delete.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "end") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";" + styles + "'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/end.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "first") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";" + styles + "'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/first.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "back") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";" + styles + "'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/back.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "next") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";" + styles + "'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/next.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "new") {
+		html = "<div class='buttons' tp='"+img+"' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/new.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+	} else if (img == "update") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/update.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "process") {
+		html = "<div class='buttons' tp='"+img+"' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/process.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "popup") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:80px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/popup.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "search") {
+		html = "<div class='buttons' tp='"+img+"' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/search.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "reset") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/reset.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "review") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/review.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "prepare") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/prepare.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "copy") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/copy.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "close") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='negative' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/close.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "cancel") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='negative' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" +  System.RootURL
+		+ "/system/controls/images/button/close.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "reject") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='negative' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/close.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "select") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/select.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "check") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/select.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "up") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/up.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "down") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/down.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "refresh") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/reload.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "confirm") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/confirm.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "approve") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/select.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "undelete") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/undo.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "excel") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/excel.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+	} else if (img == "set") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/set.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "excel_lock") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/excel_lock.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "word") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/word.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "pdf") {
+        html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/pdf.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "attach") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/attach.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "lock") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/lock.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else if (img == "lock_open") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/lock_open.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+	} else if (img == "submit") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/submit.png' /><span style='float:left;padding-top:3px;width:50px;'>" + txt + "</span></span></a></div>";
+	} else if (img == "item") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/item.png' /><span style='float:left;padding-top:2px;width:50px;'>" + txt + "</span></span></a></div>";
+	} else if (img == "request") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/request.png' /><span style='float:left;padding-top:2px;width:50px;'>" + txt + "</span></span></a></div>";
+	} else if (img == "extend") {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhla' type='button'><span style='display:inline;width:75px;height:17px'><img style='float:left' src='" + System.RootURL
+		+ "/system/controls/images/button/extend.png' /><span style='float:left;padding-top:2px;width:50px;'>" + txt + "</span></span></a></div>";
+    } else {
+		html = "<div class='buttons' title='" + alt + "' style='float:" + align + ";"+styles+"'><a href='#' class='xanhdam' type='button'><span style='display:inline;width:75px;height:17px'><span style='float:left;padding-top:3px;width:75px;'>" + txt + "</span></span></a></div>";
+    }
+
+    element.innerHTML = html;
+		
+	obj = element.childNodes(0);
+	
+	obj.attachEvent("onclick", fnOnClick)
+	
+	
+}
+
+</SCRIPT>

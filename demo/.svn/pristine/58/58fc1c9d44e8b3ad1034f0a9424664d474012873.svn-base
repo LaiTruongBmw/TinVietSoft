@@ -1,0 +1,1168 @@
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns="http://www.w3.org/TR/REC-html40">
+<% Response.ContentType = "application/x-excel" %>
+<!-- #include file="../db1.inc"  -->
+  <%
+  ConnectDBApp
+  %>
+  <%
+   dim so_pk
+  so_pk =Request.QueryString("sopk")
+ 
+  dim SQL 
+    SQL = " SELECT TO_CHAR (TO_DATE (order_dt, 'YYYYMMDD'), 'MONTH.dd, yyyy'), "
+    SQL = SQL & "       b.partner_name, buy_rep, c.code_nm, d.code_nm, deli_term, nation.code_nm, "
+    SQL = SQL & "       att03, po_no,ccy_unit "
+    SQL = SQL & "  FROM tsa_saleorder a, "
+    SQL = SQL & "       tco_buspartner b, "
+    SQL = SQL & "       (SELECT code, code_nm "
+    SQL = SQL & "          FROM tco_abcode a, tco_abcodegrp b "
+    SQL = SQL & "         WHERE a.tco_abcodegrp_pk = b.pk "
+    SQL = SQL & "           AND b.ID = 'ACCR0020' "
+    SQL = SQL & "           AND a.use_if = '1' "
+    SQL = SQL & "           AND a.del_if = 0 "
+    SQL = SQL & "           AND b.del_if = 0) c, "
+    SQL = SQL & "       (SELECT code, code_nm "
+    SQL = SQL & "          FROM tco_abcode a, tco_abcodegrp b "
+    SQL = SQL & "         WHERE a.tco_abcodegrp_pk = b.pk "
+    SQL = SQL & "           AND b.ID = 'COAB0080' "
+    SQL = SQL & "           AND a.use_if = '1' "
+    SQL = SQL & "           AND a.del_if = 0 "
+    SQL = SQL & "           AND b.del_if = 0) nation ,"
+    SQL = SQL & "       (SELECT code, code_nm "
+    SQL = SQL & "          FROM tco_abcode a, tco_abcodegrp b "
+    SQL = SQL & "         WHERE a.tco_abcodegrp_pk = b.pk "
+    SQL = SQL & "           AND b.ID = 'SAAB0100' "
+    SQL = SQL & "           AND a.use_if = '1' "
+    SQL = SQL & "           AND a.del_if = 0 "
+    SQL = SQL & "           AND b.del_if = 0) d "
+    SQL = SQL & " WHERE a.del_if = 0 "
+    SQL = SQL & "   AND b.del_if = 0 "
+    SQL = SQL & "   AND a.bill_to_pk = b.pk "
+    SQL = SQL & "   AND d.code(+) = a.price_type "
+    SQL = SQL & "   AND c.code(+) =  a.pay_term"
+    SQL = SQL & "   AND nation.code(+) = a.dest_nation  "
+    SQL = SQL & " AND a.pk = "& so_pk 
+    TableReadOpen rs, SQL
+	  If Not rs.EOF Then
+		  result 	= rs.GetRows()
+		  total	= Ubound(result, 2) + 1
+    
+      dim SQL1
+     SQL1 = " SELECT  spec.sp_name, spec.thick, spec.color, spec.width, a.item_unit, "
+      SQL1 = SQL1 & "         a.ord_qty, a.unit_price, a.amount "
+      SQL1 = SQL1 & "    FROM sale.tsa_saleorderd a, "
+      SQL1 = SQL1 & "         (SELECT b.pk, max(spec_name.sp_name) sp_name, max(spec_thick.thick) thick, max(spec_width.width) width, "
+      SQL1 = SQL1 & "       max(spec_color.color) color "
+      SQL1 = SQL1 & "  FROM tco_item b, "
+      SQL1 = SQL1 & "       tco_itemspec c, "
+      SQL1 = SQL1 & "       (SELECT d.pk, d.spec_nm sp_name "
+      SQL1 = SQL1 & "          FROM tco_spec d, tco_specgrp e "
+      SQL1 = SQL1 & "         WHERE e.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.tco_specgrp_pk = e.pk "
+      SQL1 = SQL1 & "           AND e.specgrp_nm = 'PRODUCT SPEC NAME') spec_name, "
+      SQL1 = SQL1 & "       (SELECT d.pk, d.spec_nm thick "
+      SQL1 = SQL1 & "          FROM tco_spec d, tco_specgrp e "
+      SQL1 = SQL1 & "         WHERE e.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.tco_specgrp_pk = e.pk "
+      SQL1 = SQL1 & "           AND e.specgrp_nm = 'THICKNESS') spec_thick, "
+      SQL1 = SQL1 & "       (SELECT d.pk, d.spec_nm color "
+      SQL1 = SQL1 & "          FROM tco_spec d, tco_specgrp e "
+      SQL1 = SQL1 & "         WHERE e.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.tco_specgrp_pk = e.pk "
+      SQL1 = SQL1 & "           AND e.specgrp_nm = 'COLOR') spec_color, "
+      SQL1 = SQL1 & "       (SELECT d.pk, d.spec_nm width "
+      SQL1 = SQL1 & "          FROM tco_spec d, tco_specgrp e "
+      SQL1 = SQL1 & "         WHERE e.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.del_if = 0 "
+      SQL1 = SQL1 & "           AND d.tco_specgrp_pk = e.pk "
+      SQL1 = SQL1 & "           AND e.specgrp_nm = 'WIDTH') spec_width "
+      SQL1 = SQL1 & " WHERE b.del_if = 0 "
+      SQL1 = SQL1 & "   AND c.del_if = 0 "
+      SQL1 = SQL1 & "   AND b.pk = c.tco_item_pk "
+      SQL1 = SQL1 & "   AND c.tco_spec_pk = spec_name.pk(+) "
+      SQL1 = SQL1 & "   AND c.tco_spec_pk = spec_thick.pk(+) "
+      SQL1 = SQL1 & "   AND c.tco_spec_pk = spec_color.pk(+) "
+      SQL1 = SQL1 & "   AND c.tco_spec_pk = spec_width.pk(+) "
+      SQL1 = SQL1 & "   group by b.pk ) spec "
+      SQL1 = SQL1 & "   WHERE a.del_if = 0 AND a.tco_item_pk = spec.pk(+) "
+      SQL1 = SQL1 & "         AND a.tsa_saleorder_pk = "& so_pk 
+      SQL1 = SQL1 & "ORDER BY spec.sp_name, spec.thick, spec.color "
+
+      
+      TableReadOpen rs, SQL1
+      If Not rs.EOF Then
+        resultd 	= rs.GetRows()
+        totald	= Ubound(resultd, 2) + 1   
+      end if
+    
+	  else
+		  total = 0
+      Response.write "There are no data to print!"
+      Response.end
+	  End If	
+  %>
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=ProgId content=Excel.Sheet>
+<meta name=Generator content="Microsoft Excel 11">
+<link rel=File-List href="dsbs00010_files/filelist.xml">
+<link rel=Edit-Time-Data href="dsbs00010_files/editdata.mso">
+<link rel=OLE-Object-Data href="dsbs00010_files/oledata.mso">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+x\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:LastAuthor>tuyen</o:LastAuthor>
+  <o:LastPrinted>2008-04-19T04:27:12Z</o:LastPrinted>
+  <o:Created>1996-10-14T23:33:28Z</o:Created>
+  <o:LastSaved>2008-04-19T04:28:30Z</o:LastSaved>
+  <o:Version>11.5606</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<style>
+<!--table
+	{mso-displayed-decimal-separator:"\.";
+	mso-displayed-thousand-separator:"\,";}
+@page
+	{margin:1.0in .75in 1.0in .75in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;}
+tr
+	{mso-height-source:auto;}
+col
+	{mso-width-source:auto;}
+br
+	{mso-data-placement:same-cell;}
+.style17
+	{mso-number-format:"_\(* \#\,\#\#0_\)\;_\(* \\\(\#\,\#\#0\\\)\;_\(* \0022-\0022_\)\;_\(\@_\)";
+	mso-style-name:"Comma \[0\]";
+	mso-style-id:6;}
+.style0
+	{mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	white-space:nowrap;
+	mso-rotate:0;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	border:none;
+	mso-protection:locked visible;
+	mso-style-name:Normal;
+	mso-style-id:0;}
+td
+	{mso-style-parent:style0;
+	padding:0px;
+	mso-ignore:padding;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	border:none;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	mso-protection:locked visible;
+	white-space:nowrap;
+	mso-rotate:0;}
+.xl24
+	{mso-style-parent:style0;
+	font-size:22.0pt;
+	font-weight:700;
+	font-family:돋움, monospace;
+	mso-font-charset:129;
+	text-align:center-across;
+	vertical-align:middle;
+	border-top:1.0pt solid windowtext;
+	border-right:none;
+	border-bottom:none;
+	border-left:1.0pt solid windowtext;}
+.xl25
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	text-align:center-across;
+	vertical-align:middle;
+	border-top:1.0pt solid windowtext;
+	border-right:none;
+	border-bottom:none;
+	border-left:none;}
+.xl26
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	text-align:center-across;
+	vertical-align:middle;
+	border-top:1.0pt solid windowtext;
+	border-right:none;
+	border-bottom:none;
+	border-left:none;}
+.xl27
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	text-align:center-across;
+	vertical-align:middle;
+	border-top:1.0pt solid windowtext;
+	border-right:1.0pt solid windowtext;
+	border-bottom:none;
+	border-left:none;}
+.xl28
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;}
+.xl29
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	text-align:center-across;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:none;
+	border-left:1.0pt solid windowtext;}
+.xl30
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	text-align:center-across;
+	vertical-align:middle;}
+.xl31
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	text-align:center-across;
+	vertical-align:middle;}
+.xl32
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	text-align:center-across;
+	vertical-align:middle;
+	border-top:none;
+	border-right:1.0pt solid windowtext;
+	border-bottom:none;
+	border-left:none;}
+.xl33
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:none;
+	border-left:1.0pt solid windowtext;}
+.xl34
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;}
+.xl35
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:1.0pt solid windowtext;
+	border-bottom:none;
+	border-left:none;}
+.xl36
+	{mso-style-parent:style0;
+	font-size:20.0pt;
+	font-weight:700;
+	text-decoration:underline;
+	text-underline-style:single;
+	font-family:돋움, monospace;
+	mso-font-charset:129;
+	text-align:center-across;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:none;
+	border-left:1.0pt solid windowtext;}
+.xl37
+	{mso-style-parent:style0;
+	font-size:12.0pt;
+	font-weight:700;
+	font-family:돋움, monospace;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:none;
+	border-left:1.0pt solid windowtext;}
+.xl38
+	{mso-style-parent:style0;
+	font-size:12.0pt;
+	font-weight:700;
+	font-family:돋움, monospace;
+	mso-font-charset:129;
+	vertical-align:middle;}
+.xl39
+	{mso-style-parent:style17;
+	font-size:24.0pt;
+	font-weight:700;
+	font-family:돋움, monospace;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;}
+.xl40
+	{mso-style-parent:style0;
+	font-size:13.0pt;
+	font-weight:700;
+	font-family:돋움, monospace;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:none;
+	border-left:1.0pt solid windowtext;}
+.xl41
+	{mso-style-parent:style0;
+	font-size:13.0pt;
+	font-weight:700;
+	font-family:돋움, monospace;
+	mso-font-charset:129;
+	vertical-align:middle;}
+.xl42
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:none;
+	border-bottom:none;
+	border-left:1.0pt solid windowtext;}
+.xl43
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:none;
+	border-bottom:none;
+	border-left:none;}
+.xl44
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:none;
+	border-bottom:none;
+	border-left:none;}
+.xl45
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:1.0pt solid windowtext;
+	border-bottom:none;
+	border-left:none;}
+.xl46
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:1.5pt solid windowtext;
+	border-left:1.0pt solid windowtext;}
+.xl47
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:1.5pt solid windowtext;
+	border-left:none;}
+.xl48
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:1.5pt solid windowtext;
+	border-left:none;}
+.xl49
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:1.0pt solid windowtext;
+	border-bottom:1.5pt solid windowtext;
+	border-left:none;}
+.xl50
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	text-align:right;
+	vertical-align:middle;}
+.xl51
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	text-align:center;
+	vertical-align:middle;}
+.xl52
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"\\ \#\,\#\#0\.00";
+	text-align:center;
+	vertical-align:middle;
+	border-top:none;
+	border-right:1.0pt solid windowtext;
+	border-bottom:none;
+	border-left:none;}
+.xl53
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"\#\,\#\#0";
+	text-align:right;
+	vertical-align:middle;}
+.xl54
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:none;
+	border-bottom:2.0pt double windowtext;
+	border-left:1.0pt solid windowtext;}
+.xl55
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:none;
+	border-bottom:2.0pt double windowtext;
+	border-left:none;}
+.xl56
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	text-align:right;
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:none;
+	border-bottom:2.0pt double windowtext;
+	border-left:none;}
+.xl57
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:none;
+	border-bottom:2.0pt double windowtext;
+	border-left:none;}
+.xl58
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"\[$USD\]\\ \#\,\#\#0\.00";
+	text-align:center;
+	vertical-align:middle;
+	border-top:1.5pt solid windowtext;
+	border-right:1.0pt solid windowtext;
+	border-bottom:2.0pt double windowtext;
+	border-left:none;}
+.xl59
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:2.0pt double windowtext;
+	border-left:none;}
+.xl60
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:2.0pt double windowtext;
+	border-left:none;}
+.xl61
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:2.0pt double windowtext;
+	border-right:none;
+	border-bottom:1.0pt solid windowtext;
+	border-left:none;}
+.xl62
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;
+	border-top:2.0pt double windowtext;
+	border-right:none;
+	border-bottom:1.0pt solid windowtext;
+	border-left:none;}
+.xl63
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:1.0pt solid windowtext;
+	border-left:none;}
+.xl64
+	{mso-style-parent:style17;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	mso-number-format:"_-* \#\,\#\#0\.00_-\;\\-* \#\,\#\#0\.00_-\;_-* \0022-\0022_-\;_-\@_-";
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:1.0pt solid windowtext;
+	border-left:none;}
+.xl65
+	{mso-style-parent:style0;
+	font-size:11.0pt;
+	font-weight:700;
+	font-family:돋움;
+	mso-generic-font-family:auto;
+	mso-font-charset:129;
+	vertical-align:middle;
+	border-top:none;
+	border-right:1.0pt solid windowtext;
+	border-bottom:1.0pt solid windowtext;
+	border-left:none;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <x:ExcelWorkbook>
+  <x:ExcelWorksheets>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet1</x:Name>
+    <x:WorksheetOptions>
+     <x:DefaultRowHeight>330</x:DefaultRowHeight>
+     <x:FitToPage/>
+     <x:FitToPage/>
+     <x:Print>
+      <x:FitWidth>0</x:FitWidth>
+      <x:ValidPrinterInfo/>
+      <x:PaperSizeIndex>9</x:PaperSizeIndex>
+      <x:Scale>82</x:Scale>
+      <x:HorizontalResolution>300</x:HorizontalResolution>
+      <x:VerticalResolution>300</x:VerticalResolution>
+      <x:Gridlines/>
+     </x:Print>
+     <x:Selected/>
+     <x:Panes>
+      <x:Pane>
+       <x:Number>3</x:Number>
+       <x:ActiveRow>6</x:ActiveRow>
+       <x:ActiveCol>2</x:ActiveCol>
+      </x:Pane>
+     </x:Panes>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet2</x:Name>
+    <x:WorksheetOptions>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet3</x:Name>
+    <x:WorksheetOptions>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+  </x:ExcelWorksheets>
+  <x:WindowHeight>9300</x:WindowHeight>
+  <x:WindowWidth>15135</x:WindowWidth>
+  <x:WindowTopX>120</x:WindowTopX>
+  <x:WindowTopY>120</x:WindowTopY>
+  <x:AcceptLabelsInFormulas/>
+  <x:ProtectStructure>False</x:ProtectStructure>
+  <x:ProtectWindows>False</x:ProtectWindows>
+ </x:ExcelWorkbook>
+</xml><![endif]-->
+      <!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="1026"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body link=blue vlink=purple class=xl28>
+
+<table x:str border=0 cellpadding=0 cellspacing=0 width=742 style='border-collapse:
+ collapse;table-layout:fixed;width:557pt'>
+ <col class=xl28 width=99 style='mso-width-source:userset;mso-width-alt:3620;
+ width:74pt'>
+ <col class=xl28 width=108 style='mso-width-source:userset;mso-width-alt:3949;
+ width:81pt'>
+ <col class=xl28 width=49 style='mso-width-source:userset;mso-width-alt:1792;
+ width:37pt'>
+ <col class=xl28 width=64 style='mso-width-source:userset;mso-width-alt:2340;
+ width:48pt'>
+ <col class=xl28 width=71 style='mso-width-source:userset;mso-width-alt:2596;
+ width:53pt'>
+ <col class=xl28 width=45 style='mso-width-source:userset;mso-width-alt:1645;
+ width:34pt'>
+ <col class=xl28 width=97 style='mso-width-source:userset;mso-width-alt:3547;
+ width:73pt'>
+ <col class=xl34 width=78 style='mso-width-source:userset;mso-width-alt:2852;
+ width:59pt'>
+ <col class=xl28 width=131 style='mso-width-source:userset;mso-width-alt:4790;
+ width:98pt'>
+ <col class=xl28 width=71 span=247 style='mso-width-source:userset;mso-width-alt:
+ 2596;width:53pt'>
+ <% 
+    dim i
+    for i=0 to total -1  %>
+   
+ <tr height=42 style='height:31.5pt'>
+  <td height=42 colspan=9 class=xl24 align=center width=742 style='height:31.5pt;
+  mso-ignore:colspan;border-right:1.0pt solid black;width:557pt'>DAEWON
+  CHEMICAL CO.,LTD.</td>
+ </tr>
+ <tr height=22 style='height:16.5pt'>
+  <td height=22 colspan=9 class=xl29 align=center style='height:16.5pt;
+  mso-ignore:colspan;border-right:1.0pt solid black'>DAEWON BLDG,6F.,#209-5
+  JAMSHIL-DONG,SONGPA-GU,SEOUL,KOREA</td>
+ </tr>
+ <tr height=22 style='height:16.5pt'>
+  <td height=22 colspan=9 class=xl29 align=center style='height:16.5pt;
+  mso-ignore:colspan;border-right:1.0pt solid black'>TEL : 82-55-372-8777<span
+  style='mso-spacerun:yes'>   </span>FAX:82-55-331-3319</td>
+ </tr>
+ <tr height=10 style='mso-height-source:userset;height:7.5pt'>
+  <td height=10 class=xl33 style='height:7.5pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=39 style='height:29.25pt'>
+  <td height=39 colspan=9 class=xl36 align=center style='height:29.25pt;
+  mso-ignore:colspan;border-right:1.0pt solid black'>PROFORMA INVOICE</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl29 style='height:16.5pt'>&nbsp;</td>
+  <td colspan=6 class=xl30 style='mso-ignore:colspan'></td>
+  <td class=xl31></td>
+  <td class=xl32>&nbsp;</td>
+ </tr>
+ <tr height=22 style='height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>&nbsp;</td>
+  <td colspan=5 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl28>DATE<span style='mso-spacerun:yes'>  </span>:</td>
+  <td class=xl34 colspan=2 style='mso-ignore:colspan;border-right:1.0pt solid black'
+  x:str="JUNE. 22, 2007"><span style='mso-spacerun:yes'> </span><%=result(0,i)%><span style='mso-spacerun:yes'> </span></td>
+ </tr>
+ <tr height=38 style='mso-height-source:userset;height:28.5pt'>
+  <td height=38 class=xl37 style='height:28.5pt'>TO</td>
+  <td class=xl38 colspan=5 style='mso-ignore:colspan'>: <%=result(1,i)%></td>
+  <td class=xl28></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>ATTN</td>
+  <td class=xl28 colspan=3 style='mso-ignore:colspan'>: <%=result(2,i)%></td>
+  <td colspan=3 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>&nbsp;</td>
+  <td class=xl28 colspan=8 style='mso-ignore:colspan;border-right:1.0pt solid black'><span
+  style='mso-spacerun:yes'>   </span>We are pleased to quote you the
+  undermentioned goods on the terms and</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>&nbsp;</td>
+  <td class=xl28 colspan=4 style='mso-ignore:colspan'><span
+  style='mso-spacerun:yes'> </span>condition set forth hereunder</td>
+  <td colspan=2 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=12 style='mso-height-source:userset;height:9.0pt'>
+  <td height=12 class=xl33 style='height:9.0pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=46 style='height:34.5pt'>
+  <td height=46 class=xl33 style='height:34.5pt'>Payment</td>
+  <td class=xl28 colspan=7 style='mso-ignore:colspan'>: <%=result(3,i)%></td>
+<td class='xl35'>&nbsp;</td>
+</tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>Origin</td>
+  <td class=xl28>: VIETNAM</td>
+  <td colspan=5 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>Insurance</td>
+  <td class=xl28 colspan=2 style='mso-ignore:colspan'>: <%=result(4,i)%></td>
+  <td colspan=4 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>Shipment</td>
+  <td class=xl28 colspan=4 style='mso-ignore:colspan'>:<%=result(5,i)%></td>
+<td colspan='2' class='xl28' style='mso-ignore:colspan'></td>
+<td class='xl34'></td>
+<td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>Destination</td>
+  <td class=xl28 colspan=2 style='mso-ignore:colspan'>: <%=result(6,i)%></td>
+  <td colspan=4 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>Packing</td>
+  <td class=xl28 colspan=5 style='mso-ignore:colspan'>: <%=result(7,i)%></td>
+<td class='xl28'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl40 style='height:16.5pt'>P.O NO.</td>
+  <td class=xl41>: <%=result(8,i)%></td>
+  <td colspan=5 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=21 style='mso-height-source:userset;height:15.75pt'>
+  <td height=21 class=xl33 colspan=4 style='height:15.75pt;mso-ignore:colspan'
+  x:str="Payment recipient bank (for T/T)  :  ">Payment recipient bank (for
+  T/T)<span style='mso-spacerun:yes'>  </span>:<span
+  style='mso-spacerun:yes'>  </span></td>
+  <td colspan=3 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=21 style='mso-height-source:userset;height:15.75pt'>
+  <td height=21 class=xl33 style='height:15.75pt'><span
+  style='mso-spacerun:yes'> </span></td>
+  <td class=xl28 colspan=7 style='mso-ignore:colspan'>Please remit the
+  undermentioned value to the SHINHAN BANK</td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=21 style='mso-height-source:userset;height:15.75pt'>
+  <td height=21 class=xl33 style='height:15.75pt'>&nbsp;</td>
+  <td class=xl28 colspan=8 style='mso-ignore:colspan;border-right:1.0pt solid black'>Head
+  office 120, TAEPYUNG-RO, 2-GA, CHUNG-KU, SEOUL, KOREA</td>
+ </tr>
+ <tr height=21 style='mso-height-source:userset;height:15.75pt'>
+  <td height=21 class=xl33 style='height:15.75pt'>&nbsp;</td>
+  <td class=xl28 colspan=6 style='mso-ignore:colspan'>(BUSINESS DEPARTMENT II,
+  BIC: SHBKKRSEXXX)</td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=21 style='mso-height-source:userset;height:15.75pt'>
+  <td height=21 class=xl33 style='height:15.75pt'>&nbsp;</td>
+  <td class=xl28 colspan=8 style='mso-ignore:colspan;border-right:1.0pt solid black'>A/C
+  no. : 261-82-000130. In favour of DAEWON CHEMICAL CO.,LTD</td>
+ </tr>
+ <tr height=21 style='mso-height-source:userset;height:15.75pt'>
+  <td height=21 class=xl33 colspan=9 style='height:15.75pt;mso-ignore:colspan;
+  border-right:1.0pt solid black'>Advising Bank (for L/C)<span
+  style='mso-spacerun:yes'>   </span>:<span style='mso-spacerun:yes'>  
+  </span>Any Korean bank or foreign bank in Korea acceptable</td>
+ </tr>
+ <tr height=5 style='mso-height-source:userset;height:3.75pt'>
+  <td height=5 class=xl33 style='height:3.75pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=23 style='mso-height-source:userset;height:17.25pt'>
+  <td height=23 class=xl42 style='height:17.25pt'>ITEM</td>
+  <td class=xl43>&nbsp;</td>
+  <td class=xl43 colspan=2 style='mso-ignore:colspan'>THICKNESS</td>
+  <td class=xl43>&nbsp;</td>
+  <td class=xl43>UNIT</td>
+  <td class=xl43>QUANTITY</td>
+  <td class=xl44 x:str="U/PRICE"><span
+  style='mso-spacerun:yes'> </span>U/PRICE<span
+  style='mso-spacerun:yes'> </span></td>
+  <td class=xl45>AMOUNT</td>
+ </tr>
+ <tr height=23 style='mso-height-source:userset;height:17.25pt'>
+  <td height=23 class=xl46 style='height:17.25pt'><span
+  style='mso-spacerun:yes'>   </span>COLOR</td>
+  <td class=xl47>&nbsp;</td>
+  <td class=xl47>&nbsp;</td>
+  <td class=xl47>WIDTH</td>
+  <td class=xl47>&nbsp;</td>
+  <td class=xl47>&nbsp;</td>
+  <td class=xl47>&nbsp;</td>
+  <td class=xl48>&nbsp;</td>
+  <td class=xl49>&nbsp;</td>
+ </tr>
+ <tr height=14 style='mso-height-source:userset;height:10.5pt'>
+  <td height=14 class=xl33 style='height:10.5pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+  <%dim j, sumQty, sumAmount,qty,amount
+    sumQty=0
+    sumAmount=0 
+    qty=0 
+    amount=0 
+    for j=0 to totald-1 
+     if resultd(5,j) <>"" then
+          qty = CDbl(resultd(5,j)&"")
+      else
+          qty=0
+      end if
+        if resultd(7,j)<> "" then
+          amount = CDbl(resultd(7,j)&"")
+      else
+          amount=0
+      end if
+        sumQty=sumQty + qty
+        sumAmount= sumAmount + amount
+    if j=0   then
+    %>
+      <tr height=24 style='mso-height-source:userset;height:18.0pt'>
+      <td height=24 class=xl37 colspan=2 style='height:18.0pt;mso-ignore:colspan'><%=resultd(0,j)%></td>
+      <td class=xl50 x:num><%=resultd(1,j)%></td>
+      <td class=xl28 x:str="'+-">+-</td>
+      <td class=xl28>0.1MM</td>
+      <td colspan=2 class=xl50 style='mso-ignore:colspan'></td>
+      <td class=xl51></td>
+      <td class=xl52>&nbsp;</td>
+      </tr>
+    <%
+        else
+        if resultd(0,j)<>resultd(0,j-1) then
+        %>
+          <tr height='24' style='mso-height-source:userset;height:18.0pt'>
+            <td height='24' class='xl37' colspan='2' style='height:18.0pt;mso-ignore:colspan'>
+              <%=resultd(0,j)%>
+            </td>
+            <td class='xl50' x:num=''>
+              <%=resultd(1,j)%>
+            </td>
+            <td class='xl28' x:str="'+-">+-</td>
+            <td class="xl28">0.1MM</td>
+            <td colspan="2" class="xl50" style='mso-ignore:colspan'></td>
+            <td class='xl51'></td>
+            <td class='xl52'>&nbsp;</td>
+          </tr>
+       <%
+        end if
+    end if
+    %>     
+ <tr height=24 style='mso-height-source:userset;height:18.0pt'>
+  <td height=24 class=xl33 style='height:18.0pt'><%=resultd(2,j)%></td>
+  <td class=xl28></td>
+  <td class=xl50></td>
+  <td class=xl28 align=right x:num><%=resultd(3,j)%></td>
+  <td class=xl28></td>
+  <td class=xl50><%=resultd(4,j)%></td>
+  <td class=xl53 x:num=""><%=resultd(5,j)%></td>
+  <td class=xl51 x:num=""><span style='mso-spacerun:yes'>      </span><%=resultd(6,j)%></td>
+  <td class=xl52 x:num="" ><%=result(9,i)%>&nbsp;<%=resultd(7,j)%></td>
+ </tr>
+ <tr height=23 style='mso-height-source:userset;height:17.25pt'>
+  <td height=23 class=xl33 style='height:17.25pt'>&nbsp;</td>
+  <td class=xl28></td>
+  <td class=xl50></td>
+  <td colspan=2 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl50></td>
+  <td class=xl53></td>
+  <td class=xl51></td>
+  <td class=xl52>&nbsp;</td>
+ </tr>
+ 
+        
+  <%next%>
+ <tr height=31 style='mso-height-source:userset;height:23.25pt'>
+  <td height=31 class=xl54 style='height:23.25pt'>TOTAL</td>
+  <td class=xl55>&nbsp;</td>
+  <td class=xl55>&nbsp;</td>
+  <td class=xl55>&nbsp;</td>
+  <td class=xl55>&nbsp;</td>
+  <td class=xl56></td>
+  <td class=xl55 align=right x:num ><%=sumQty%></td>
+  <td class=xl57>&nbsp;</td>
+  <td class=xl58 x:num="" ><%=result(9,i)%>&nbsp; <%=sumAmount%></td>
+ </tr>
+ <tr height=23 style='height:17.25pt'>
+  <td height=23 class=xl33 style='height:17.25pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='height:16.5pt'>
+  <td height=22 class=xl33 colspan=8 style='height:16.5pt;mso-ignore:colspan'><span
+  style='mso-spacerun:yes'>      </span>We hereby confirm our performing the
+  transactions as above mentioned</td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=9 style='mso-height-source:userset;height:6.75pt'>
+  <td height=9 class=xl33 style='height:6.75pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=26 style='mso-height-source:userset;height:19.5pt'>
+  <td height=26 class=xl28 colspan=2 style='height:19.5pt;mso-ignore:colspan'>authorized
+  signature</td>
+  <td colspan=2 class=xl28 style='mso-ignore:colspan'></td>
+  <td align=left valign=top><!--[if gte vml 1]><v:shapetype id="_x0000_t75"
+   coordsize="21600,21600" o:spt="75" o:preferrelative="t" path="m@4@5l@4@11@9@11@9@5xe"
+   filled="f" stroked="f">
+   <v:stroke joinstyle="miter"/>
+   <v:formulas>
+    <v:f eqn="if lineDrawn pixelLineWidth 0"/>
+    <v:f eqn="sum @0 1 0"/>
+    <v:f eqn="sum 0 0 @1"/>
+    <v:f eqn="prod @2 1 2"/>
+    <v:f eqn="prod @3 21600 pixelWidth"/>
+    <v:f eqn="prod @3 21600 pixelHeight"/>
+    <v:f eqn="sum @0 0 1"/>
+    <v:f eqn="prod @6 1 2"/>
+    <v:f eqn="prod @7 21600 pixelWidth"/>
+    <v:f eqn="sum @8 21600 0"/>
+    <v:f eqn="prod @7 21600 pixelHeight"/>
+    <v:f eqn="sum @10 21600 0"/>
+   </v:formulas>
+   <v:path o:extrusionok="f" gradientshapeok="t" o:connecttype="rect"/>
+   <o:lock v:ext="edit" aspectratio="t"/>
+  </v:shapetype><v:shape id="_x0000_s1025" type="#_x0000_t75" style='position:absolute;
+   margin-left:49.5pt;margin-top:18pt;width:188.25pt;height:107.25pt;z-index:1'>
+   <v:imagedata src="dsbs00010_files/image001.jpg" o:title="대원" gain="69719f"/>
+   <x:ClientData ObjectType="Pict">
+    <x:SizeWithCells/>
+    <x:CF>Bitmap</x:CF>
+   </x:ClientData>
+  </v:shape><![endif]--><![if !vml]><span style='mso-ignore:vglayout;
+  position:absolute;z-index:1;margin-left:66px;margin-top:24px;width:251px;
+  height:143px'><img width=251 height=143 src="dsbs00010_files/image002.jpg"
+  v:shapes="_x0000_s1025"></span><![endif]><span style='mso-ignore:vglayout2'>
+  <table cellpadding=0 cellspacing=0>
+   <tr>
+    <td height=26 class=xl28 width=71 style='height:19.5pt;width:53pt'></td>
+   </tr>
+  </table>
+  </span></td>
+  <td class=xl28 colspan=3 style='mso-ignore:colspan'>authorized signature</td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=26 style='mso-height-source:userset;height:19.5pt'>
+  <td height=26 class=xl33 style='height:19.5pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=22 style='height:16.5pt'>
+  <td height=22 class=xl33 style='height:16.5pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=77 style='mso-height-source:userset;height:57.75pt'>
+  <td height=77 class=xl33 style='height:57.75pt'>&nbsp;</td>
+  <td colspan=6 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl34></td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=23 style='height:17.25pt'>
+  <td height=23 class=xl33 style='height:17.25pt'>&nbsp;</td>
+  <td colspan=4 class=xl28 style='mso-ignore:colspan'></td>
+  <td class=xl59>&nbsp;</td>
+  <td class=xl59>&nbsp;</td>
+  <td class=xl60>&nbsp;</td>
+  <td class=xl35>&nbsp;</td>
+ </tr>
+ <tr height=29 style='mso-height-source:userset;height:21.75pt'>
+  <td height=29 class=xl61 colspan=3 style='height:21.75pt;mso-ignore:colspan'>JUAN
+  ARTURO PUENTE MARQ<span style='display:none'>UEZ</span></td>
+  <td class=xl63>&nbsp;</td>
+  <td class=xl63>&nbsp;</td>
+  <td class=xl63 colspan=3 style='mso-ignore:colspan'>daewon chemical co.,ltd.</td>
+  <td class=xl65>&nbsp;</td>
+ </tr>
+   <%next%>
+ <![if supportMisalignedColumns]>
+ <tr height=0 style='display:none'>
+  <td width=99 style='width:74pt'></td>
+  <td width=108 style='width:81pt'></td>
+  <td width=49 style='width:37pt'></td>
+  <td width=64 style='width:48pt'></td>
+  <td width=71 style='width:53pt'></td>
+  <td width=45 style='width:34pt'></td>
+  <td width=97 style='width:73pt'></td>
+  <td width=78 style='width:59pt'></td>
+  <td width=131 style='width:98pt'></td>
+ </tr>
+ <![endif]>
+</table>
+
+</body>
+<%CloseDB%>
+</html>

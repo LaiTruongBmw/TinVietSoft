@@ -1,0 +1,39 @@
+Ms.Van()
+popup():
+old--->new
+gfco002006 --->change =60090010_CtrItem
+
+gfco002005.aspx--->change=60090010_CtrItem2
+
+ffco002003 --->change=60090010_emp_name
+
+gfda00010_GetPO--->change=60090010_GetPO
+
+ffbp00031--->60090010_vendor_popup
+
+gfco002006_1.aspx--->60090010_item2_popup
+
+gf/da/PopUpGetWareHouse.aspx--->60090010_GetWareHouse
+gf/co/ffco002000--->60090020_account_popup.aspx
+chae00010_search_emp-->60090010_search_emp
+gfhg00010_transaction-->60090010_Transaction
+
+gfda00020_GetImpContract-->60090010_GetImpContract
+fp/ab/PopUpGetPartner-->60090010_PopUpGetPartner
+gfhg00020_popup.aspx-->60090030_popup
+gfhg00020_1.aspx-->60090030_1_popup
+
+agga00010_popup.aspx-->60040010_popup.aspx
+gfda00060_popup_DO-->60090040_popup_do.aspx
+gfda00060_popup_OS-->60090040_popup_DO.aspx
+gfda00060_popup_OS-->60090040_popup_OS
+gfda00010_expense--->60090040_expense_popup
+gfda00010_popup_TAcc--->60090040_popup_TAcc
+gfda00010_APTrType--->60090040_APTrType
+gf/co/ffco002000-->60090050_popup
+gf/da/gfda00090_popup-->60090050_1_popup
+ag/ga/agga00090-->60090050_2_popup
+gfda00010_popup--->60090060_popup
+gf/co/gfco002009.aspx			-----> 60060010_popup_beneficiary
+gf/hg/gfhg00010_search.aspx		--------->   60060010_popup_search.aspx
+gf/co/gfco002007.aspx  ----------->   60\06\60060010_popup_contract.aspx

@@ -1,0 +1,262 @@
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Login.aspx.cs" Inherits="Login" %>
+
+<!-- #include file="system/lib/form.inc"  -->
+<html>
+<style>
+    /* the container that holds the log in elements */
+    .ajaxlogin_container {
+	    margin-left:auto;
+	    margin-right:auto;
+	    border:2px solid #c3c3c3;
+	    padding: 30px 30px; 
+	    background:#cccccc;
+	    width: 300px;
+	    border-radius:10px;
+	    box-shadow: 8px 8px 8px #666666;
+	    font-family:Arial,Helvetica,sans-serif;
+    }
+
+    /* the login form */
+    #ajaxlogin_action{
+	    /*
+	    margin-left:auto;
+	    margin-right:auto; /**/
+	    width:70em;
+	    border: 1px solid #cac7c9;
+    }
+    
+    #ctLogin{
+	   width:50%; height:300px;display:inline;
+       align-items:center;
+    }
+
+    .loLogin_1, .loPwd_1 {
+        position:relative;
+        border:solid 1px #dadada;
+        padding:10px 35px 10px 15px;
+        width:250px;
+        margin:0 0 14px;
+        background:#fff;
+        height:22px
+    }
+
+    .loLogin_1.focus, .loPwd_1.focus {
+        border:solid 1px #d6e9be;
+    }
+
+    .input_box{display:block;overflow:hidden}
+    .lbl{left:15px;z-index:8;font-size:11px;color:#999;line-height:16px;}
+    .int{width:100%;padding:7px 0 6px;height:16px;z-index:9;border:none;background:#fff;font-size:11px;color:#000;line-height:16px;-webkit-appearance:none}
+
+    .spaceheight {
+        line-height:10px;
+    }
+
+    #ctLogo{
+	   width:50%; height:300px;display:inline;
+	   background-color:#d6e9be;
+       text-align:center;
+    }
+
+    /* the username  textbox and password textbox */
+    #ajaxlogin_username, #ajaxlogin_password{
+	    width:80%;
+       margin-left: 23px;
+           border: 1px solid #656565; 
+        -webkit-border-radius: 8px; 
+        -moz-border-radius: 8px; 
+        border-radius: 8px; 
+        outline:0; 
+        height:25px; 
+        padding-left:10px; 
+        padding-right:10px;
+    }
+
+    /* the submit button */
+    #ajaxlogin_submit{
+       margin-left: 160px;
+       height: 22px;
+       border-top: 1px solid #96d1f8;
+       background: #64c9d7;
+       background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+       background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+       background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+       background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+       background: -o-linear-gradient(top, #3e779d, #65a9d7);
+       padding: 5px 10px;
+       -webkit-border-radius: 8px;
+       -moz-border-radius: 8px;
+       border-radius: 8px;
+       -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+       -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+       box-shadow: rgba(0,0,0,1) 0 1px 0;
+       text-shadow: rgba(0,0,0,.4) 0 1px 0;
+       color: white;
+       font-size: 14px;
+       font-family: Georgia, serif;
+       text-decoration: none;
+       vertical-align: middle;
+    }
+
+    #ajaxlogin_submit:hover {
+       border-top-color: #28597a;
+       background: #28597a;
+       color: #ccc;
+    }
+
+    #ajaxlogin_submit:active {
+       border-top-color: #1b435e;
+       background: #1b435e;
+    }
+
+    /* the progress image if any */
+    #ajaxlogin_progress_image{
+       margin-left: 160px;
+       width: 22px;
+       height: 22px;
+    }
+
+    /* the title of the  log in form */
+    #ajaxlogin_header{
+       margin-left: 23px;
+    }
+
+    .fzloginpanel{
+	    position:absolute;
+        top: 45%;
+        left: 0%;/**/
+        width:100%;
+        height:18em;
+        margin-top: -9em; /*set to a negative number 1/2 of your height*/
+        /*margin-left: -15em; /*set to a negative number 1/2 of your width*/
+        border: 0px solid #237705;
+        background-color: #ffffff;
+    }
+</style>
+<SCRIPT LANGUAGE="JavaScript" SRC="system/lib/md5.js"></script>
+<script>
+// test SVN
+var NS = (document.layers) ? 1 : 0;// if browser is netscape
+var IE = (document.all)    ? 1 : 0;
+document.onkeypress = KeyHandler;
+var _securityKey = "<%=Session.SessionID%>";
+function KeyHandler(e) {
+  if (NS) Key = e.which;
+  else Key = window.event.keyCode;
+  if (Key == 13 ) 
+		return Checkform() ;
+	return true;
+}
+function SetFocus() {
+    var id = findObj("txtUserID");
+    var pw = findObj("txtPassword");
+
+    addInputEvent(getAttr(id, "id"), 'id_area');
+    addInputEvent(getAttr(pw, "id"), 'pw_area');
+    
+    try {
+        if (navigator.appVersion.toLowerCase().indexOf("win") != -1) {
+            id.style.imeMode = "disabled";
+            document.msCapsLockWarningOff = true;
+        }
+    } catch (e) { }
+
+    
+    try {
+        if (id.value.length == 0) {
+            id.focus();
+        }
+        else {
+            pw.focus();
+        }
+    } catch (e) { }
+
+    var msg = "<%=Request["errmsg"]%>";
+    if(msg != "") alert(msg);
+    document.login_form.txtUserID.focus();
+    //alert($('#ctLogo').html());
+    return false; 
+} 
+function Checkform() 
+{
+    if (document.login_form.txtUserID.value.length < 1) {
+        alert("Input your Company ID."); 
+        document.login_form.txtUserID.focus(); 
+        return false; 
+    } 
+    if (document.login_form.txtPassword.value.length < 1) { 
+        alert("Input your Password."); 
+        document.login_form.txtPassword.focus(); 
+        return false; 
+    } 
+	document.login_form._password.value = b64_md5(document.login_form.txtPassword.value);
+	document.login_form.txtPassword.value = _securityKey;
+	document.login_form._txtSecurityKey.value = _securityKey;
+    document.login_form.submit(); 
+	return false;
+ } 
+</script> 
+<body leftmargin="0" topmargin="0" onload = "SetFocus()">
+<form method="post" action="login_submit.aspx" onsubmit="return Checkform();"  name=login_form enctype="multipart/form-data">
+<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" style="background:#FFFFFF">
+    <tr>
+        <td align="center" valign="middle">
+            <div class="fzloginpanel">
+                <div action="" id="ajaxlogin_action">
+                    <table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0" style="background:#FFFFFF">
+                        <tr>
+                            <td id="ctLogin" align="center">
+                                <div class="loLogin_1" id="id_area">
+                                    <span class="input_box">
+                                        <label for="id" id="label_id_area" class="lbl" style="display: block;">USER ID</label>
+                                        <input type="text" id="txtUserID" name="txtUserID" tabindex="7" class="int" maxlength="41" value="" />
+                                    </span>
+                                </div>
+                                <div class="spaceheight"></div>
+                                <div class="loPwd_1" id="pw_area">
+                                    <span class="input_box">
+                                        <label for="pw" id="label_pw_area"  class="lbl" style="display: block;">PASSWORD</label>
+                                        <input type="password" id="txtPassword" name="txtPassword" tabindex="8" class="int" maxlength="41" value="" />
+                                    </span>
+                                </div>
+                            </td>
+                            <td id="ctLogo">
+
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="display:none;font-weight:bold; line-height:20px;padding-top:10px;padding-bottom:10px;width:90%;height:20px;border-bottom:1px solid #237705;font-family:Tahoma;font-size:14px;color:#237705;" align="left">
+                        <img src = "system/images/login/logo.jpg" />
+                    </div>
+                    <div style="display:none;width:90%;height:100px;background:#fff;padding-top:10px;padding-bottom:10px;border-bottom:1px solid #237705;">
+                        <table padding="2" marging="2" style="height:100%;padding-left:20px">
+                            <tr>
+                                <td rowspan="1" align="center" style="font-family:Tahoma;font-size:14px;color:#237705;font-weight:lighter">USER ID</td>
+                                
+                                <td rowspan="2" style="border:1px solid #237705;width:120px;background-color:#2eb002;color:#fff;font-size:20px;font-family:Tahoma;" align="center"><input type="submit"  tabindex="3" value="LOG IN" style="width:100%;height:100%;border:0px;color:#fff;background-color:#2eb002;font-size:20px"  onclick="Checkform()" /></td>
+                            </tr>
+                            <tr>
+                                <td rowspan="1" align="center" style="font-family:Tahoma;font-size:14px;color:#237705;font-weight:lighter">PASSWORD</td>
+                                
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="display:none;line-height:20px;padding-top:10px;padding-bottom:30px;width:90%;font-family:Tahoma;font-size:12px;color:#ccc;" align="right">
+                        Copyright © 2016, TINVIET. All rights Reserved.
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+<OBJECT    id="idInternalGrid" CLASSID="clsid:D76D7126-4A96-11D3-BD95-D296DC2DD072" codebase="system/activex/grid.cab#version=7,0,1,151" style="position:absolute;width:100;height:2;left:0;top:-20;"  >
+</OBJECT>
+<OBJECT   id="idInternalGridGroup" CLASSID="clsid:49EC7E14-9F3D-44D8-A1A4-97CC5D4A7EE8" codebase="system/activex/vsFGroup.CAB#version=1,0,0,0" style="position:absolute;width:100;height:2;left:0;top:-20" >
+</OBJECT>                                           
+
+<input  type="hidden" name="_password" />
+<input  type="hidden" name="_txtSecurityKey" />
+
+</form>
+</body>
+</html>

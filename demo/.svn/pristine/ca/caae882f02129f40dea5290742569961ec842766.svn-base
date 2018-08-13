@@ -1,0 +1,369 @@
+November 2002                                                    (Version 1.20)
+                              ===========
+                              HELP & INFO
+                              ===========
+                              
+
+ 
+
+
+                               0. Content
+                               ==========
+
+         1.  What's DXF?
+         2.  How to use the viewer
+         3.  Supported DXF features / Outview
+         4.  Acknowledgements
+         5.  License
+         6.  Bugs
+
+
+
+
+
+                              1. What's DXF
+                              =============
+
+   DXF is an exchange format for CAD data.  It was originally created by
+Autodesk, Inc. for their well-known product AutoCAD(tm) some 15 years ago 
+and developped further with every new AutoCAD(tm) version.
+
+   Nevertheless today there are several thousands of applications around 
+which claim to import or export DXF. Among them are nearly every CAD program 
+(of course), many DTP and paint programs and lots of others. This viewer is 
+one of them.
+
+
+
+                          2. How to use the viewer
+                          ========================
+
+                           2.1 Getting started
+                           -------------------
+
+   You will need a JDK 1.1.x (or newer) compatible version of Java to run 
+this program.
+
+   For JDK 1.2 or newer: You can view a DXF file by typing
+        java -jar dxfviewer.jar dxffilename
+
+   For JDK 1.1.x: add the jar archive with the viewer classes to your 
+class path. Then you can view a DXF file by typing
+        java de.escape.quincunx.dxf.DxfViewer dxffilename
+
+   If you want to preset the language you can set the property dxfview.language,
+e.g.
+	java -Ddxfview.language=de_DE -jar dxfviewer.jar
+
+or for Java 1.1.x:
+        java -Ddxfview.language=de_DE de.escape.quincunx.dxf.DxfViewer 
+
+will start the viewer with German user interface without loading a file. 
+The default is English.
+
+   For your convenience it's strongly recommended to put this into a script or
+batch file. You should have gotten a DOS batch file (named DV.BAT) and an
+Unix script (named dv) with the jar archive. With that you can start the 
+viewer using 
+        dv dxffilename
+
+The viewer can load plain DXF files and DXF files packed with gzip und 
+(pk)zip. The files don't need a special extension like .dxf.
+
+   The other way of viewing a file is to load it via the File menu -- as 
+usual. The progress of file loading and converting is shown by a growing 
+(or sometimes moving) bar.
+
+
+There are two other properties which you can set via the -D command line switch:
+
+dxfview.reducelines -- an integer value representing the number of lines
+                       displayed in reduced display mode.
+
+preview.reducelines -- an integer value representing the number of lines
+                       displayed in print preview. 0 selects all lines!
+
+
+                               2.2 Handling
+                               ------------
+
+                                 Moving
+                                 °°°°°°
+The content of the DXF file is shown as a wireframe model. You can rotate,
+move, and scale this model by dragging the mouse over the view window
+('dragging' means moving the mouse while pressing a mouse button).
+Use different mouse buttons or press CTRL or SHIFT for the different
+actions. The active action is shown in the status line below the model
+view window.
+
+Use LEFT   mouse button (with no modifier key) to rotate the model.
+           While rotating, there is a circle shown. You can imagine a
+           trackball lying in this circle. When you drag in the circle,
+           you rotate the model like dragging the trackball with the
+           mouse. If you drag outside the circle, you rotate the
+           model around the view axis. Once you get used to this it
+           allows for a perfect control of the view.
+Use MIDDLE mouse button (or LEFT with SHIFT) to move the model.
+Use RIGHT  mouse button (or LEFT with CTRL) to scale the model and
+           to change the distance to the model.
+
+
+You can change the complexity of the model shown while moving with the
+choice in the top right corner.
+
+[Move full]    All lines are drawn while moving (slowest)
+[Move BBox]    Only a bounding box of the whole model is moved (fastest)
+[Move reduced] Only some of the lines are moved (default)
+
+   
+You can step through previous points where you released a mouse button
+with the two buttons named [Previous]/[Next].
+Reset to [X-Y] resets the view to a view direction parallel to the z axis,
+         [Y-Z] parallel to the x axis and 
+         [X-Z] parallel to the y axis.
+
+
+                                 Layer
+                                 °°°°°
+The data in the DXF file is organized on layers. You can switch them on and
+off using the layer list in the bottom right corner. Use the buttons
+[Invert] to invert the momentary selection and [Select all] to select 
+all of the layers. Layers marked hidden in the DXF file are initially 
+hidden.
+
+
+                               Printing
+                               °°°°°°°°
+It is possible to print the represented view using the Print item in
+the File menu. Printing isn't supported very well in the known Java
+versions so don't be too sad if you do not get what you expected.
+
+For those of you with postscript printers there's the possibility of creating
+PostScript data directly, which gives much better results than the 
+Java1.1-internal printing.
+
+
+                     Language [Options>Language] 
+                     °°°°°°°°°°°°°°°°°°°°°°°°°°°
+You can switch the language of the viewer between English and German. 
+English is the default, see in section 2.1 how to start the viewer with
+German user interface. The language is not changed in some system dialogs.
+
+              Coordinate System [Options>Show CS/CS Position]
+              °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+It's possible to display a little coordinate system for better orientation.
+The corner in which it is display can be varied.
+
+              Swap black & white [Options>Swap Black & White]
+              °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+DXF has a black background by default. If you prefer a white background
+you can switch to that by using the Options menu.
+
+                    Message Log [Info>Message Log]
+                    °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+Here you can see the messages and warnings from the file read process.
+
+                       Model Info [Info>Model]
+                       °°°°°°°°°°°°°°°°°°°°°°°
+Shows you some rudimentary information about the current model.
+
+                        JVM [Info>Java Stuff]
+                        °°°°°°°°°°°°°°°°°°°°°
+Shows you some info about the Java Virtual Machine you are running.
+This may be useful for bug reports.
+
+                               Leaving
+                               °°°°°°°
+In case you ever want to leave the program you can use Exit in the File menu.
+
+
+                              2.3 Applet
+                              ----------
+
+   In principle the viewer can be run as an Applet immediately, but several
+bugs of internet browsers require a more complicated solution, where parts
+of the jar have to be unpacked to the server. The detailed actions and a 
+prepared package could be found on the internet page
+        http://www.escape.de/users/quincunx/dxfviewer/
+
+
+
+                        3. Supported DXF features
+                        =========================
+
+   The DXF format is changing with every new release of AutoCAD (tm). 
+This viewer understands DXF as written by AutoCAD R12. This is the
+most wide-spread version of DXF. 
+
+   AutoDesk has totally changed the DXF format beginning with AutoCAD R13.
+The viewer will not display newer DXF versions very well.
+   
+
+
+			    DXF entities
+                            °°°°°°°°°°°°
+                             
+This is a table with all DXF entities and wether the viewer supports them
+or not.
+
+            ENTITY                |           support status
+----------------------------------+-------------------------------------
+            POINT                 |           supported (only dots)
+                                  |
+            LINE/3DLINE           |           supported
+                                  | 
+            CIRCLE                |           supported
+                                  |
+            ARC                   |           supported
+                                  |
+            TRACE                 |           supported
+                                  |
+            SOLID                 |           supported
+                                  |
+            TEXT                  |           supported (in font version)
+                                  |
+            SHAPE                 |           NOT supported
+                                  |
+            POLYLINE/VERTEX       |           supported
+                                  |
+            3DFACE                |           supported
+                                  |
+            VIEWPORT/VPORT/VIEW   |           not yet supported
+                                  |
+            DIMENSION             |           supported
+                                  |
+            BLOCK/INSERT          |           supported
+                                  |
+            ATTRIB/ATTDEF         |           supported
+----------------------------------+-------------------------------------
+
+
+
+                          Entity attributes
+                          °°°°°°°°°°°°°°°°°
+
+   DXF entities can have different properties. Here's a table if (and 
+possibly how) they are supported.
+
+            PROPERTY              |           support status
+----------------------------------+-------------------------------------
+            color                 |           supported
+                                  |
+            layer                 |           supported
+                                  |
+            line types            |           supported
+                                  |
+            line width            |           not yet supported
+                                  |
+            extrusion             |           supported
+                                  |
+            font                  |           supported when known (in
+                                  |           font version)
+----------------------------------+-------------------------------------
+                                  
+
+
+                             Outview
+                             -------
+
+*  Everything above labeled 'not yet supported' waits to get implemented  :-)
+
+*  When there's a common 3D API for Java available shaded models should
+   be a nice feature.
+
+*  Printing should get better.
+
+
+
+
+                        4. Acknowledgements
+                        ===================
+
+* Thanks to the guys at Sun for giving away the JDK for free.
+
+* This program was developped under Linux. So thanks to the Linux community
+  and everybody else who participated for the zillion of years of free work
+  which made this possible.
+
+* Special thanks to Frank Gerberding for raytracing the about image on his
+  famous PPC powered Amiga.
+
+* Thanks to Tim Niels van der Leeuw who gave me the idea that speeding up
+  Java I/O is possible.
+
+* Many thanks to HP Knoll from Paris for supporting me with a binary DXF
+  file. Now the viewer understands this rare format, too.
+
+* Thanks to Dietmar Rudolph/Thomas Stürznickel/Leo Weissenberger for writing
+  the book "Der DXF-Standard" (ISBN 3-87686-246-9). It was really 
+  unrenounceable (and maybe one day I will have found all the errors  ;-)
+
+
+
+                            5. License
+                            ==========
+
+   Take this program, use it, distribute it.  It's free.  If you are able
+to create any damage using it I will be astonished but I will not compensate 
+for it.  It's your own risk.
+
+   It's possible to get the sources.  Just write me an email and I will
+probably send them to you.  I am just curious who might be interested and
+I don't want someone to make some changes and then sell the result as
+(or as part of) a commercial product. Here's my address:
+
+                      rammi@caff.de
+
+                      Rammi (aka Andreas M. Rammelt)
+                      Gliesmaroder Str. 95
+                      38106 Braunschweig
+                      Germany
+                      Tel. +49-531-343054
+
+
+                               6. Bugs
+                               =======
+
+                             Bug Reporting
+                             °°°°°°°°°°°°°
+
+   If you find a bug first check if it is mentioned below. If not, please
+take the time to report it to the address given above. Please add the 
+JVM info you can get via the [Info>Java Stuff] menu. If it is possible 
+and they are small enough (<1MByte) attach the DXF file with which you
+discovered the error. Thank you.
+
+   I am still looking for AutoCAD R14 DXF files. If you have access to 
+AutoCAD you can help to improve the DXF Viewer by exporting at least
+one normal and one binary DXF file and send them to the given address.
+
+                              Known Bugs
+                              °°°°°°°°°°
+
+Middle mouse button not supported with JDK1.2 on Windows
+--------------------------------------------------------
+This is a bug in JDK1.2. 
+Please use the [Shift] key to move the modell until this bug is fixed.
+
+Coordinate system is clipped with JDK1.2 on Windows
+---------------------------------------------------
+This is a bug in JDK1.2.
+No known workaround.
+
+Viewer Window does not resize on SGI
+------------------------------------
+When the window is resize the content is not changing on SGI machines. This is 
+reported against the 1.1.5 (3.1) JVM on Irix 6.2. 
+No known workaround.
+
+Printing is not satisfiing
+--------------------------
+This is a known Java 1.1  problem. It should get better when the viewer is ported
+to Java 1.2.
+No known workaround.
+
+
+
+
+Released: November 15th, 2002
+

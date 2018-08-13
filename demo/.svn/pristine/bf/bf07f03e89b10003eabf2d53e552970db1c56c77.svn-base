@@ -1,0 +1,507 @@
+﻿<PUBLIC:COMPONENT tagName="TextBox" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="GetEnabled" />
+	<PUBLIC:METHOD name="SetReadOnly" />
+	<PUBLIC:METHOD name="GetControl" />	
+	<PUBLIC:METHOD name="Validate" />	
+	
+	<PUBLIC:PROPERTY  NAME="text"   PUT="setText" GET="getText"/>
+	<PUBLIC:PROPERTY  NAME="type"  GET="getType"/>
+	<PUBLIC:PROPERTY  NAME="enabled"   PUT="SetEnable" GET="GetEnable"/>
+	
+	<public:event id="onChange" name="onchange">
+	<public:event id="onKeyPress" name="onkeypress">
+	<public:event id="onBlur" name="onBlur">
+	<public:event id="onFocus" name="onfocus">
+	<public:event id="onDblclick" name="ondblclick">
+	
+	<public:event id="onEnterkey" name="onenterkey">
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >	
+	
+<SCRIPT Language="Javascript">
+
+var text="";
+var check="";
+var obj = null;
+var type = "textbox";
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function GetControl() {
+	return obj;
+}
+
+function GetData()
+{
+   
+ return text;
+ 
+}
+function Validate()
+{
+   if(check == ""){
+	    return true;
+   }
+   else if(check == "1"){
+        if(text == "" || text == null){
+            alert("Please input data for this textbox. \n\nBạn phải nhập dữ liệu cho textbox này.");
+            obj.focus();
+            return false;
+        }
+   }
+  
+  return false; 
+}
+function SetData( data )
+{ 
+	if ( data )
+		setText( data.text );
+	else
+		setText( "" );
+}
+
+function SetDataText( txt )
+{  
+	setText( txt );
+}
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+	if ( bEnable )
+	{
+		obj.contentEditable = "true";
+		obj.style.fontWeight = "normal";
+	} else
+	{
+		obj.contentEditable = "false";
+		obj.style.fontWeight = "bold";
+	}
+}
+function SetReadOnly(bReadOnly) {
+		obj.readOnly = bReadOnly;
+}
+function GetEnable( )
+{
+	return !element.disabled;
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+
+function setText (vValue)
+{
+  
+   text = "" + vValue ;
+   
+   if ( obj ) 
+   {
+		text = GetPresentToValue( text ); 
+		obj.value = GetValueToPresent( text );
+   }
+	
+}
+
+function getText()
+{
+	 return text;
+}
+function getType()
+{
+	 return type;
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+function OnKeyDown()
+{
+	if ( event.keyCode == 13 )
+	{
+		setText( obj.value );	
+		var evObj = createEventObject()
+  		onEnterkey.fire(evObj);
+ 	}	
+}
+
+function OnChangeInternal()
+{
+	
+	setText( obj.value );	
+	var evObj = createEventObject()
+  	onChange.fire(evObj)
+}
+
+function onDblclick()
+{
+	
+	setText( obj.value );	
+	var evObj = createEventObject()
+  	onDblclick.fire(evObj)
+}
+
+var oldBGColor="", oldBorderColor="";
+function OnFocus()
+{
+	//obj.value = GetValueToPresentEdit( text );
+	obj.select();
+	oldBGColor=obj.style.backgroundColor;
+	oldBorderColor=obj.style.borderColor;
+	obj.style.backgroundColor="#ffeaea";
+	obj.style.borderColor="#f28a8a";
+	var evObj = createEventObject();
+  	onFocus.fire(evObj);
+}
+
+function OnBlur()
+{
+	obj.style.backgroundColor=oldBGColor;
+	obj.style.borderColor=oldBorderColor;
+	var evObj = createEventObject();
+  	onBlur.fire(evObj);
+}
+// --------------------------------------------------------------------------------------------------------//
+//	For number format
+// --------------------------------------------------------------------------------------------------------//
+
+var bDigitCutMethod  = 0;	// 0 : Floor , 1 : Round , 2 : Ceil
+var bConvertNumber = false ; 
+var nFixedPoint = 0;
+var nStart0 = 0;
+var nSep = 3;
+var nSepChar = "";
+
+function GetPresentToValue( value )
+{
+
+  if ( element.type != "number" )  return value;
+
+	var i , j;
+	
+	var str="";
+	var bPoint = false;
+	
+	for ( i = 0 ; i < value.length ; i++ )	
+	{
+		var ch = value.charAt(i);
+		
+		if (( ch >= "0" && ch <= "9" ) )
+			str += ch;
+		else
+		if ( ch == "."  && !bPoint) 
+		{
+			str += ch; bPoint = true;
+		} else
+		if (ch =="-" && str.length==0) 
+		{
+			str += ch; 
+		}
+	}
+	
+	
+	var nm = new Number( str );
+	
+	
+	if (isNaN (nm)  )
+		nm = 0;
+	
+	if ( bConvertNumber ) 
+	{
+		nm = nm * Math.pow( 10 , nFixedPoint );
+		
+		switch ( bDigitCutMethod )
+		{
+			case 0 :
+				nm = Math.floor( nm );
+				break;
+			case 1:
+				nm = Math.round( nm );
+				break;
+			case 2:
+				nm = Math.ceil( nm );
+				break;
+		}
+	
+		
+		nm = nm / Math.pow( 10 , nFixedPoint );
+	}
+		
+	return nm.toString();
+}
+
+function GetValueToPresentEdit( v )
+{
+	return v;
+}
+
+function GetValueToPresent( nm )
+{	
+
+	if ( element.type != "number" )  return nm;	
+	
+	nm = nm * Math.pow( 10 , nFixedPoint );
+	
+	switch ( bDigitCutMethod )
+	{
+		case 0 :
+			nm = Math.floor( nm );
+			break;
+		case 1:
+			nm = Math.round( nm );
+			break;
+		case 2:
+			nm = Math.ceil( nm );
+			break;
+	}
+
+	
+	nm = nm / Math.pow( 10 , nFixedPoint );
+	
+    
+
+	var str = nm.toString();
+	
+	if ( nStart0 < 0 )
+	{
+		var ix = str.indexOf( "." );
+		
+		if ( ix == -1 ) ix= 0;
+		else
+			ix = str.length - ix -1;
+			
+		
+		for ( i = 0 ; i < -ix - nStart0  ; i++ )
+		{
+			if ( i == 0 && ix == 0 ) str += ".";
+			str += "0";
+		}
+		
+	}
+    
+	
+	if  ( nSepChar >= ' '  && nSep > 0)
+	{
+		var ix;
+		
+		ix = str.indexOf(".");
+		if ( ix < 0 ) ix = str.length;
+		
+		var ss = "";
+		var j = 0;
+		
+		for ( i = 0 ; i < str.length ; i++ )
+		{
+		
+			ss += str.charAt( i );
+			if ( str.charAt( i ) != "-" ) {
+				j++;
+				if (( i+1 < ix ) && ( (( ix - j) % nSep )==0) )
+				ss += nSepChar;//comma ','
+			}	else ix --;
+		
+		}
+
+		str = ss;
+		
+	}
+	
+
+	return str;
+
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+function event_oncontentready()
+{
+
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		return;
+	}
+	element.print = true;
+
+	var style = Gb_Text_DefStyle; //global
+	
+  if (element.csstype) { // for css type
+		switch (element.csstype.toLowerCase()) {
+			case "filter" : {	
+				style = Gb_Text_FltStyle;
+				break;
+			}
+			case "mandatory" : {	
+				style = Gb_Text_ManStyle;
+				break;
+			}
+			case "general" : {	
+				style = Gb_Text_GenStyle;
+				break;
+			}						
+		}
+	} 
+	var keylabel="";
+	var readonly = "";
+	if (element.keyid)
+		  keylabel = "id=" + element.keyid;
+		  
+	if(typeof(element.readonly) != "undefined"){ 	  
+	    if ( typeof( element.passwd ) != "undefined" ) {
+	          element.innerHTML += "<input " + keylabel + " readonly='true' type = 'password' style=';font-size:9pt;width:100%;" + style + element.styles + "' >";
+	    }
+        else{
+    	      element.innerHTML += "<input " + keylabel + " readonly='true' type = 'text' style=';font-size:9pt;width:100%;" + style + element.styles + "' >";     		
+        }
+    }    
+    else{
+        if ( typeof( element.passwd ) != "undefined" ) {
+              element.innerHTML += "<input " + keylabel + " type = 'password' style=';font-size:9pt;width:100%;" + style + element.styles + "' >";
+        }
+        else{
+	          element.innerHTML += "<input " + keylabel + " type = 'text' style=';font-size:9pt;width:100%;" + style + element.styles + "' >";     		
+        }
+	}
+
+	obj = element.childNodes(0);
+	obj.attachEvent("onchange", OnChangeInternal);
+	obj.attachEvent("onkeydown" , OnKeyDown );	
+	obj.attachEvent("onfocus" , OnFocus );
+	obj.attachEvent("onblur" , OnBlur );
+
+	if ( element.size ) 
+		obj.size = element.size;		
+	
+	if ( element.maxlen )
+		obj.maxLength = element.maxlen;
+		
+	if ( element.type == "number" ) // data type
+	{
+		
+		obj.style.textAlign  = "right";
+		
+		var digitarea = "";
+		var otherarea = "";
+		var i , j;
+
+		if (element.format != undefined) {
+			digitarea = element.format;
+		}
+		
+
+		i = digitarea.lastIndexOf( "0" );
+		j = digitarea.lastIndexOf( "#" );
+		
+		if ( i < 0 && j < 0 ) 
+		{
+			alert( "["+ digitarea + "] Format Error" );
+		}
+		
+		if ( j > i ) i = j;
+		
+		otherarea = digitarea.substring( i + 1 );
+		digitarea = digitarea.substring( 0 , i+1 );
+	
+		for ( i = 0 ; i < otherarea.length ; i++ )
+		{
+			switch ( otherarea.charAt(i) )
+			{
+				case "C":
+					bDigitCutMethod  = 2;
+
+					break;
+				case "F":
+					bDigitCutMethod  = 0;
+					break;
+					
+				case "R":
+					bDigitCutMethod  = 1;
+					break;
+					
+				case "T":
+					bConvertNumber = true; 				
+					break;
+			}
+		}	
+
+		nStart0 = -1; 
+		nFixedPoint = -1;
+		nSep = -1;
+
+		j = 0;
+		
+		for ( i = 0 ; i < digitarea.length; i ++ )
+		{
+			var ch = digitarea.charAt(i);
+			
+			if ( ch == "0"  ) nStart0 = j;
+			
+			if ( ch == "." ) nFixedPoint = j
+			else
+			if ( ch == "#" || ch == "0" ) 
+				j++;
+			else
+			{
+				
+				nSep = j;
+				nSepChar = ch;
+			}
+		}	
+
+
+		if ( nFixedPoint >= 0 ) 
+			nFixedPoint = j - nFixedPoint ;
+		else
+			nFixedPoint = 0;
+
+		if ( nStart0 > -1 )
+		{
+			nStart0 = ( j - nStart0 ) - nFixedPoint -1;
+			if ( nStart0 >= 0 ) nStart0 ++;
+		}
+		else
+			nStart0 = 0;
+		
+		if ( nSep >=0 )
+		{
+		
+			nSep = ( j - nSep ) - nFixedPoint ;
+			
+		}
+		
+		//alert( "Point=" + nFixedPoint );
+		//alert( "0=" + nStart0 );
+		//alert( "Unit=" + nSep + nSepChar);
+		
+		
+	} else
+	{
+		if ( element.format )
+			obj.maxLength = element.format.length;
+	}
+	
+	if(element.validate){
+	    check = element.validate;
+	}
+	else{
+	    check = "";
+	}
+	
+	setText( text );
+	
+}
+
+
+
+
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

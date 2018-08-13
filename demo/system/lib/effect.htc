@@ -1,0 +1,206 @@
+<PUBLIC:COMPONENT  lightweight = true  >
+
+	<public:event id="onclick" name="onclick" />	
+	
+</PUBLIC:COMPONENT>
+
+<SCRIPT Language="Javascript">
+
+
+
+var oObject = null;
+
+
+var nInterval = 0;
+
+
+
+function fnEffectStart()
+{
+	if ( !oObject )
+	{
+		element.style.zIndex = 11;
+		element.document.body.insertAdjacentHTML("afterBegin" , "<div style='position:absolute;z-index:1'> " + element.innerHTML  +  " </div>" );	
+		oObject = element.document.body.childNodes(0);
+		oObject .attachEvent("onmouseout", fnEffectEnd );
+		oObject .attachEvent("onclick", fnOnClick );
+	}
+
+	if ( nInterval == 0 )
+	{
+		FindPosition();
+		oObject.style.display = "";	
+		
+		x = oObject.offsetLeft;
+		y = oObject.offsetTop;
+		
+		w = oObject.offsetWidth ;
+		h  = oObject.offsetHeight;
+
+		
+		AniStart();
+		
+	}
+	
+	
+}
+
+function fnOnClick()
+{
+	var evObj = createEventObject()
+  	onclick.fire(evObj)
+	
+}
+
+function fnEffectEnd()
+{
+	AniEnd();
+}
+
+
+function FindPosition()
+{
+	var obj = element;
+	
+	var pobj ;
+	
+	var x = 0  , y = 0 ;
+	
+	
+	pobj = obj;
+	
+	while ( pobj )
+	{
+		x += pobj.offsetLeft;
+		y += pobj.offsetTop;
+		
+		// alert( pobj.offsetLeft + "="+pobj.outerHTML );
+		
+		if ( pobj != obj && pobj.offsetParent && pobj.tagName != "TABLE")
+		{
+			// alert( pobj.clientLeft + ":" + pobj.clientTop + "/" + pobj.offsetLeft + "="+pobj.outerHTML);
+			x += pobj.clientLeft;
+			y += pobj.clientTop;
+			
+		}
+		pobj = pobj.offsetParent;	
+	}
+	
+	oObject.style.left = x;
+	oObject.style.top = y;
+	oObject.style.width = obj.offsetWidth;
+	oObject.style.height = obj.offsetHeight;
+
+	
+}
+
+
+element.attachEvent("onmouseover", fnEffectStart );
+
+
+//--------------------------------------------------------
+var nTickState = 0;
+var nTickState2 = 0;
+var x , y , w, h;
+
+
+function fnTickWow()
+{
+
+
+	if  ( oObject.filters.length == 0 )
+	{
+		oObject.style.filter = " progid:DXImageTransform.Microsoft.Glow(strength=0, color=blue) ";
+		oObject.style.color = "white";
+			
+	}
+		
+	for ( var i = 0 ; i < 1 ; i ++ )
+	{
+		oObject.filters[i].strength = nTickState*2;
+		// oObject.filters[i].direction =  i*90 + nTickState*10;
+	}
+	
+	
+	
+	oObject.style.left = x + ( w - oObject.offsetWidth  ) /2 ;
+	oObject.style.top = y +  ( h - oObject.offsetHeight ) /2 ;;
+	
+
+	if ( nTickState == 0 )
+		AniEnd();
+
+	nTickState += nTickState2 ;
+	if ( nTickState > 5 ) nTickState2 = -1;
+	
+}
+
+
+function fnTickMotion()
+{
+
+	
+	if  ( oObject.filters.length == 0 )
+	{
+		oObject.style.filter = " progid:DXImageTransform.Microsoft.MotionBlur(direction=90,strength=1)" ;
+			
+	}
+		
+	for ( var i = 0 ; i < oObject.filters.length ; i ++ )
+	{
+		oObject.filters[i].strength = nTickState*nTickState;
+		// oObject.filters[i].direction =  i*90 + nTickState*10;
+	}
+	
+	
+	
+	//oObject.style.left = x + ( w - oObject.offsetWidth  ) /2 ;
+	//oObject.style.top = y +  ( h - oObject.offsetHeight ) /2 ;;
+	
+
+	if ( nTickState == 0 )
+	{
+		AniEnd();
+		return;
+	}
+
+	nTickState += nTickState2 ;
+	if ( nTickState < 0 ) 
+	{
+		nTickState2 = 1;
+		oObject.filters[0].direction = 0;
+		
+	}
+	
+}
+
+function AniStart()
+{
+	if ( element.type == 1 )
+	{
+	
+		nTickState = 10;
+		nTickState2 = -1;		
+		nInterval = setInterval( fnTickMotion , 40 );
+	
+	} else
+	{
+		nTickState = 1;
+		nTickState2 = 1;
+		nInterval = setInterval( fnTickWow , 20 );
+	}
+}
+
+function AniEnd()
+{
+	if ( nInterval != 0 )
+	{
+		clearInterval( nInterval  );
+		nInterval = 0;
+		oObject.style.display = "none";
+		oObject.style.filter = "";
+	}
+}
+
+
+</SCRIPT>

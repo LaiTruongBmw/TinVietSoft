@@ -1,0 +1,175 @@
+<PUBLIC:COMPONENT tagName="textarea" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="SetReadOnly" />
+	<PUBLIC:METHOD name="GetControl" />
+	<PUBLIC:METHOD name="Validate" />
+	
+  <public:event id="onChange" name="onchange">
+  <public:event id="onBlur" name="onblur">
+  <public:event id="onFocus" name="onfocus">
+  <public:event id="onDblClick" name="ondblclick">	
+  <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+
+</PUBLIC:COMPONENT>
+
+
+
+
+<SCRIPT Language="Javascript">
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function Validate()
+{
+   return true;
+}
+var obj = null;
+function GetControl()
+{
+	return obj;
+}
+function GetData()
+{
+	return obj.value ;
+}
+
+function SetData( data )
+{
+	
+	if ( data )
+	{
+		obj.value =  data.text ;
+		
+	}
+	else
+		obj.value =  ""  ;
+}
+
+function SetDataText( txt )
+{
+	obj.value = txt;
+}
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+	if ( bEnable )
+	{
+		obj.contentEditable = "true";
+	} else
+	{
+		obj.contentEditable = "false";
+	}
+}
+
+function SetReadOnly(bReadOnly) {
+		obj.readOnly = bReadOnly;
+}
+
+function GetReadOnly() {
+	return obj.readOnly;
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+function OnChangeInternal()
+{
+	var evObj = createEventObject()
+  	onChange.fire(evObj)
+}
+var oldBGColor="", oldBorderColor="";
+function OnFocus()
+{
+	oldBGColor=obj.style.backgroundColor;
+	oldBorderColor=obj.style.borderColor;
+	obj.style.backgroundColor="#ffeaea";
+	obj.style.borderColor="#f28a8a";
+	var evObj = createEventObject();
+  	onFocus.fire(evObj);
+}
+function OnBlur()
+{
+    obj.style.backgroundColor=oldBGColor;
+	obj.style.borderColor=oldBorderColor;
+	var evObj = createEventObject();
+  	onBlur.fire(evObj);
+}
+function OnDblClick()
+{
+	var evObj = createEventObject()
+  	onDblClick.fire(evObj)
+}
+
+var nDelay;
+function OnCheckTab()
+{
+	if ( 9==event.keyCode )
+	{
+	
+		if (  ( typeof( element.enabletab ) != "undefined" ) || (event.ctrlKey) )
+		{
+			obj.selection = element.document.selection.createRange();
+			nDelay  = setInterval( OnCheckTabDelay , 40 );		
+		}
+	}
+}
+
+
+function OnCheckTabDelay()
+{
+	clearInterval( nDelay  );
+	obj.selection.text=String.fromCharCode(9)
+	obj.focus();
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		return;
+	}
+	element.print = true;
+
+	var style = ";border:1 solid #6b9eb8; border-width: 1 1 1 1 ; padding:4 5 4 5; margin:1 1 1 1 ; background-color:white; line-height:100% ; ";
+	
+	element.innerHTML = "<textarea  style='"  + style + element.styles + "' >" + element.innerHTML + "</textarea>";
+	
+	obj = element.childNodes(0);
+	
+	if (typeof(element.rows) != "undefined") {
+		obj.rows = element.rows;
+	}
+	
+	if (typeof(element.cols) != "undefined") {
+		obj.cols = element.cols;
+	}
+	
+	if ( typeof(element.readOnly) != "undefined") {
+		obj.readOnly = true;
+	}
+	
+	obj.attachEvent( "onkeydown" , OnCheckTab );
+
+	obj.attachEvent("onchange", OnChangeInternal);
+	obj.attachEvent("onfocus" , OnFocus );
+	obj.attachEvent("onblur", OnBlur);
+	obj.attachEvent("ondblclick", OnDblClick);
+
+}
+
+</SCRIPT>
+

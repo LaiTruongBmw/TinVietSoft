@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<KHAI_BAO_TAM_TRU>
+    <THONG_TIN_KHACH>
+        <so_thu_tu>1</so_thu_tu>
+        <ho_ten>PHAM HUNG THAI</ho_ten>
+        <ngay_sinh>10/10/1976</ngay_sinh>
+        <ngay_sinh_dung_den>D</ngay_sinh_dung_den>
+        <gioi_tinh>M</gioi_tinh>
+        <ma_quoc_tich>RUS</ma_quoc_tich>
+        <so_ho_chieu>51N5337648</so_ho_chieu>
+        <so_phong>102A9</so_phong>
+        <ngay_den>25/07/2016</ngay_den>
+        <ngay_di_du_kien>28/07/2017</ngay_di_du_kien>
+        <ngay_tra_phong>27/07/2016</ngay_tra_phong>
+    </THONG_TIN_KHACH>
+</KHAI_BAO_TAM_TRU>

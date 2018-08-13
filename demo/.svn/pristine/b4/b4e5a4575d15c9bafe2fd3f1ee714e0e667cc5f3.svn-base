@@ -1,0 +1,65 @@
+<PUBLIC:COMPONENT tagName="download" lightweight = true  >
+
+<!--
+
+Explanation : Image Control 
+
+
+
+Instant property :
+
+-->	
+		
+	
+	<PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="event_oncontentready()" >
+	<PUBLIC:METHOD name="Download" />
+	<PUBLIC:METHOD name="AddFile" />
+	<PUBLIC:METHOD name="AddImage" />
+
+
+</PUBLIC:COMPONENT>
+
+
+
+
+<SCRIPT Language="Javascript">
+
+
+function Download()
+{
+	obj.DownloadAll();
+}
+
+function AddFile( name , url , size )
+{
+	obj.AddFile ( name , url , size );
+}
+
+function AddImage( name , pk , size )
+{
+	
+	obj.AddFile ( name , System.HostURL + System.SystemURL  +"/binary/view.asp?id=" + pk , size );
+}
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+var obj = null;
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) return;
+	element.print = true;
+
+	element.innerHTML = 
+	 "<OBJECT  style='left:0;top:-4;height:2;position:absolute;width:300;;display:' CLASSID='clsid:5E1D2020-22FD-4360-8191-206632C7ED81' ></OBJECT>"
+	;
+
+	obj = element.childNodes(0);
+	
+	
+}
+
+
+</SCRIPT>

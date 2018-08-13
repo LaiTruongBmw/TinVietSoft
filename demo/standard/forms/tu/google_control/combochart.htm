@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <script type="text/javascript" src="jsapi.js"></script>
+    <script type="text/javascript" src="columnchart.js"></script>
+    <script type="text/javascript">
+      //google.load("visualization", "1", {packages:["columnchart"]});
+	  google.load('visualization', '1', {packages: ['corechart']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Month');
+        data.addColumn('number', 'Bolivia');
+        data.addColumn('number', 'Ecuador');
+		data.addColumn('number', 'Madagascar');
+		data.addColumn('number', 'Papua New Guinea');
+		data.addColumn('number', 'Rwanda');
+		data.addColumn('number', 'Average');
+        data.addRow(['2004/05',  165,      938,         522,             998,           450,      614.6]);
+		data.addRow(['2005/06',  135,      1120,        599,             1268,          288,      682]);
+		data.addRow(['2006/07',  157,      1167,        587,             807,           397,      623]);
+		data.addRow(['2007/08',  139,      1110,        615,             968,           215,      609.4]);
+		data.addRow(['2008/09',  136,      691,         629,             1026,          366,      569.6]);
+		/*
+        data.setValue(0, 0, '2004');
+        data.setValue(0, 1, 1000);
+        data.setValue(0, 2, 400);
+        data.setValue(1, 0, '2005');
+        data.setValue(1, 1, 1170);
+        data.setValue(1, 2, 460);
+        data.setValue(2, 0, '2006');
+        data.setValue(2, 1, 660);
+        data.setValue(2, 2, 1120);
+        data.setValue(3, 0, '2007');
+        data.setValue(3, 1, 1030);
+        data.setValue(3, 2, 540);
+        
+		// Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable([
+          ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
+          ['2004/05',  165,      938,         522,             998,           450,      614.6],
+          ['2005/06',  135,      1120,        599,             1268,          288,      682],
+          ['2006/07',  157,      1167,        587,             807,           397,      623],
+          ['2007/08',  139,      1110,        615,             968,           215,      609.4],
+          ['2008/09',  136,      691,         629,             1026,          366,      569.6]
+        ]);
+		*/
+       var options = {
+          title : 'Monthly Coffee Production by Country',
+		  width:900,
+		  height:500,
+          vAxis: {title: "Cups"},
+          hAxis: {title: "Month"},
+          seriesType: "bars",
+          series: {5: {type: "line"}}
+        };
+
+        var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="chart_div"></div>
+  </body>
+</html>

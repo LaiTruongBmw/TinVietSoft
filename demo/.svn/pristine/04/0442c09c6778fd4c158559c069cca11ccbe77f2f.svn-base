@@ -1,0 +1,451 @@
+﻿<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=utf-8">
+<meta name=ProgId content=Excel.Sheet>
+<meta name=Generator content="Microsoft Excel 11">
+<link rel=File-List href="rpt_dsbs00060_4_files/filelist.xml">
+<link rel=Edit-Time-Data href="rpt_dsbs00060_4_files/editdata.mso">
+<link rel=OLE-Object-Data href="rpt_dsbs00060_4_files/oledata.mso">
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:LastAuthor>tuyen</o:LastAuthor>
+  <o:Created>2012-09-26T04:17:11Z</o:Created>
+  <o:LastSaved>2012-09-26T04:17:11Z</o:LastSaved>
+  <o:Version>11.5606</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<style>
+<!--table
+	{mso-displayed-decimal-separator:"\.";
+	mso-displayed-thousand-separator:"\,";}
+@page
+	{mso-footer-data:"&C&P of &N";
+	margin:1.0in .75in 1.0in .75in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-page-orientation:landscape;}
+tr
+	{mso-height-source:auto;}
+col
+	{mso-width-source:auto;}
+br
+	{mso-data-placement:same-cell;}
+.style0
+	{mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	white-space:nowrap;
+	mso-rotate:0;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	border:none;
+	mso-protection:locked visible;
+	mso-style-name:Normal;
+	mso-style-id:0;}
+td
+	{mso-style-parent:style0;
+	padding-top:1px;
+	padding-right:1px;
+	padding-left:1px;
+	mso-ignore:padding;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	border:none;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	mso-protection:locked visible;
+	white-space:nowrap;
+	mso-rotate:0;}
+.xl24
+	{mso-style-parent:style0;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;}
+.xl25
+	{mso-style-parent:style0;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:Fixed;
+	vertical-align:middle;}
+.xl26
+	{mso-style-parent:style0;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border:.5pt solid windowtext;
+	background:#CCFFFF;
+	mso-pattern:black none;}
+.xl27
+	{mso-style-parent:style0;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;
+	background:#CCFFFF;
+	mso-pattern:black none;}
+.xl28
+	{mso-style-parent:style0;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;
+	background:#CCFFFF;
+	mso-pattern:black none;}
+.xl29
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:.5pt solid windowtext;
+	white-space:normal;}
+.xl30
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl31
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl32
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;
+	white-space:normal;}
+.xl33
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:Standard;
+	text-align:center;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl34
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:Standard;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl35
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	font-weight:700;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:Standard;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;
+	background:#FFCC99;
+	mso-pattern:black none;}
+.xl36
+	{mso-style-parent:style0;
+	color:blue;
+	font-size:24.0pt;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:none;
+	border-right:none;
+	border-bottom:2.0pt double windowtext;
+	border-left:none;}
+.xl37
+	{mso-style-parent:style0;
+	font-size:9.0pt;
+	font-weight:700;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:Fixed;
+	vertical-align:middle;
+	border-top:2.0pt double windowtext;
+	border-right:none;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl38
+	{mso-style-parent:style0;
+	font-size:9.0pt;
+	font-weight:700;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	mso-number-format:Fixed;
+	text-align:right;
+	vertical-align:middle;
+	border-top:2.0pt double windowtext;
+	border-right:none;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl39
+	{mso-style-parent:style0;
+	font-weight:700;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:none;
+	border-bottom:.5pt solid windowtext;
+	border-left:.5pt solid windowtext;
+	background:#FFCC99;
+	mso-pattern:black none;}
+.xl40
+	{mso-style-parent:style0;
+	font-weight:700;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:none;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;
+	background:#FFCC99;
+	mso-pattern:black none;}
+.xl41
+	{mso-style-parent:style0;
+	font-weight:700;
+	font-family:Tahoma, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:.5pt solid black;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;
+	background:#FFCC99;
+	mso-pattern:black none;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <x:ExcelWorkbook>
+  <x:ExcelWorksheets>
+   <x:ExcelWorksheet>
+    <x:Name>rpt_dsbs00060_3</x:Name>
+    <x:WorksheetOptions>
+     <x:FitToPage/>
+     <x:FitToPage/>
+     <x:Print>
+      <x:FitHeight>0</x:FitHeight>
+      <x:ValidPrinterInfo/>
+      <x:PaperSizeIndex>9</x:PaperSizeIndex>
+      <x:Scale>78</x:Scale>
+      <x:HorizontalResolution>600</x:HorizontalResolution>
+      <x:VerticalResolution>0</x:VerticalResolution>
+     </x:Print>
+     <x:Selected/>
+     <x:DoNotDisplayGridlines/>
+     <x:Panes>
+      <x:Pane>
+       <x:Number>3</x:Number>
+       <x:ActiveRow>14</x:ActiveRow>
+       <x:ActiveCol>5</x:ActiveCol>
+      </x:Pane>
+     </x:Panes>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+  </x:ExcelWorksheets>
+  <x:WindowHeight>8445</x:WindowHeight>
+  <x:WindowWidth>15195</x:WindowWidth>
+  <x:WindowTopX>0</x:WindowTopX>
+  <x:WindowTopY>45</x:WindowTopY>
+  <x:ProtectStructure>False</x:ProtectStructure>
+  <x:ProtectWindows>False</x:ProtectWindows>
+ </x:ExcelWorkbook>
+</xml><![endif]-->
+</head>
+
+<body link=blue vlink=purple>
+<!--The following information was generated by Microsoft Excel's Publish as Web
+Page wizard.--><!--If the same item is republished from Excel, all information between the DIV
+tags will be replaced.--><!-----------------------------><!--START OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD --><!----------------------------->
+
+<table x:str border=0 cellpadding=0 cellspacing=0 width=1184 style='border-collapse:
+ collapse;table-layout:fixed;width:891pt'>
+ <col class=xl24 width=106 style='mso-width-source:userset;mso-width-alt:3876;
+ width:80pt'>
+ <col class=xl24 width=64 style='width:48pt'>
+ <col class=xl24 width=72 style='mso-width-source:userset;mso-width-alt:2633;
+ width:54pt'>
+ <col class=xl24 width=30 style='mso-width-source:userset;mso-width-alt:1097;
+ width:23pt'>
+ <col class=xl24 width=81 style='mso-width-source:userset;mso-width-alt:2962;
+ width:61pt'>
+ <col class=xl24 width=111 style='mso-width-source:userset;mso-width-alt:4059;
+ width:83pt'>
+ <col class=xl24 width=62 style='mso-width-source:userset;mso-width-alt:2267;
+ width:47pt'>
+ <col class=xl24 width=53 style='mso-width-source:userset;mso-width-alt:1938;
+ width:40pt'>
+ <col class=xl24 width=67 style='mso-width-source:userset;mso-width-alt:2450;
+ width:50pt'>
+ <col class=xl24 width=59 style='mso-width-source:userset;mso-width-alt:2157;
+ width:44pt'>
+ <col class=xl24 width=70 style='mso-width-source:userset;mso-width-alt:2560;
+ width:53pt'>
+ <col class=xl24 width=68 style='mso-width-source:userset;mso-width-alt:2486;
+ width:51pt'>
+ <col class=xl24 width=70 style='mso-width-source:userset;mso-width-alt:2560;
+ width:53pt'>
+ <col class=xl24 width=59 style='mso-width-source:userset;mso-width-alt:2157;
+ width:44pt'>
+ <col width=70 span=2 style='mso-width-source:userset;mso-width-alt:2560;
+ width:53pt'>
+ <col width=72 style='mso-width-source:userset;mso-width-alt:2633;width:54pt'>
+ <tr class=xl24 height=60 style='mso-height-source:userset;height:45.0pt'>
+  <td colspan=17 height=60 class=xl36 width=1184 style='height:45.0pt;
+  width:891pt'><!--The following information was generated by Microsoft Excel's Publish as Web
+Page wizard.--><!--If the same item is republished from Excel, all information between the DIV
+tags will be replaced.--><!-----------------------------><!--START OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD --><!-----------------------------><!--The following information was generated by Microsoft Excel's Publish as Web
+Page wizard.--><!--If the same item is republished from Excel, all information between the DIV
+tags will be replaced.--><!-----------------------------><!--START OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD --><!----------------------------->S/O
+  CHECKING</td>
+ </tr>
+ <tr class=xl24 height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl25 style='height:16.5pt'></td>
+  <td colspan=4 class=xl37>Date: 19/09/0201 ~ 26/09/2012</td>
+  <td colspan=6 class=xl25 style='mso-ignore:colspan'></td>
+  <td colspan=3 class=xl38>Print Date: 26/09/2012 10:21</td>
+  <td colspan=3 class=xl24 style='mso-ignore:colspan'></td>
+ </tr>
+ <tr class=xl24 height=22 style='mso-height-source:userset;height:16.5pt'>
+  <td height=22 class=xl26 style='height:16.5pt'>Buyer</td>
+  <td class=xl27>Ord Date</td>
+  <td class=xl27>P/O No</td>
+  <td class=xl27>Seq</td>
+  <td class=xl27>Item Code</td>
+  <td class=xl28>Item Name</td>
+  <td class=xl28>Cust Item</td>
+  <td class=xl28>UOM</td>
+  <td class=xl28>U/P</td>
+  <td class=xl28>Ord Qty</td>
+  <td class=xl28>Amount</td>
+  <td class=xl27>Cancel Qty</td>
+  <td class=xl27>Amount</td>
+  <td class=xl27>Deli Qty</td>
+  <td class=xl28>Amount</td>
+  <td class=xl28>Bal Qty</td>
+  <td class=xl28>Bal Amount</td>
+ </tr>
+ <tr class=xl24 height=28 style='mso-height-source:userset;height:21.0pt'>
+  <td height=28 class=xl29 width=106 style='height:21.0pt;width:80pt'>0104093672
+  * CÔNG TY C¿ PH¿N BUU CHÍNH VIETTEL</td>
+  <td class=xl30 x:num>20120912</td>
+  <td class=xl31><span style='mso-spacerun:yes'> </span>/ ABV0001</td>
+  <td class=xl30 x:num>1</td>
+  <td class=xl31>P010001</td>
+  <td class=xl32 width=111 style='width:83pt'>LAPTOP COMPAQ</td>
+  <td class=xl30>&nbsp;</td>
+  <td class=xl33>PCS</td>
+  <td class=xl34 align=right x:num>10.00</td>
+  <td class=xl34 align=right x:num>100.00</td>
+  <td class=xl34 align=right x:num>11.00</td>
+  <td class=xl34 align=right x:num>12.00</td>
+  <td class=xl34 align=right x:num>125.00</td>
+  <td class=xl34 align=right x:num>12.00</td>
+  <td class=xl34 align=right x:num>25.00</td>
+  <td class=xl34 align=right x:num>88.00</td>
+  <td class=xl34 align=right x:num>0.00</td>
+ </tr>
+ <tr class=xl24 height=20 style='mso-height-source:userset;height:15.0pt'>
+  <td colspan=8 height=20 class=xl39 style='border-right:.5pt solid black;
+  height:15.0pt'>Total</td>
+  <td class=xl35>&nbsp;</td>
+  <td class=xl35 align=right x:num>100.00</td>
+  <td class=xl35 align=right x:num>0.00</td>
+  <td class=xl35 align=right x:num>12.00</td>
+  <td class=xl35 align=right x:num>0.00</td>
+  <td class=xl35 align=right x:num>0.00<!-----------------------------><!--END OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD--><!-----------------------------></td>
+  <td class=xl35 align=right x:num>25.00</td>
+  <td class=xl35 align=right x:num>88.00</td>
+  <td class=xl35 align=right x:num>0.00<!-----------------------------><!--END OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD--><!-----------------------------><!-----------------------------><!--END OF OUTPUT FROM EXCEL PUBLISH AS WEB PAGE WIZARD--><!-----------------------------></td>
+ </tr>
+ <![if supportMisalignedColumns]>
+ <tr height=0 style='display:none'>
+  <td width=106 style='width:80pt'></td>
+  <td width=64 style='width:48pt'></td>
+  <td width=72 style='width:54pt'></td>
+  <td width=30 style='width:23pt'></td>
+  <td width=81 style='width:61pt'></td>
+  <td width=111 style='width:83pt'></td>
+  <td width=62 style='width:47pt'></td>
+  <td width=53 style='width:40pt'></td>
+  <td width=67 style='width:50pt'></td>
+  <td width=59 style='width:44pt'></td>
+  <td width=70 style='width:53pt'></td>
+  <td width=68 style='width:51pt'></td>
+  <td width=70 style='width:53pt'></td>
+  <td width=59 style='width:44pt'></td>
+  <td width=70 style='width:53pt'></td>
+  <td width=70 style='width:53pt'></td>
+  <td width=72 style='width:54pt'></td>
+ </tr>
+ <![endif]>
+</table>
+
+</body>
+
+</html>

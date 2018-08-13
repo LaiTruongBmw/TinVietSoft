@@ -1,0 +1,73 @@
+function BindingDataList()6101001
+ {
+        var data="";
+        data = "<%=ESysLib.SetListDataFUNC("SELECT F_COMMONCODE('CODC0010','','') FROM DUAL")%>|ALL|--Select All--"; 
+        cboPartnertype.SetDataText(data);
+		cboPartnertype.value = '80';
+        lstType.SetDataText(data); 
+		lstType.value = 'ALL';
+        
+        data = "<%=ESysLib.SetListDataFUNC("SELECT F_COMMONCODE('CODC0160','','') FROM DUAL")%>"; 
+        lstVoucherType.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataSQL("SELECT pk, partner_name FROM tco_company where del_if=0")%>"; 
+        cboOrganization.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGGS0101') FROM DUAL" )%>";    
+        cboCompanysize.SetDataText(data);           
+
+        data = "<%=ESysLib.SetListDataSQL(" select COUNTRY_no, COUNTRY_NM from tie_country a where  a.del_if = 0 order by A.COUNTRY_NM")%>"; 
+        cboNation.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGCM0100') FROM DUAL" )%>";    
+        cboTranccy.SetDataText(data);
+        
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGGS0103') FROM DUAL" )%>";    
+        cboInvoiceterms.SetDataText(data);        
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGGS0104') FROM DUAL" )%>";
+        cboInvoiceSchedule.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGGS0105') FROM DUAL" )%>";
+        cboInvoicegroup.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGCM0260') FROM DUAL" )%>";
+        cboDeliveryterms.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGCM0140') FROM DUAL" )%>";
+        cboCustTradeType.SetDataText(data);
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGCM0141') FROM DUAL" )%>";
+        cboVendortradetype.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGCM0120') FROM DUAL" )%>";
+        cboCustPaymentTerms.SetDataText(data);
+        cboVendorpayterm.SetDataText(data); 
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGCM0110') FROM DUAL" )%>";
+        cboCustpaymentform.SetDataText(data);
+        cboVenPaymentform.SetDataText(data);
+
+        data = "<%=ESysLib.SetListDataFUNC("SELECT f_logistic_code('LGCM0160') FROM DUAL" )%>";
+        cboSaledefaulttax.SetDataText(data);
+        cboVendorDtax.SetDataText(data);
+        data = "DATA|Y|Yes|N|No";
+        lstCorporate.SetDataText(data); 
+        data = "DATA|Y|Yes|N|No";
+        lstUse_YN.SetDataText(data);  
+        
+        ls_Transaction      = "<%=ESysLib.SetListDataFUNC("SELECT SF_A_GET_COMMONCODE('TPS0023') FROM DUAL")%>|ALL|--Select All--";  
+        lstTransaction_D.SetDataText(ls_Transaction);  
+        lstTransaction.SetDataText(ls_Transaction);  
+		lstTransaction.value = 'ALL';
+          var ls_Catalogue_YN = "DATA|Y|Yes|N|No"; 
+        cboCatalogue_YN.SetDataText(ls_Catalogue_YN); 
+        <%=ESysLib.SetGridColumnComboFormat("grdFinancial", 2,"SELECT A.CODE, A.CODE FROM TCO_ABCODE A, TCO_ABCODEGRP B WHERE A.DEL_IF = 0 AND B.DEL_IF = 0  AND A.TCO_ABCODEGRP_PK = B.PK AND B.ID = 'ACAB0110' AND A.USE_IF = 1 ORDER BY A.CODE")%>; 
+       <%=ESysLib.SetGridColumnComboFormat("grdFinancial", 4,"SELECT A.CODE, A.CODE FROM TCO_ABCODE A, TCO_ABCODEGRP B WHERE A.DEL_IF = 0 AND B.DEL_IF = 0  AND A.TCO_ABCODEGRP_PK = B.PK AND B.ID = 'ACAB0110' AND A.USE_IF = 1 ORDER BY A.CODE")%>; 
+       <%=ESysLib.SetGridColumnComboFormat("grdFinancial", 6,"SELECT A.CODE, A.CODE FROM TCO_ABCODE A, TCO_ABCODEGRP B WHERE A.DEL_IF = 0 AND B.DEL_IF = 0  AND A.TCO_ABCODEGRP_PK = B.PK AND B.ID = 'ACAB0110' AND A.USE_IF = 1 ORDER BY A.CODE")%>;  
+       ls_Location      = "<%=ESysLib.SetListDataFUNC("SELECT SF_A_GET_COMMONCODE('TPS0013') FROM DUAL")%>";  
+       cboLocation.SetDataText(ls_Location);  
+       ls_Position      = "<%=ESysLib.SetListDataFUNC("SELECT SF_A_GET_COMMONCODE('TPS0014') FROM DUAL")%>";  
+       lstPosition.SetDataText(ls_Position);  
+       ls_Nationality      = "<%=ESysLib.SetListDataSQL(" select COUNTRY_no, COUNTRY_NM from tie_country a where  a.del_if = 0 order by A.COUNTRY_NM")%>"; 
+       lstNationality.SetDataText(ls_Nationality);  
+ }

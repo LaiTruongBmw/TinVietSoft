@@ -1,0 +1,158 @@
+<PUBLIC:COMPONENT tagName="icon" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetHint" />
+	<PUBLIC:METHOD name="SetHint" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="SetFireEvent" />
+	
+	<PUBLIC:PROPERTY  NAME="text"   PUT="setText" GET="getText"/>
+	<PUBLIC:PROPERTY  NAME="img"   PUT="setImage" />
+	
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+
+	
+</PUBLIC:COMPONENT>
+
+<SCRIPT Language="Javascript">
+
+var text ="" ;
+var obj = null;
+var tobj = null;
+
+var dsoid = null; 
+var type = null;
+var img ="" ;
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+
+function GetHint()
+{
+	return text;
+}
+
+function SetHint( txt )
+{
+	text = txt;
+	element.alt = text;
+	obj.rows[0].cells[0].childNodes(0).alt = text;
+}
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+	
+	if (element.disabled) {
+		//change icon img
+		if ( obj )
+		{
+			obj.rows[0].cells[0].childNodes(0).src = System.SysImgPath + "/button/icons_button/" + img + "_de.gif";
+		}		
+	}else {
+		if ( obj )
+		{
+			obj.rows[0].cells[0].childNodes(0).src = System.SysImgPath +"/button/icons_button/" + img + ".gif";
+		}			
+	}
+	
+}
+
+
+function SetFireEvent( p_dsoid , p_type )
+{
+	dsoid = p_dsoid;
+	type = p_type;	
+	
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function setImage( id )
+{
+	img = id;
+	/*if ( img.length > 0 ) 
+		img += "_";*/
+	if ( obj )
+	{
+		obj.rows[0].cells[0].childNodes(0).src = System.SysImgPath + "/button/icons_button/" + img + ".gif";
+		/*obj.rows[0].cells[1].background =  "/images/button/btn_" + img + "bgm.gif";
+		obj.rows[0].cells[2].childNodes(0).src =  "/images/button/btn_" + img + "bgr.gif";*/
+	}
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+
+function fnOnClick()
+{
+	if ( dsoid && !element.disabled )
+	{
+		ControlEventHandle( dsoid , type );
+	} 
+	
+	window.event.cancelBubble = ( element.disabled );
+}
+
+function fnOnMouseOver()
+{
+  	var e = window.event.srcElement;
+	while ( e.tagName != "TABLE" ) e = e.parentNode;
+	if (element.disabled == false) {
+		if ( obj )
+		{
+			obj.rows[0].cells[0].childNodes(0).src = System.SysImgPath + "/button/icons_button/" + img + "_on.gif";
+		}
+	}
+	// e.rows[0].cells[1].style.color="#153B88";
+}
+
+function fnOnMouseOut()
+{
+  	var e = window.event.srcElement;
+	while ( e.tagName != "TABLE" ) e = e.parentNode;
+	if (element.disabled == false) {
+		if ( obj )
+		{
+			obj.rows[0].cells[0].childNodes(0).src =  System.SysImgPath + "/button/icons_button/" + img + ".gif";
+		}
+	}
+     //alert(obj.rows[0].cells[0].childNodes(0).src)
+	// e.rows[0].cells[1].style.color="";
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+function event_oncontentready()
+{
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0).childNodes(0);
+		return;
+	}
+	element.print = true;
+
+	if ( typeof( element.img ) != "undefined" )  img = element.img;
+	if (typeof( element.alt ) != "undefined") text = element.alt;
+	
+	if ( text.length > 0 )
+		element.innerHTML = "<span><table style='"+ element.styles +";cursor:hand' border=0 cellpadding=0 cellspacing=0><tr><td><img  src='"  + System.SysImgPath +   "/button/icons_button/" + img +".gif' alt='"+ text + "'/></td></tr></table></span>";
+	else
+		element.innerHTML = "<span><table style='"+ element.styles +";cursor:hand' border=0 cellpadding=0 cellspacing=0><tr><td ><img  src='" + System.SysImgPath +  "/button/icons_button/" + img +".gif'/></td></tr></table></span>" ;
+    
+    //alert(element.innerHTML)		
+	obj = element.childNodes(0).childNodes(0);
+	obj.attachEvent("onclick", fnOnClick)
+	obj.attachEvent("onmouseover", fnOnMouseOver);
+	obj.attachEvent("onmouseout", fnOnMouseOut);
+}
+
+</SCRIPT>

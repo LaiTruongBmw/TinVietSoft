@@ -1,0 +1,194 @@
+<PUBLIC:COMPONENT tagName="Radio" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="SetFireEvent" />
+	<PUBLIC:METHOD name="Validate" />
+
+	<PUBLIC:PROPERTY  NAME="value"   GET="getValue" PUT="setValue" />		
+	<public:event id="onChange" name="onchange" />
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >	
+	
+<SCRIPT Language="Javascript">
+
+var dsoid = null; 
+var type = null;
+var value="";
+var obj = null;
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function Validate()
+{
+   return true;
+}
+function GetData()
+{
+	return value;
+}
+
+function SetData( data )
+{ 
+	
+	if ( data )
+		value =  data.text ;
+	else
+		value = "";
+		
+	CheckNodeValue();		
+}
+
+
+function SetDataText( txt )
+{
+	value = txt;
+	CheckNodeValue();		
+}
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+}
+
+function SetFireEvent( p_dsoid , p_type )
+{
+	dsoid = p_dsoid;
+	type = p_type;	
+	
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Properties
+// --------------------------------------------------------------------------------------------------------//
+
+
+function setValue (vValue)
+{
+	value = vValue;
+	
+	if ( obj )
+   		CheckNodeValue();		
+}
+
+function getValue()
+{
+	 return value;
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+function OnUpdate()
+{
+	value = event.srcElement.value ;
+
+	if ( dsoid && !element.disabled )
+	{
+		ControlEventHandle( dsoid , type );
+	} 
+	
+		
+	var evObj = createEventObject()
+  	onChange.fire(evObj)
+	
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) 
+	{
+		obj = element;
+		return;
+	}
+	
+	element.print = true;
+
+	var style = ";border:1 solid darkgray; border-width: 0 0 1 0 ; padding:4 5 4 5; height:20; margin:1 1 1 1 ; background-color:white; line-height:100%;  ";
+    	if ( element.id == '' ) element.id = newid();
+	
+	var list = element.children;
+	
+	var id = "C" + element.id;
+	var cnt = 0;
+	
+	
+	for ( var i = 0 ;  i< list.length ; i ++ )
+	{
+		
+		if ( list(i).nodeType == 1 )
+		{ 
+			if ( list(i).tagName == "SPAN" ) 
+			{
+				var btn ;
+				if ( value == list(i).value || (value=="" && cnt ==0 ) )
+				{
+					btn = window.document.createElement("<input type='radio' id='" + id + "' value='" + list(i).value + "' name='" + id + "' checked/>" );
+					value = list(i).value;	
+				}
+				else
+					btn = window.document.createElement("<input type='radio' id='" + id + "' value='" + list(i).value + "' name='" + id + "'  />" );
+				list(i).insertAdjacentElement("beforeBegin", btn);
+				i++;cnt++;
+				btn.attachEvent( "onclick" , OnUpdate );
+			}
+		}			
+	}
+	
+	obj = element;
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Functions
+// --------------------------------------------------------------------------------------------------------//
+
+function newid()
+{
+	var id;
+	
+	
+	id = 'id' + Math.random().toString().substr(2, 10);
+	
+	while (window.document.all(id))
+	{
+		id = 'id' + Math.random().toString().substr(2, 10);
+	}
+	
+	return id;
+}
+
+
+function CheckNodeValue()
+{
+	var list = element.all("C"+element.id );
+	
+	
+	if ( value == "" )
+	{
+		value = list(0).value ;
+		list(0).checked = true;
+	} else
+	{
+		for ( var i = 0; i < list.length ; i ++ )
+		{
+			if ( list(i).value == value ) 
+				list(i).checked = true;
+		}
+	}
+	
+}
+
+
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

@@ -1,0 +1,69 @@
+<!-- #include file="../../../system/lib/form.inc"  -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>POP </title>
+</head>
+<%  
+	ESysLib.SetUser(Session("APP_DBUSER"))
+    Dim l_user As String
+    l_user = ""
+%>
+
+<script> 
+    
+//=======================================================================
+var callerWindowObj = dialogArguments;  
+
+function BodyInit()
+{
+    System.Translate(document);    
+    //-------------------------
+}  
+//=======================================================================
+
+function OnReport()
+{
+    callerWindowObj.OnReport( radType.value, dtFromDate.value, dtToDate.value )      
+    this.close(); 	
+}
+
+//=======================================================================
+
+</script>
+
+<body>
+    <!---------------------------------------------------------------->
+    <table style="width:100%;height:100%" >
+        <tr style="height: 20%">
+            <td style="font-size: large; color: Blue;width:100%" align="center">
+                Production Reports</td>
+        </tr>
+        <tr style="height: 10%">
+            <td align="center" style="width: 100%">
+                <gw:icon id="idBtnOk" img="2" text="Print Report" styles='width:50%' onclick="OnReport()" />
+            </td>
+        </tr>
+		<tr style="height: 30%">
+            <td style="width: 100%" align="center">
+                 <gw:datebox id="dtFromDate" lang="1" type='date'  />
+				 ~
+				 <gw:datebox id="dtToDate" lang="1" type='date'  />
+            </td>
+        </tr>
+        <tr style="height: 40%">
+            <td style="width: 100%" align="left">
+                <gw:radio id="radType" value="DUR01" styles="width:100%"> 
+				
+					<span value="DUR01">DURING : MOLD</span> <br/>
+					<span value="DUR02">DURING : VISUAL</span> <br/>  
+					<span value="DUR04">DURING : VISUAL MACHINE</span> <br/>    	
+					 
+					<br/>
+					<span value="DUR03">DURING : DAILY</span> <br/>					  
+                </gw:radio>
+            </td>
+        </tr>
+    </table>
+</body>
+<!---------------------------------------------------------------------->
+</html>

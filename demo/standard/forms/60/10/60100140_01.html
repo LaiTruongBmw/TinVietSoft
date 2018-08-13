@@ -1,0 +1,193 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Finger Index Checking</title>
+
+
+
+  <style type="text/css">
+  
+  html, body {
+                width:50px;
+                height: 200px;
+                margin: 0;
+                padding: 0;
+                background-color:#292A2D;
+            }
+ 
+ #poup{
+	position: relative;
+	background-image: url("file://192.168.1.246/d$/Webprojects/STDGW/standard/forms/60/10/assets/hinh/nen4.jpg");
+    background-repeat: no-repeat;
+	height: 290px;
+	width : 270px;
+
+  /*  margin-left: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;*/
+	
+}
+
+/*.ui-widget-overlay {
+   background: url("hinh/nen.jpg");
+   opacity: .30;
+   
+   filter: Alpha(Opacity=30);
+}*/
+
+
+ #poup #title{
+ position: absolute;
+	font-size: 100%;
+	 text-align: center;
+	  color: red;
+	 
+	top: 5px;
+	margin-left: 53px;
+}
+
+#poup #imn1 {
+	position: absolute;
+	left: 24px;
+	top: 83px;
+}
+#poup   #imn2 {
+	 position: absolute;
+	left: 43px;
+	top: 69px;
+	
+}
+#poup   #imn3 {
+	position: absolute;
+	left: 70px;
+	top: 56px;
+	
+}
+
+#poup  #imn4 {
+	position: absolute;
+	left: 100px;
+	top: 70px;	
+}
+
+#poup   #imn5 {
+	 position: absolute;
+	left: 130px;
+	top: 116px;
+	
+}
+
+
+#poup  #imn6 {
+  position: absolute;
+	left: 140px;
+	top: 116px;
+	
+}
+
+#poup #imn7 {
+	 position: absolute;
+	
+	left: 177px;
+	top: 73px;
+	
+	
+}
+
+#poup  #imn8 {
+	  position: absolute;
+	
+	left: 200px;
+	top: 57px;
+	
+}
+
+#poup   #imn9 {
+	  position: absolute;
+	
+	
+	
+	left: 230px;
+	top: 67px;
+}
+
+#poup   #imn10 {
+	 position: absolute;
+	
+	left: 248px;
+	top: 77px;
+	
+}
+
+#poup #bun10{
+	position: absolute;
+	left: 120px;
+	top: 220px;
+	width:30px;
+}
+div p {
+	color: #ff0000;
+}
+</style>
+</head>
+<body >
+ 
+
+  <div id="poup" style="width: :60px;">
+  
+  		<div id = "title">Please scan index finger</div>
+	
+			<img alt="" src=""  id="imn1"> 
+		
+			<img alt="" src="" id ="imn2">
+	
+			<img alt="" src="" id ="imn3">
+	
+			<img alt="" src="" id ="imn4">
+		
+			<img alt="" src="" id ="imn5">
+		
+			<img alt="" src="" id ="imn6">
+		
+			<img alt="" src="" id ="imn7">
+		
+			<img alt="" src="" id ="imn8">
+		
+			<img alt="" src="" id ="imn9">
+		
+			<img alt="" src="" id ="imn10">
+		
+		<button onclick="OK()" id ="bun10"> OK</button>
+		
+
+	</div>
+	
+<script type="text/javascript">
+//var oMyObject = window.dialogArguments;
+//var image1 = oMyObject.image1;
+//for(var i =1 ;i<11;i++){
+	//document.getElementById("imn"+i).src="/assets/hinh/nut.jpg";
+//}
+
+//changeimg(image1);
+
+function changeimg(index){
+document.getElementById("imn"+index).src= "file://192.168.1.246/d$/Webprojects/STDGW/standard/forms/60/10/assets/hinh/hinhn.jpg";
+}
+
+var vReturnValue = new Object();
+vReturnValue.yesNo =0;
+window.returnValue = vReturnValue;
+function OK()
+{
+   
+	vReturnValue.yesNo =1;
+	window.returnValue = vReturnValue;
+    window.close();
+	
+	
+} 
+</script>
+ 
+</body>
+</html>

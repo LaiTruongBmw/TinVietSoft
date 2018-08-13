@@ -1,0 +1,399 @@
+﻿
+<PUBLIC:COMPONENT tagName="Data" lightweight = false  >
+
+	<PUBLIC:METHOD name="Call" />
+	<PUBLIC:METHOD name="Retrieve" />
+
+	
+	<PUBLIC:METHOD name="StatusUpdate" />
+	<PUBLIC:METHOD name="StatusDelete" />
+	<PUBLIC:METHOD name="StatusInsert" />
+	<PUBLIC:METHOD name="StatusSelect" />
+	<PUBLIC:METHOD name="GetStatus" />
+	
+		
+	<PUBLIC:PROPERTY  NAME="searchs"  GET="getSearchList" />
+	<PUBLIC:PROPERTY  NAME="inputs"  GET="getInputList"/>
+	<PUBLIC:PROPERTY  NAME="outputs"  GET="getOutputList"/>
+	<PUBLIC:PROPERTY  NAME="parameters"  GET="getParameterList"/>
+	<PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="event_oncontentready()" >	
+	
+	<public:event id="evtreceive" name="onreceive">
+	<public:event id="evterror" name="onerror">
+	
+</PUBLIC:COMPONENT>
+
+<SCRIPT Language="Javascript">
+
+/*
+Mr Thai created
+Create Date:2007-10-01
+*/
+
+var SearchList = new Array();
+var InputList = new Array();
+var OutputList = new Array();
+var ParaList = new Array();
+var func = "";
+var dsoType = "";
+var rows=0;		
+var table = new Array();	
+// --------------------------------------------------------------------------------------------------------//
+//  PROPERTY
+// --------------------------------------------------------------------------------------------------------//
+
+function getParameterList()
+{
+	return ParaList;
+}
+function getSearchList()
+{
+	return SearchList;
+}
+
+function getOutputList()
+{
+	return OutputList;
+}
+
+function getInputList()
+{
+	return InputList;
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function Call(  f , rowcnt  )
+{
+    System.ShowProgress();
+	window.status = "System is processing. Please wait ...";
+    System.Send(element, f);	
+}
+
+function Retrieve( xml )
+{   //alert(xml.xml)
+	if (! xml || xml.xml == "") 
+	{
+		alert("Failure to receive data from server. please check debug window" );
+		//System.showdebug();
+		System.HideProgress();
+	    window.status = "System meets error.";
+		return;	
+	}
+	var logmsg=xml.childNodes(0).childNodes(2).childNodes(0).text;
+	//alert(logmsg);
+	System.SaveLastLog(logmsg);
+    element.errno = xml.childNodes(0).childNodes(1).childNodes(0).text ;
+	element.errmsg  = xml.childNodes(0).childNodes(1).childNodes(1).text ;
+	
+	if ( element.errmsg.length > 0 )
+	{
+	    System.Logging("Error No:"+ element.errno);
+	    System.Logging("Error Message:"+ element.errmsg);
+	    System.HideProgress();
+	    window.status = "System meets error.";
+	    if(element.errno == "100")
+	    {
+	        alert( element.errmsg );
+	        window.status = "Your session was timeout!"
+	        return;
+	    }
+		if ( typeof( element.onerror ) == "unknown" ) 
+		{
+		   alert( element.errmsg );
+		   //System.ShowErrorMessage(element);
+		} 
+		var evObj = createEventObject();
+		evterror.fire( evObj );
+		return;
+	}
+   
+   var datalist=xml.childNodes(0).childNodes(0).childNodes;
+   //alert(datalist);
+   if(datalist == null) 
+   {
+       System.HideProgress();
+       window.status = System.S_LoginInfo + " return 0 row." ;
+       var evObj = createEventObject();
+       evtreceive.fire( evObj );
+       StatusUpdate();
+       return;
+   }
+   
+   if(dsoType == "array")
+   {
+      data = xml.childNodes(0).childNodes(0);
+      rows = data.childNodes.length;
+	  bindArray(data);//bind to table array then attach this array to event object. Client get data by event.array.
+   }
+   else if(dsoType == "table")
+   {
+      data = xml.childNodes(0).childNodes(0);
+      rows = data.childNodes.length;
+	  var obj=OutputList[0];
+	  bindTable(obj,data);
+   }
+   else if((dsoType == "grid")||(dsoType == "tree"))
+   {
+      data = xml.childNodes(0).childNodes(0);
+      rows = data.childNodes.length;
+	  var obj=eval(OutputList[0]);
+	  obj.SetData(data)
+   }
+   else if(dsoType == "control" || dsoType == "process" || dsoType == "list")
+   {
+        ClearDataControl();
+        for ( var i = 0 ; i < datalist.length ; i ++ )
+        {
+          rows = 1;
+          var aTemp=datalist(i).text.split("|!");
+          for ( var j = 0 ; j < aTemp.length ; j ++ )
+          {
+            if(j < OutputList.length){
+                var obj=OutputList[j];
+                obj.SetDataText(aTemp[j]);
+            }
+          }
+      }
+   }
+   
+   System.Logging("Receive: " + xml.xml);
+   
+   System.HideProgress();
+   window.status = System.S_LoginInfo;
+   var evObj = createEventObject();
+   if(dsoType == "array")
+   {
+        evObj.array = table;//attach array to event(onreceive can get by event.array)
+   }
+   evtreceive.fire( evObj );
+   StatusUpdate();
+   return;
+}
+function bindArray(data){
+   table = new Array();
+   
+   for ( var x = 0 ;  x < data.childNodes.length ; x ++ )
+   {
+			var row = data.childNodes(x).text ;
+			var cols = row.split(CDelimiter)
+			
+			var aTemp = new Array();
+						
+			for ( var i = 0 ; i < cols.length ; i++ )
+			{
+			  aTemp[aTemp.length]=cols[i];
+			}
+			table[table.length] = aTemp;
+	}		
+}
+function bindTable(tbl,data){
+   
+   for ( var x = 0 ;  x < data.childNodes.length ; x ++ )
+   {
+			var row = data.childNodes(x).text ;
+			var cols = row.split(CDelimiter)
+			
+			var newTR = tbl.insertRow(x);
+						
+			for ( var i = 0 ; i < cols.length ; i++ )
+			{
+			  var newTD = newTR.insertCell(i);
+			  newTD.innerHTML  = cols[i];
+			}
+			
+	}		
+}
+
+//
+// For DSQL-Form
+//
+
+var status = 0;
+
+function GetStatus()
+{
+	return status;
+}
+
+function StatusSelect()
+{
+	status = 0;
+}
+
+function StatusUpdate()
+{
+	status = 10;
+}
+
+function StatusInsert()
+{
+    if(status == 20){
+        alert('Already set new. Now you can input new data.\n\n Đã bật chức năng nhập mới rồi. Giờ bạn có thể nhập mới dữ liệu.');
+        return;
+    }
+    
+	ClearDataControl();
+	status = 20;
+}
+
+function StatusDelete()
+{
+	status = 40;
+}
+
+function ClearData()
+{
+	ClearDataControl();
+}
+
+function ClearDataControl()
+{
+	for (var i = 0 ; i < OutputList.length ; i ++)
+	{
+	    var obj = OutputList[i];
+	    obj.SetData(null);
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+function event_oncontentready()
+{
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		return;
+	}
+	element.print = true;
+	
+	if ( !element.id ) 
+		element.id = element.uniqueID;
+
+		element.style.visibility = "hidden";
+		element.style.display = "none";
+	
+	// Parsing DSO information
+	
+	if ( element.childNodes.length == 0 ) return;
+	
+	var dso = element.childNodes(0).XMLDocument.childNodes(0);
+	
+	if ( !dso )
+	{
+		alert( "tag problem :" +element.outerHTML )
+		return;
+	}
+	
+	RegisterInOutput(dso);
+}
+
+function RegisterInOutput(dso)
+{
+    var parameter = dso.getAttribute("parameter");	
+    if(parameter){
+        ParaList = parameter.split(",");
+    }
+    dsoType = dso.getAttribute("type");	
+    var bindingname;
+    var bindobject = null;
+   
+    if(dsoType == "array")
+    {
+         //searching controls list
+	    var searchList = dso.childNodes(0).childNodes;
+	    for(var i=0;i<searchList.length;i++){
+            bindingname = searchList[i].getAttribute("bind");
+            SearchList[SearchList.length] = ObjectEvaluation(bindingname);
+        }
+    }
+	else if(dsoType == "grid" || dsoType == "tree" || dsoType == "table")
+	{
+	    //searching controls list
+	    var searchList = dso.childNodes(0).childNodes;
+	    for(var i=0;i<searchList.length;i++){
+            bindingname = searchList[i].getAttribute("bind");
+            SearchList[SearchList.length] = ObjectEvaluation(bindingname);
+        }
+        //inout controls list
+	    bindingname=dso.childNodes(1).getAttribute("bind");
+	    bindobject = ObjectEvaluation(bindingname);
+	    InputList[InputList.length] = bindobject;
+	    OutputList[OutputList.length] = bindobject;
+	}
+	else if(dsoType == "control"){
+	    //searching controls list
+	    var inoutList = dso.childNodes(0).childNodes;
+	    bindingname = inoutList[0].getAttribute("bind");
+        SearchList[SearchList.length] = ObjectEvaluation(bindingname);
+        
+        // inout controls list
+	    for(var i=0;i<inoutList.length;i++){
+            bindingname = inoutList[i].getAttribute("bind");
+            bindobject = ObjectEvaluation(bindingname);
+            
+            OutputList[OutputList.length] = bindobject;
+            
+            if(InParameterList(i)){
+	            InputList[InputList.length] = bindobject;
+	        }
+        }
+	}
+	else if(dsoType == "process" || dsoType == "list"){
+	    //input controls list
+	    var inList = dso.childNodes(0).childNodes;
+	    if(inList.length == 0 && dsoType == "process" ){
+	        alert("You must add input node for element "+ element.id);
+	        return;
+	    }
+	    for(var i=0;i<inList.length;i++){
+            bindingname = inList[i].getAttribute("bind");
+            bindobject = ObjectEvaluation(bindingname);
+            InputList[InputList.length] = bindobject;
+        }
+        //output controls list
+	    var outList = dso.childNodes(1).childNodes;
+	    if(outList.length == 0 ){
+	        alert("You must add output node for element "+ element.id);
+	        return;
+	    }
+	    for(var i=0;i<outList.length;i++){
+            bindingname = outList[i].getAttribute("bind");
+            bindobject = ObjectEvaluation(bindingname);
+            OutputList[OutputList.length] = bindobject;
+        }
+	}
+}
+
+function ObjectEvaluation(bindingname)
+{
+    var bindobject = element.document.all( bindingname );
+	
+	if (! bindobject)
+	{
+		alert( "[" + bindingname + "] binding object does not exist !!");
+		return null;
+	}
+	else if (typeof(bindobject.length) != "undefined" )
+	{
+	    alert( "There are many object having binding name [" + bindingname + "] ");
+	    return null;
+	}
+	return bindobject;
+}
+function InParameterList(col)
+{
+  for(var i=0;i<ParaList.length;i++)
+  {
+    if(ParaList[i] == col)
+    {
+        return true;
+    }
+  }
+  return false;
+}
+</SCRIPT>
+

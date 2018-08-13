@@ -1,0 +1,124 @@
+﻿
+<public:event id="onSelect"         name="onselect">
+
+<script language="javascript">
+//------------------------------------------------------------------------
+// Attach to element events
+//------------------------------------------------------------------------
+element.attachEvent("onreadystatechange", fnOnReadyStateChange)
+//------------------------------------------------------------------------
+// Create the arrays of days & months for different languages
+//------------------------------------------------------------------------
+
+var goSelect        = null;            // The month select control
+var gbLoading            = true ;           // Flag for if the behavior is loading
+
+
+// Insert the HTML elements needed for the calendar display
+fnCreateListBoxHTML();
+
+// Build the month select control
+fnBuildListBox();
+//--------------------------
+function fnCreateListBoxHTML()
+{
+  element.innerHTML = 
+  '<table width="100%" height="100%" style="background-color:#808080;" cellpadding=0 cellspacing=0 border=0> ' +
+  '  <tr>                                          ' +
+  '      <td>' +
+  '        <nobr> <select id="_internalListBox" size="4" multiple="multiple" style="width:100%;height:200px;" ></select>                ' +
+  '        </nobr> </td>  ' +
+  '  </tr>                                         ' +
+  '  <tr>                          ' +
+  '      <tr><td style="cursor:hand;"><b style="color:Blue" onclick="document.body.CallClose();">Close</b> &nbsp;&nbsp;&nbsp;&nbsp;<b style="color:Blue" onclick="document.body.CallClear()">Clear</b></td>' +
+  '  </tr>      ' +
+  '</table>     ';
+
+  goSelect = element.children[0].rows[0].cells[0].children[0].children[0]
+
+}
+
+//------------------------------------------------------------------------
+
+function fnBuildListBox()
+{
+
+    goSelect=element.document.getElementById("_internalListBox");
+
+	goSelect.style.border="1 solid orange";
+	goSelect.style.backgroundColor= "#eeeeff";
+
+	  var data = ""+ element.data;
+	  var aItem = new Array();
+	  
+	  if(data.length > 0 && data.charAt(0) == "#")
+	  {
+	     data = data.substr(1,data.length-1);
+	     aItem = data.split("|#");
+	  }
+	  
+      for (var i=0 ; i < aItem.length ; i++)
+      {
+        var e = element.document.createElement("OPTION")
+        var val = aItem[i].split(";");
+        e.value = val[0];
+        e.text = val[1];
+        goSelect.options.add(e);
+      }
+      
+      goSelect.attachEvent("onchange", fnOnListSelected);
+      var idx = GetItemIndex(element.curValue);
+      
+      if( idx >= 0 ){
+        goSelect.options[idx].selected = true;
+      }
+  
+     // element.parentElement.width = 400;
+}
+function GetItemIndex(value) {
+	var i;
+	var val;
+	var item;
+	
+	for (i=0;i<goSelect.options.length;i++) {
+		item = goSelect.options.item(i);
+		val = item.value;
+		if (val == value) {
+			return i;
+		}
+	}
+	return -1;
+}
+//------------------------------------------------------------------------
+
+function fnOnListSelected()
+{
+  var evObj = createEventObject();
+  
+  evObj.text = goSelect.options.item(goSelect.selectedIndex).text;
+  evObj.value = goSelect.options.item(goSelect.selectedIndex).value;
+  element.curText = evObj.text;
+  element.curValue = evObj.value;
+  
+  onSelect.fire(evObj);
+  
+}
+//------------------------------------------------------------------------
+
+function fnOnSelectStart()
+{
+  window.event.returnValue = false
+  window.event.cancelBubble = true
+}
+
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+
+function fnOnReadyStateChange()
+{
+  gbLoading = (readyState != "complete")
+
+}
+
+</script>
+

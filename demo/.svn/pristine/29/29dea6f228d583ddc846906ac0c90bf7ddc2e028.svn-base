@@ -1,0 +1,286 @@
+﻿<!-- #include file="../../../../system/lib/form.inc"  -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Menu Setting</title>
+</head>
+
+<%  
+	CtlLib.SetUser(Session("APP_DBUSER"))
+    Dim l_user As String
+    l_user = ""
+%>
+
+<script>
+
+//-----------------------------------------------------
+
+var flag = ""; var br_default = "";
+var comp_pk = "<%=Session("COMPANY_PK")%>";
+var emp_pk = "<%=Session("EMPLOYEE_PK")%>";
+var emp_name = "<%=Session("USER_NAME")%>";
+
+//=================================================================================
+var G1_DETAIL_PK        = 0,
+	G1_MENU_NO			= 1,
+    G1_BRANCH_PK        = 2,
+    G1_MEAL_TYPE	    = 3,
+    G1_USE_YN	        = 4,
+    G1_PRICE		    = 5,
+    G1_CHINH		    = 6,
+    G1_PHU			    = 7,
+    G1_RAU		        = 8,
+    G1_CANH			    = 9,
+	G1_CHINH_PER	    = 10,
+    G1_PHU_PER		    = 11,
+    G1_RAU_PER	        = 12,
+    G1_CANH_PER		    = 13,
+    G1_END	            = 14
+	;
+    
+var arr_FormatNumber = new Array();    
+ //===============================================================================================
+function BodyInit()
+ {
+    System.Translate(document);  // Translate to language session   
+    txtCompanyPK.text = comp_pk;
+    txtUser_PK.text = "<%=session("USER_PK")%>";
+	txtEmpPK.text = emp_pk;
+	txtLang.text = "<%=Session("SESSION_LANG")%>";
+	txtTemp.text = "CTCO0110";
+
+    if(txtCompanyPK.text == ""){
+        alert("Tài khoản của bạn chưa được kết nối với công ty. \r\n Vui lòng liên hệ đội tư vấn để được hỗ trợ.");
+        return;
+    }
+	
+    BindingDataList();
+ }
+ //==================================================================================
+ 
+ function BindingDataList()
+ { 
+	grdData.GetGridControl().FrozenCols = G1_CHINH;
+    DAT_CTBS00010_0.Call('SELECT');
+ }
+
+ function OnPopup(obj_type){
+    var obj;
+    var strcom = txtCompanyPK.text; 
+    var param = "comp_pk=" + strcom + "&user_pk=" + txtUser_PK.text  + "&emp_pk=" + txtEmpPK.text + "&lang=" + txtLang.text;
+    var fpath = System.RootURL;
+	var arrTemp;
+	var lNewRow, seqInit;
+    switch(obj_type){
+        
+    }
+ }
+
+ function OnClick(obj_type){
+    switch(obj_type){
+		case "SEARCH":
+			DAT_CTBS00020_1.Call("SELECT");
+		break;
+        case "SAVE":
+			if(OnValidation()){
+                DAT_CTBS00020_1.Call();
+            }
+        break;
+		case "DELETE":
+			if(confirm("Bạn có muốn xóa dữ liệu?"))
+            {
+                if ( grdData.GetGridData( grdData.row, G1_DETAIL_PK ) == '' )
+                {
+                    grdData.RemoveRow();
+                }
+                else
+                {   
+                    grdData.DeleteRow();
+                }    
+            }
+		break;	
+    }
+ }
+ 
+ function OnDataReceive(obj)
+ {
+	var L_MASTER_PK = "";
+	var GRID_LIST = "";
+    switch(obj.id){
+        case "DAT_CTBS00010_0":
+			lstBranch.SetDataText(txtReturnValue.text);
+			grdData.SetComboFormat(G1_BRANCH_PK, ConvertListToGrid(txtReturnValue.text));
+			txtReturnValue.text = "";
+			DAT_CTBS00020_0.Call();
+        break;
+		case "DAT_CTBS00020_0":
+			lstShift.SetDataText(txtReturnValue.text+"|ALL|Tất cả");
+			lstShift.value = 'ALL';
+			grdData.SetComboFormat(G1_MEAL_TYPE, ConvertListToGrid(txtReturnValue.text));
+			txtReturnValue.text = "";
+			txtTemp.text = "";
+		break;
+    }
+ }
+ 
+ function OnInsert(){
+    grdData.AddRow();
+	lNewRow = grdData.rows - 1;
+	grdData.SetGridText(lNewRow, G1_BRANCH_PK, lstBranch.value);
+	grdData.SetGridText(lNewRow, G1_USE_YN, -1);
+	grdData.SetGridText(lNewRow, G1_PRICE, 0);
+	grdData.SetGridText(lNewRow, G1_CHINH, 0);
+	grdData.SetGridText(lNewRow, G1_PHU, 0);
+	grdData.SetGridText(lNewRow, G1_RAU, 0);
+	grdData.SetGridText(lNewRow, G1_CANH, 0);
+ }
+ 
+ function OnMaxSeq(grd, cl_seq)
+{
+    
+}
+
+function OnValidation(){
+	var rs = true;
+    for (var i = 1; i < grdData.rows; i++)
+	{
+		if(grdData.GetGridData(i, G1_BRANCH_PK) == "" || grdData.GetGridData(i, G1_MEAL_TYPE)==""){
+			alert("Bạn hãy nhập đầy đủ thông tin"); 
+			rs = false; i = grdData.rows;
+		}
+	}
+	return rs;
+}
+ 
+function OnExits(grd, cl_compare, data){
+	
+}
+
+function ConvertListToGrid(str){
+	var arr = str.split("|");
+	var rs = "";
+	if (arr.length > 1){
+		for(var i = 1; i < arr.length; i++){
+			if(i%2==0){
+				rs += ";" + arr[i];
+			}else{
+				rs += "|#" + arr[i]; 
+			}
+		}
+		rs = rs.substring(1, rs.length);
+	}
+	return rs;
+}
+</script>
+
+<body bgcolor='#FFFFFF' style="overflow-y:hidden;">
+    <!--------------------------------------->
+	<gw:data id="DAT_CTBS00010_0" onreceive="OnDataReceive(this)"> 
+        <xml> 
+            <dso type="list" procedure="ST_LG_SEL_CTBS00010_0" > 
+                <input>
+                    <input bind="txtCompanyPK" />
+                    <input bind="txtUser_PK" />
+                    <input bind="txtEmpPK" />
+                    <input bind="txtLang" />
+                </input> 
+                <output>
+                    <output bind="txtReturnValue" />
+                </output>
+            </dso> 
+        </xml> 
+    </gw:data>
+	<!--------------------------------------->
+	<gw:data id="DAT_CTBS00020_0" onreceive="OnDataReceive(this)"> 
+        <xml> 
+            <dso type="list" procedure="ST_LG_SEL_CTBS00020_0" > 
+                <input>
+                    <input bind="txtTemp" />
+                </input> 
+                <output>
+                    <output bind="txtReturnValue" />
+                </output>
+            </dso> 
+        </xml> 
+    </gw:data>
+	<!--------------------------------------->
+    <gw:data id="DAT_CTBS00020_1" onreceive="OnDataReceive(this)"> 
+        <xml> 
+            <dso id="DSO_CTBS00020_1" type="grid" parameter="0,1,2,3,4,5,6,7,8,9,10,11,12,13" function="ST_LG_SEL_CTBS00020_1" procedure="ST_LG_UPD_CTBS00020_1"> 
+                <input bind="grdData">
+					<input bind="txtCompanyPK" />
+                    <input bind="lstBranch" />
+                    <input bind="lstShift" />
+                </input> 
+                <output bind="grdData" />
+            </dso> 
+        </xml> 
+    </gw:data>
+    <!-------------------------------------------------------------------->
+    <table id="main" style="width:100%;height:100%;border:0" cellpadding="2" cellspacing="1" border="0">
+        <tr>
+            <td id="right" style="width: 100%" valign="top">
+                <div style="width:100%;" class="eco_line">
+                    <table style="width:100%;height:100%;border:0;padding:2 5 1 5" cellpadding="0" cellspacing="0" border="0">
+                        <tr style="padding-bottom:2px" class="eco_bg">
+                            <td align="left">
+                                <table style="height:100%;">
+                                    <tr>
+                                        <td style="width:100px;display:none"><gw:label id="lblStatus" styles='width:100%;color:cc0000;font:9pt;align:left' text='status' /></td>
+										<td align="left" style="width: 100px; white-space: nowrap">
+                                            <b>Điểm nấu</b>
+                                        </td>
+                                        <td style="width: 400px">
+                                            <gw:list id="lstBranch" styles='width:100%' csstype="mandatory" />
+                                        </td>
+                                        <td align="right" style="width: 100px" align="center">
+                                            <b>Thời điểm</b>
+                                        </td>
+                                        <td style="width: 150px">
+                                            <gw:list id="lstShift" styles='width:100%' csstype="mandatory" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>&nbsp;</td>
+                            <td align="right">
+                                <table style="height:100%">
+                                    <tr>
+										<td><gw:button id="btnSearch" img="search" alt="Search" text="Tìm kiếm" onclick="OnClick('SEARCH')" /></td>
+                                        <td><gw:button id="btnNew" img="new" alt="New" text="Thêm mới" onclick="OnInsert()" /></td>
+                                        <td><gw:button id="btnDelete" img="delete" alt="Delete" text="Xóa bỏ" onclick="OnClick('DELETE')" /></td>
+                                        <td><gw:button id="btnSave" img="save" alt="Save" text="Sao Lưu" onclick="OnClick('SAVE')" /></td>
+										<td><gw:button id="btnPrint" img="excel" alt="Print" text="Báo cáo" onclick="OnClick('REPORT')" /></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+        <tr style="height: 96%">
+            <td valign="top">
+                <div style="width:100%;height:100%" class="eco_line">
+                    <gw:grid id='grdData' 
+						header='_PK|Tên thực đơn|Điểm nấu|Thời điểm|Kích hoạt|Đơn giá|Món chính|Món phụ|Món Rau|Món Canh|Ratio|_(%)M.Phụ|_(%)M.Rau|_(%)M.Canh|.'
+						format	='0|0|0|0|3|-0|-0|-0|-0|-0|-0|-0|-0|-0|0'
+						aligns	='0|0|0|0|0|0|0|0|0|0|0|0|0|0|0'
+						editcol	='0|1|0|0|0|1|1|1|1|1|1|1|1|1|0'
+						widths	='0|2000|4000|1200|1200|1200|1200|1200|1200|1200|1200|1200|1200|1200|0'
+						sorting='T' styles='width:100%; height:100%'
+						acceptnulldate='T' />
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+<!------------------------------------------------------------------------------>
+<gw:textbox id="txtCompanyPK" styles="display:none;" />
+<gw:textbox id="txtEmpPK" styles="width: 100%;display: none" />
+<gw:textbox id="txtUser_PK" styles="width: 100%;display: none" />
+<gw:textbox id="txtLang" styles="width: 100%;display: none" />
+
+<gw:textbox id="txtMasterPK" styles="display:none;" />
+<gw:textbox id="txtReturnValue" styles="width: 100%;display: none" />
+<gw:textbox id="txtTemp" styles="display:none;" />
+</html>

@@ -1,0 +1,170 @@
+<PUBLIC:COMPONENT tagName="image" lightweight = true  >
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="GetStatus" />
+	<PUBLIC:METHOD name="ChangeImage" />
+	<PUBLIC:METHOD name="SetImage" />
+	
+	<PUBLIC:PROPERTY  NAME="MasterPK"  PUT="setMasterPK" GET="getMasterPK"/>
+	
+	<public:event id="onmouseenter" name="onmoueenter">
+	<PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="event_oncontentready()" >
+
+</PUBLIC:COMPONENT>
+
+<SCRIPT Language="Javascript">
+
+var obj = null;
+var bModify = false;
+var _table_name = "";
+var _master_pk = "-1";
+var _procedure = "";
+var ctrlUpload =null;
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function setMasterPK(txt){
+    _master_pk = txt;
+}
+function getMasterPK(){
+    return _master_pk;
+}
+function GetData()
+{
+    return element.oid;
+}
+function UploadFile()
+{
+	if ( bModify ) 
+	{
+	    var url = System.SystemURL + element.post + "?img_pk=" + element.oid + "&table_name="
+        + _table_name + "&master_pk=" + _master_pk + "&procedure="+ _procedure;
+		//alert(url)
+		var rtnPK = System.OpenModal(  url , 415, 310 , "unadorned:on ; center:yes; edge:sunken ; resizable:yes;status:yes;" );
+		
+		if(rtnPK)
+		{
+		   if(IsNumeric(rtnPK))
+		   {
+		        element.oid = rtnPK;
+		        SetDataText(element.oid);
+		   }
+		   else
+		   {
+		        alert("Unexpected error:"+rtnPK);
+		   }
+		}
+		else
+		{
+		    //element.oid = 0;
+		}
+	}
+}
+function SetData( data )
+{
+	bModify = false;
+	if ( data )
+	{
+		SetDataText( data.text );
+	}
+	else
+	{
+		SetDataText( "" );
+	}
+}
+
+function SetDataText( txt )
+{
+	var d = new Date();
+	
+	if ( txt.length == 0 )
+		txt = "0";
+		
+	if (  txt != "0" ) 
+		obj.src = System.SystemURL  + "/binary/ViewFile.aspx?img_pk=" + txt + "&table_name=" + _table_name + "&master_pk=" + _master_pk + "&random=" + d ;
+	else
+		obj.src = element.noimage;
+		
+	element.oid = txt;
+}
+function SetEnable( bEnable )
+{
+	element.readonly = bEnable?"false":"true";
+}
+function GetStatus()
+{
+	return element.readonly ;
+}
+function ChangeImage()
+{
+    bModify = true;
+	UploadFile();
+	
+}
+function SetImage( url )
+{
+	var ctrl = ctrlUpload ;
+	if ( !ctrl ) return;
+	
+	ctrl.ClickDeleteAllFile();
+	ctrl.AddFilename( url );
+
+	bModify = true;
+
+	s = ctrl.FileList.split( "\t" );
+	//alert(s[2])
+	obj.src = s[2];
+
+}
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+function fnOnClick()
+{
+	if  ( event.srcElement.tagName == "IMG"  && element.readonly != "true" )
+	{
+		ChangeImage();
+	}
+}
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+function event_oncontentready()
+{
+	if ( element.print  ) return;
+	element.print = true;
+
+	if ( typeof( element.oid ) == "undefined" ) 
+		element.oid = "0";
+
+	if (typeof (element.procedure) != "undefined")
+	    _procedure = element.procedure;
+
+	if ( typeof( element.table_name ) == "undefined" ) 
+		_table_name = "TC_FSBINARY";
+	else
+	    _table_name = element.table_name;
+		
+	element.innerHTML = "<img border=1 src='" + System.SystemURL + element.view  +"?img_pk=" + element.oid + "&table_name="+ _table_name  + "&master_pk=" + _master_pk +"' style='" +  element.styles +"' />"; 
+                       //+ "<OBJECT  style='left:0;top:-4;height:2;position:absolute;width:100;;display:' ID='GWUploadCtrl' CLASSID='clsid:BFFC3536-DA84-4CA8-9843-5110B68C047A' ></OBJECT>";
+	//alert( element.innerHTML );	
+	obj = element.childNodes(0);
+	//ctrlUpload = element.childNodes(1);
+	if ( typeof( element.noimage ) == "undefined" ) 
+		element.noimage = System.SysImgPath  + "/photo_X.gif";
+		
+	//alert(element.noimage)
+	
+	if ( element.oid == "0" )
+		obj.src =  element.noimage;
+	
+	obj.attachEvent("onclick", fnOnClick);
+	obj.attachEvent("onmouseenter", OnMouseEnter);
+}
+function OnMouseEnter(){
+	var evObj = createEventObject();
+	onmouseenter.fire( evObj );
+}
+</SCRIPT>

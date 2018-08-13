@@ -1,0 +1,111 @@
+<PUBLIC:COMPONENT tagName="HtmlEdit" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+
+	<public:event id="onChange" name="onchange">
+
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+
+</PUBLIC:COMPONENT>
+
+
+
+
+<SCRIPT Language="Javascript">
+
+var obj = null;
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+
+function GetData()
+{
+	return obj.innerHTML ;
+}
+
+function SetData( data )
+{
+	
+	if ( data )
+	{
+	
+		var s = "";
+		
+		for ( var i = 0 ; i < data.childNodes.length ; i ++ )
+		{
+			s+= data.childNodes(i).xml;
+		}
+		
+		obj.innerHTML =  s ;
+		
+	}
+	else
+		obj.innerHTML =  ""  ;
+}
+
+function SetDataText( txt )
+{
+	obj.innerHTML = txt;
+}
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+	if ( bEnable )
+	{
+		obj.contentEditable = "true";
+	} else
+	{
+		obj.contentEditable = "false";
+	}
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+var oldtext;
+function OnChangeInternal()
+{
+	if ( oldtext != obj.innerHTML )
+	{
+		oldtext = obj.innerHTML;
+		var evObj = createEventObject()
+  		onChange.fire(evObj)
+  	}
+}
+
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+function event_oncontentready()
+{
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		return;
+	}
+	
+	element.print = true;
+
+	var style = ";border:1 solid #6B9EB8; border-width: 1 1 1 1 ; padding:4 5 4 5; margin:1 1 1 1 ; background-color:white; line-height:100%;  ";
+
+	element.innerHTML = "<span CONTENTEDITABLE=\"true\" style='"+ style +  element.styles + "' >" + element.innerHTML + "</span>";
+	obj = element.childNodes(0);
+
+	oldtext = obj.innerHTML;
+	obj.attachEvent("onblur", OnChangeInternal);
+}
+
+
+
+</SCRIPT>
+

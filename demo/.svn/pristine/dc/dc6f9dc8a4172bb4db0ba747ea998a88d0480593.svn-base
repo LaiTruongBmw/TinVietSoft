@@ -1,0 +1,306 @@
+<PUBLIC:COMPONENT tagName="gridhtml" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+
+	<PUBLIC:METHOD name="SetModifyFlag" />
+	<PUBLIC:METHOD name="SetInterface" />	
+
+	<PUBLIC:METHOD name="AddRow" />
+	<PUBLIC:METHOD name="DeleteRow" />
+	<PUBLIC:METHOD name="UpRow" />
+	<PUBLIC:METHOD name="DownRow" />
+
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="ClearData" />
+	
+	<PUBLIC:ATTACH EVENT="ondocumentready" for="element" ONEVENT="event_oncontentready()" >
+	
+</PUBLIC:COMPONENT>
+
+
+<SCRIPT Language="Javascript">
+
+var text;
+var obj = null;
+var templaterow = null;
+var innerData  = "";
+var activaterow = null;
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+
+function GetData( )
+{
+	var s = "";
+
+
+	for ( var i = 2 ; i < obj.rows.length ; i ++ )
+	{
+		var row = obj.rows[i];
+		
+		if ( row.state * 1.0 > 0 )
+		{
+			var arr = new Array();
+			
+			element.fnGetData( row , arr );
+			
+			for ( var j = 0 ;  j <= arr.length ; j++ )
+			{
+				
+				if ( j > 0 ) s += CDelimiter;
+				else
+				if ( s.length > 0  ) s += RDelimiter;
+	
+				if ( arr.length == j )
+				{
+					s += row.state;
+				}
+				else
+				{
+					s += arr[j] ;
+				}
+				
+			}
+		}
+		
+	}
+	return s; 	
+}
+
+function ClearData()
+{
+	while (obj.rows.length > 2 )
+	{
+		obj.deleteRow( 2 );
+	}
+	
+}
+
+function SetData( data )
+{
+	ClearData();
+	if ( activaterow )
+	{
+		activaterow.style.backgroundColor = "";
+		activaterow = null;	
+	}
+		
+	
+	if ( data )
+	{
+
+		for ( var x = 0 ;  x < data.childNodes.length ; x ++ )
+		{
+
+		
+			var row = data.childNodes(x).text ;
+			var arr = row.split(CDelimiter)
+
+			var rowNode =  obj.insertRow();
+			
+			
+			// var newNode = templaterow.cloneNode(true) ;
+			// rowNode.replaceNode( newNode );
+			
+			
+			
+			for ( var i = 0 ; i < templaterow.cells.length ; i++ )
+			{
+				var cellNode = rowNode.insertCell();
+				cellNode.innerHTML = templaterow.cells[i].innerHTML;
+				cellNode.className = "grid_content";		
+			}
+	
+			rowNode.className = "grid_content"
+			
+			
+			// rowNode.innerHTML = templaterow.innerHTML;
+
+			rowNode.bnode = true;			
+			rowNode.attachEvent("onactivate" , ActivateRow );			
+			rowNode.style.display = "";
+			element.fnSetData( rowNode , arr );			
+			rowNode.state = 0;
+			
+		}
+
+		
+	}
+}
+
+
+function SetModifyFlag( o )
+{
+	var tr ;
+	
+	if ( typeof(o) == "object" )
+	{
+		tr = o;
+		while ( tr != null && (tr.tagName != "TR"  || !tr.bnode)) tr = tr.parentNode;
+	}
+	else
+		tr = obj.rows[ o + 2 ];
+	
+	tr.state  |= 0x10 ;
+	
+}
+
+function SetInterface( getdata , setdata  )
+{
+	element.fnSetData = setdata;
+	element.fnGetData = getdata;
+
+	if (element.childNodes.length > 1 )
+	{
+		var xxx = element.childNodes(1);
+		SetData( xxx.childNodes(0) );
+	}
+
+}
+
+function AddRow()
+{
+
+
+	var rowNode =  obj.insertRow();
+	
+	
+	// var newNode = templaterow.cloneNode(true) ;
+	// rowNode.replaceNode( newNode );
+	
+	
+	
+	for ( var i = 0 ; i < templaterow.cells.length ; i++ )
+	{
+		var cellNode = rowNode.insertCell();
+		cellNode.innerHTML = templaterow.cells[i].innerHTML;
+		cellNode.className = "grid_content";		
+	}
+	
+	rowNode.bnode = true;
+	rowNode.className = "grid_content"
+	rowNode.attachEvent("onactivate" , ActivateRow );
+	rowNode.style.display = "";
+	element.fnSetData( rowNode , null );			
+	rowNode.state = 0x20;
+
+	
+}
+
+function DeleteRow()
+{
+	if ( activaterow )
+	{
+		activaterow.state |= 0x40;
+		activaterow.style.display = "none";
+		activaterow = null;
+	}
+	
+}
+
+function UpRow()
+{
+	if ( activaterow )
+	{
+		
+		for ( var i = activaterow.rowIndex -1 ; i > 1 ; i-- )
+		{
+			
+			if (( obj.rows[i].state & 0x40 ) != 0x40 )
+			{
+				
+				activaterow.swapNode ( obj.rows[i] );
+				return;
+			}
+		}
+	}
+	
+}
+
+function DownRow()
+{
+	if ( activaterow )
+	{
+		for ( var i = activaterow.rowIndex +1 ; i < obj.rows.length  ; i++ )
+		{
+			
+			if (( obj.rows[i].state & 0x40 ) != 0x40 )
+			{
+			
+				activaterow.swapNode ( obj.rows[i] );
+				return;
+			}
+		
+		}	
+	}
+}
+
+
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+}
+
+
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+
+function ActivateRow()
+{
+	
+	var o = event.srcElement;
+	
+	while ( o !=null && ( o.tagName !="TR" || !o.bnode) ) o = o.parentNode;
+	o.style.backgroundColor = "green";
+	
+	if ( activaterow )
+	{
+		activaterow.style.backgroundColor = "";
+		
+	}
+	activaterow = o;
+	
+}
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		templaterow = obj.rows[1];
+
+		return;
+	}
+	
+	element.print = true;
+
+	var node;
+	innerData = "";
+	
+	
+	obj = element.childNodes(0);
+	templaterow = obj.rows[1];
+	templaterow.style.display = "none";
+	templaterow.attachEvent("onactivate" , ActivateRow );
+
+	var list = templaterow.all;
+	
+	//for ( var i = 0 ;  i< list.length ; i ++ )
+	//{
+	//if ( list(i).scopeName == "gw" ) 
+	//list(i).print = "";
+	//}
+	
+	// window.document.GetData();
+}
+
+</SCRIPT>
+

@@ -1,0 +1,389 @@
+November 2002                                                    (Version 1.22)
+                              ============
+                              HILFE & INFO
+                              ============
+                              
+
+ 
+
+
+                               0. Inhalt
+                               =========
+
+         1.  Was ist DXF?
+         2.  Wie mensch den Betrachter benutzt
+         3.  Unterstützte Eigenschaften von DXF / Ausblick
+         4.  Danksagungen
+         5.  Lizenz
+         6.  Fehler
+
+
+
+
+
+                              1. Was ist DXF
+                              ==============
+
+   DXF ist ein Datenaustauschformat für CAD-Daten. Es wurde ursprünglich
+von der Firma Autodesk, Inc. für ihr bekanntes Produkt AutoCAD(tm) vor
+etwa 15 Jahren entwickelt und ist seitdem mit jeder AutoCAD-Version fort-
+entwickelt worden.
+
+   Trotzdem es eigentlich proprietär ist, gibt es heutzutage tausende von
+Programmen, die von sich behaupten, DXF lesen oder schreiben zu können. 
+Unter ihnen befindet sich nahezu jedes CAD-Programm (wenig erstaunlich),
+viele DTP- und Malprogramme und manches andere. Dieser Betrachter ist eins
+davon.
+
+
+
+                   2. Wie mensch den Betrachter benutzt
+                   ====================================
+
+                            2.1 So geht's los
+                            -----------------
+
+   Zunächst benötigt mensch mindestens eine zum JDK/JRE 1.1.x (oder neuer) 
+kompatible Java-Version.
+
+   Für Java-Version 1.2 und neuer: zum Betrachten einer DXF-Datei einfach
+folgenden Befehl aufrufen:
+        java -jar dxfviewer.jar dxffilename     
+
+   Für Java-Version 1.1.x: das den Betrachter beinhaltende JAR-Archiv muss an 
+den CLASSPATH angehängt werden. Dann kann eine DXF-Datei betrachtet werden 
+durch Eingabe von:
+        java de.escape.quincunx.dxf.DxfViewer dxffilename
+
+   Um eine andere Sprache einzustellen, kann die Property dxfview.language
+gesetzt werden. Z.B.
+        java -Ddxfview.language=de_DE -jar dxfviewer.jar
+
+bzw. für Java 1.1.x:
+	java -Ddxfview.language=de_DE de.escape.quincunx.dxf.DxfViewer 
+
+startet den Betrachter mit deutscher Oberfläche, ohne eine Datei zu laden. 
+Standardsprache ist Englisch.
+
+   Zur Förderung der guten alten Bequemlichkeit empfiehlt es sich sehr, dies
+in eine Skript- oder Batchdatei zu packen. Mit dem JAR-Archiv sollte eigent-
+lich auch eine DOS-Batchdatei (namens DV.BAT) und ein Unixskript (namens dv)
+mitgekommen sein. Diese lassen sich leicht anpassen, damit der Betrachter
+dann so gestartet werden kann:
+        dv dxffilename
+
+   Der Betrachter kann einfache DXF-Dateien und mit gzip oder (pk)zip 
+gepackte Dateien laden. Die Dateien brauchen keine spezielle Dateiendung wie
+z. B. .dxf. 
+
+   Eine andere Möglichkeit, eine DXF-Datei zu betrachten, ist wie üblich über
+das Dateimenü. Der Fortgang des Ladens und Konvertierens der Datei läßt sich
+mit dem wachsenden Balken unten rechts abschätzen.
+
+Es gibt noch zwei Eigenschaften, die über den Kommandozeilenschalter -D gesetzt
+werden können:
+
+dxfview.reducelines -- eine Ganzzahl, die die Anzahl der Linien, die in der
+                       reduzierten Darstellung anzeigt werden, angibt.
+
+preview.reducelines -- eine Ganzzahl, die die Anzahl der Linien in der
+                       Druckvorschau angibt. 0 lässt alle Linien darstellen!
+
+
+                              2.2 Bedienung
+                              -------------
+
+                                 Bewegen
+                                 °°°°°°°
+Der Inhalt der DXF-Datei wird als Drahtgittermodell dargestellt. Dieses kann
+gedreht, verschoben und sklaiert werden, indem die Maus mit gedrückter Taste
+über das Betrachterfenster geschoben wird. Die verschiedenen Maustasten bzw.
+zusätzliches Drücken von Strg (Ctrl) und Umschalt (Shift) wählen die ver-
+schiedenen Bewegungsmöglichkeiten aus.
+
+LINKE      Maustaste (und keine Umschalttaste) zum Drehen des Modells.
+           Beim Rotieren erscheint ein Kreis. Am besten stell man sich
+           einen Ball vor, der in diesem Kreis liegt. Bewegt man die
+           Maus innerhalb des Kreises ist es so, als wenn man diesen
+           Ball mit der Maus festhält und dreht. Das Modell bewegt
+           sich entsprechend. Bewegt man die Maus außerhalb des Kreises,
+           wird das Modell entsprechend der Bewegung um die Blickachse 
+           gedreht. Nach kurzer Eingewöhnungszeit kann man die Sicht auf
+           diese Weise perfekt kontrollieren.
+MITTLERE   Maustaste (oder LINKE und UMSCHALT) zum Verschieben.
+RECHTE     Maustaste (oder LINKE und STRG) zum Skalieren bzw. ändern der
+           Entfernung.
+
+Damit's bei umfangreicheren Modellen etwas schneller geht, läßt sich die Kom-
+plexität der Darstellung mittels der Auswahl in der oberen rechten Ecke
+ändern:
+
+[Komplett bewegen]   bewegt das komplette Modell (langsam)
+[Maximalbox bewegen] bewegt nur einen Kasten (schnell)
+[reduziert bewegen]  zeigt beim Bewegen nur einen Teil der Linien (Default)
+
+
+Durch vorherige Ansichten kann mittels der zwei Knöpfe [Vorherige]/[Nächste]
+geblättert werden. 
+Rücksetzen auf [X-Y] setzt die Ansicht auf eine Blickrichtung parallel
+                     zur z-Achse zurück,
+               [Y-Z] entsprechend senkrecht zur x-Achse und
+               [X-Z] senkrecht zur y-Achse.
+
+
+                                 Layer
+                                 °°°°°
+Die Daten in der DXF-Datei ist auf sogenannten Layern organisiert. Diese
+können mittels der kleinen Listen unten rechts an- oder abgeschaltet werden.
+Der Knopf [Invertieren] kehrt die Auswahl um, der Knopf [Alle selektieren]
+schaltet alle Layer ein. Layer, die in der Datei als 'versteckt' markiert
+sind, sind auch zunächst unselektiert.
+
+
+                                Drucken
+                                °°°°°°°
+Es ist prinzipiell möglich, die angezeigte Ansicht zu drucken, indem der
+entsprechende Punkt im Dateimenü ausgewählt wird. Drucken ist allerdings
+in den bisherigen Java-Version nur sehr rudimentär unterstützt, also
+bitte lieber nicht zuviel erwarten.
+
+Für alle Nutzer mit Zugang zu PostScript-Druckern gibt es seit neuerem auch
+die Möglichkeit, PostScript-Dateien direkt zu erzeugen. Diese ergeben einen
+erheblcih besseren Ausdruck als die Java1.1-internen Druckroutinen.
+
+
+                       Sprache [Optionen>Sprache]
+                       °°°°°°°°°°°°°°°°°°°°°°°°°°
+Die Sprache läßt sich zwischen Englisch und Deutsch ändern. Englisch ist 
+Standard, aber in Abschnitt 2.1 steht, wie der Betrachter in Deutsch 
+startet. Die Sprache von manchen Systemdialogen wird allerdings nicht
+geändert.
+
+            Koordinatensystem [Optionen>KS zeigen/KS-Position]
+            °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+In die Ansicht läßt sich zur Orientierung ein kleines Hilfskoordinatensystem
+einblenden. Es kann ausgewählt werden, in welcher Ecke es dargestellt wird
+(Hierbei steht SW für Süd-West etc.).
+
+      Schwarz & Weiß austauschen [Optionen>Schwarz & Weiß austauschen
+      °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
+DXF hat normalerweise einen schwarzen Hintergrund. Wer es lieber anders
+mag, kann dies durch entsprechendes Auswählen im Optionenmenü erreichen.
+
+                     Meldungen [Info>Meldungen]
+                     °°°°°°°°°°°°°°°°°°°°°°°°°°
+Hier werden die Meldungen und Warnungen vom Dateieinlesen angezeigt.
+
+                      Modell Info [Info>Modell]
+                      °°°°°°°°°°°°°°°°°°°°°°°°°
+Hier werden rudimentäre Informationen über das momentane Modell angezeigt.
+
+                        JVM [Info>Java-Info]
+                        °°°°°°°°°°°°°°°°°°°°
+Hier werden einige Informationen über die Java Virtual Machine angezeigt.
+Dies kann für Fehlerberichte sehr sinnvoll sein.
+
+                               Beenden
+                               °°°°°°°
+Sollten Sie das Programm tatsächlich jemals wieder verlassen wollen, so 
+geht dies wie üblich über das Dateimenü->Beenden.
+
+
+
+                              2.3 Applet
+                              ----------
+
+   Der Viewer ist eigentlich in der vorliegenden Form auch schon als Applet
+benutzbar, die diversen Bugs der verschiedenen Internetbrowser erfordern aber
+ein etwas komplizierteres Vorgehen, wobei gewisse Teile des jar-Archivs auf
+dem Server entpackt bereitgestellt werden müssen. Das genauere Vorgehen und
+ein entsprechend vorbereitetes Paket sind auf der Internetseite
+        http://www.escape.de/users/quincunx/dxfviewer/
+zu finden.
+
+
+                   3. Unterstütze Eigenschaften von DXF
+                   ====================================
+
+   Das DXF-Format ändert sich mit jeder neuen Version von AutoCAD(tm).
+Dieser Betrachter versteht DXF, wie es von AutoCAD R12 geschrieben
+wurde. Dies ist auch die meistgenutzte Version von DXF.
+
+   AutoDesk hat das DXF-Format beginnend mit AutoCAD R13 von Grund auf
+geändert. Der Viewer wird neuere DXF-Dateien daher nur bedingt richtig
+darstellen.   
+
+
+			    DXF-Entities
+                            °°°°°°°°°°°°
+                             
+Hier nun eine Tabelle aller DXF-Entities (Elemente) und wie sie der 
+Betrachter unterstützt oder auch nicht.	
+
+            ENTITY                |           Status
+----------------------------------+-------------------------------------
+            POINT                 |           unterstützt (nur Punkte)
+                                  |
+            LINE/3DLINE           |           unterstützt
+                                  | 
+            CIRCLE                |           unterstützt
+                                  |
+            ARC                   |           unterstützt
+                                  |
+            TRACE                 |           unterstützt
+                                  |
+            SOLID                 |           unterstützt
+                                  |
+            TEXT                  |           unterstützt (in der Version
+                                  |           mit Zeichensätzen)
+                                  |
+            SHAPE                 |           NICHT unterstützt
+                                  |
+            POLYLINE/VERTEX       |           unterstützt
+                                  |
+            3DFACE                |           unterstützt
+                                  |
+            VIEWPORT/VPORT/VIEW   |           noch nicht unterstützt
+                                  |
+            DIMENSION             |           unterstützt
+                                  |
+            BLOCK/INSERT          |           unterstützt
+                                  |
+            ATTRIB/ATTDEF         |           unterstützt
+----------------------------------+-------------------------------------
+
+
+
+                          Entity-Eigenschaften
+                          °°°°°°°°°°°°°°°°°°°°
+
+   DXF-Entities können verschiedene Eigenschaften haben. In der folgenden
+Tabelle steht, ob (und möglicherweise, wie) sie angezeigt werden.
+
+            EIGENSCHAFT           |           Status
+----------------------------------+-------------------------------------
+            Farbe                 |           unterstützt
+                                  |
+            Layer                 |           unterstützt
+                                  |
+            Strichlierung         |           unterstützt
+                                  |
+            Linienbreite          |           noch nicht unterstützt
+                                  |
+            Hochzug               |           unterstützt
+                                  |
+            Schriftart            |           unterstützt wenn bekannt 
+                                  |           (in der Schriftartversion)
+----------------------------------+-------------------------------------
+                                  
+
+
+                             Ausblick
+                             --------
+
+*  Alles, was 'noch nicht unterstützt' gebrandmarkt ist, wartet darauf,
+   endlich implementiert zu werden.
+
+*  Wenn es eine verbreitete 3D-Schnittstelle gibt, wären schattierte 
+   Modelle ein nettes Feature.
+
+*  Drucken muß wirklich besser werden.
+
+
+
+
+                        4. Danksagungen
+                        ===============
+
+*  Vielen Dank an die Leute bei Sun, die das JDK umsonst zur Verfügung
+   stellen.
+
+*  Dieses Programm entstand unter Linux. Also tausend Dank an die Linux-
+   Gemeinde und alle anderen, die daran mitgeholfen haben, für die
+   Zillionen Jahren unbezahlter Arbeit, die dies möglich gemacht haben.
+
+*  Speziellen Dank an Frank Gerberding für das Raytracen des Logos auf
+   seinem berüchtigten PPC-angetriebenen Amiga.
+
+*  Dank an Tim Niels van der Leeuw, der mir die Idee eingab, daß Java-
+   Ein- und Ausgabe nicht langsam sein muß.
+
+*  Vielen Dank an HP Knoll aus Paris für eine binäre DXF-Datei. Nunmehr
+   beherrscht der Betrachter auch dieses eher seltene Format. 
+
+*  Dank an Dietmar Rudolph/Thomas Stürznickel/Leo Weissenberger für das
+   Schreiben des Buches "Der DXF-Standard" (ISBN 3-87686-246-9). Es war
+   unverzichtbar (und vielleicht werde ich eines Tages alle Fehler gefunden
+   haben  ;-)
+
+
+
+                            5. Lizenz
+                            =========
+
+   Nehmen Sie dies Programm, benutzen Sie es, verteil es. Es ist umsonst.
+Wenn Sie es schaffen, damit Schaden zu verursachen, werde ich staunen, aber 
+nicht dafür aufkommen. Sie benutzen es auf Ihr eigenes Risiko. 
+
+   Es ist möglich, die Quellen zu bekommen. Dazu müssen Sie mir eine Email
+schreiben und ich werde sie Ihnen vermutlich zur Verfügung stellen. Ich bin
+einfach neugierig, wer sich dafür interessiert und möchte auch verhindern,
+daß jemand das ganze mit ein paar Änderungen als eigenes Produkt (oder als
+Teil eines Programms) verkauft. Hier ist meine Adresse:
+
+                      rammi@quincunx.escape.de
+
+                      Rammi (alias Andreas M. Rammelt)
+                      Gliesmaroder Str. 95
+                      38106 Braunschweig
+                      Germany
+                      Tel. +49-531-343054
+                      
+
+
+                               6. Fehler 
+                               =========
+
+                             Fehler mitteilen
+                             °°°°°°°°°°°°°°°°
+
+   Wenn Sie einen Fehler finden sollten, schaue bitte erst, ob er weiter unten bereits 
+erwähnt wird. Falls nicht, so wäre es nett, wenn Sie einen kurzen Bericht an obige
+Adresse schicken würden. Bitte fügen Sie das JVM-Info, daß Sie unter dem Menüpunkt
+[Info>Java-Info] erhalten, bei. Falls möglich und nicht zu groß (<1MByte), schicken
+Sie bitte die DXF-Datei, die den Fehler verursacht, mit. Vielen Dank!
+
+   Ich suche noch immer nach AutoCAD-R14 -DXF-Dateien. Falls Sie Zugriff zu AutoCAD 
+haben, könnten Sie diesen Betrachter verbessern helfen, indem Sie von dort eine
+normale und eine binäre DXF-Datei exportieren und an die oben angegebene Adresse
+senden.
+
+
+                             Bekannte Fehler
+                             °°°°°°°°°°°°°°°
+
+Die mittlere Maustaste funktioniert nicht mit JDK1.2 unter Windows
+------------------------------------------------------------------
+Das ist ein JDK1.2-Fehler. 
+Bis er behoben ist, verschieben Sie das Modell bitte durch zusätzliches Drücken
+der Umschalt (Shift) Taste.
+
+Das Koordinatensystem erscheint abgeschnitten mit JDK1.2 unter Windows
+----------------------------------------------------------------------
+Das ist ein JDK1.2-Fehler.
+Abhilfe ist keine bekannt.
+
+Das Betrachterfenster reagiert nicht auf Größenveränderungen auf SGI
+--------------------------------------------------------------------
+Dieser Fehler wurde für SGI-Maschinen mit JDK 1.1.5 (3.1) auf Irix 6.2 berichtet.
+Abhilfe ist keine bekannt.
+
+Das Drucken ist nicht zufriedenstellend
+---------------------------------------
+Das ist ein bekanntes Java 1.1-Problem. Es sollte besser werden, wenn der Betrachter
+nach Java 1.2 portiert ist.
+
+
+
+
+Stand: 15. November 2002

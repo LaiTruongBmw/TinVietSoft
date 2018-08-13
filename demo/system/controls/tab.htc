@@ -1,0 +1,274 @@
+<PUBLIC:COMPONENT tagName="tab2" lightweight = true  >
+
+	<public:event id="evonpageactivate"    name="onpageactivate">
+	
+	<public:method name="GetCurrentPage" >	
+	<public:method name="GetCurrentPageNo" >		
+	<public:method name="SetPage" >		
+	<public:method name="HideTab" >	
+	<public:method name="ShowTab" >	
+	
+	<PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="event_oncontentready()" >
+/>
+
+
+<SCRIPT Language="Javascript">
+
+function Click()
+{
+	alert( "test");
+}
+
+var curPage = 0;
+var startIndex = 0;
+var tbl = null;
+var PageCount = 0;
+function event_oncontentready()
+{
+
+	if ( element.print  )
+	{
+		tbl = element.childNodes(0);
+		 return;
+	}
+	
+	element.print = true;
+
+	var i ,j ;
+	var str = '<TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0"  width="100%" height="100%">' +
+			'		<TR>' ;
+			
+	//------------------------------build tab header-----------------------
+	var colcount = 1;
+	for ( i = 0 ;  i < element.childNodes.length ; i++ )
+	{
+		
+		
+		
+		if ( i == 0 && typeof( element.childNodes(i).name ) == "undefined" ) 
+		{
+			startIndex = 1;
+			
+		} else
+		{
+			name = element.childNodes(i).name;
+			if ( i == startIndex ) 
+			{	
+				img = "_sel";
+				color="color:white" ;
+			} else 
+			{
+				img = "";
+				color="color:#000000" ;
+				element.childNodes(i).style.display = "none";
+			}
+			
+			str += '    <TD  style="cursor:hand;padding:0 0 0 0 ;margin:0 0 0 0;font-weight:bold;'+color+'">' +
+				'			<IMG SRC= "' +System.SysImgPath+ '/button/tab_bgl' + img +'.gif"  align="absMiddle" />' +
+				'		</TD>' +
+				'		<TD  valign="bottom" style="font-weight:bold;background-image:url(' +System.SysImgPath+ '/button/tab_bgm' + img +'.gif);background-repeat : repeat-x;cursor:hand;padding:0 0 4 0;margin:0 0 0 0;'+color+'"><nobr>' +
+				name  +
+				'		</nobr></TD>' +
+				'		<TD  style="font-weight:bold;cursor:hand;padding:0 0 0 0;margin:0 0 0 0;'+color+'">' +
+				'			<IMG SRC="' +System.SysImgPath+ '/button/tab_bgr' + img +'.gif" align="absMiddle" />' +
+				'		</TD>' ;
+			//alert(str);
+			colcount += 3;
+		}
+	}		
+
+	
+	str += '	<td width="100%"></td>	</TR>' +
+		 '</TABLE>	 	';
+
+		
+	element.insertAdjacentHTML("afterBegin", str );
+	//-----------------------------------end of build tab header------------------------------------------------------------
+	
+	//-----------------build body content------------------------------------------------------------------------------------
+	tbl = element.childNodes(0);
+	//alert( element.childNodes(0).outerHTML );
+	for (  i = element.childNodes.length -1 ; i > startIndex ; i -- )
+	{
+		//alert( element.childNodes(i).outerHTML );
+		var newTR = tbl.insertRow(1);
+		var newTD = newTR.insertCell();
+		
+		
+		newTD.colSpan = colcount;
+		newTD.vAlign="top";
+		newTD.style.height="100%";
+		newTD.innerHTML = "<div></div>";
+		
+		
+		newTD.childNodes(0).replaceNode( element.childNodes(i) );
+		newTR.style.display = newTD.childNodes(0).style.display ;
+		newTD.childNodes(0).style.display = "";
+		
+		
+		
+		PageCount ++;
+		
+	}
+	//-------------------------------------------------- end of build body content------------------------------------------------------
+	
+	//-------------------attach event to tabs header----------------------------------------------------------------------
+	tbl.rows(0).attachEvent("onclick", fnOnClick);
+	tbl.rows(0).attachEvent("onmouseover", fnOnMouseOver);
+	tbl.rows(0).attachEvent("onmouseout", fnOnMouseOut);
+	
+	// if ( startIndex > 0 ) tbl.rows(1).style.display = "none";
+}
+
+function HidePage( p )
+{
+	tbl.rows(p+1).style.display = "none";
+	ShowTabBtn( p , 0 );
+}
+
+function ShowPage( p )
+{
+	tbl.rows(p+1).style.display = "";
+	
+	ShowTabBtn( p , 1 );
+}
+function HideTab( p )
+{
+	/*tbl.rows(0).cells( p*3 ).style.display = "none";
+	tbl.rows(0).cells( p*3 + 1 ).style.display = "none";
+	tbl.rows(0).cells( p*3 + 2 ).style.display = "none";
+	*/
+	tbl.rows(0).cells( p*3 ).style.visibility = "hidden";
+	tbl.rows(0).cells( p*3 + 1 ).style.visibility = "hidden";
+	tbl.rows(0).cells( p*3 + 2 ).style.visibility = "hidden";
+	
+	
+	ShowTabBtn( p , 0 );
+}
+
+function ShowTab( p )
+{
+    /*
+	tbl.rows(0).cells( p*3 ).style.display = "";
+	tbl.rows(0).cells( p*3 + 1 ).style.display = "";
+	tbl.rows(0).cells( p*3 + 2 ).style.display = "";
+	*/
+	tbl.rows(0).cells( p*3 ).style.visibility = "visible";
+	tbl.rows(0).cells( p*3 + 1 ).style.visibility = "visible";
+	tbl.rows(0).cells( p*3 + 2 ).style.visibility = "visible";
+	
+	ShowTabBtn( p , 1 );
+}
+
+function ShowTabBtn( p , n )
+{
+	var s="";
+	var color="#000000";
+	
+	if ( n == 1 ) 
+	{
+		s = "_sel";
+		color = "white"; 
+	}
+	else
+	if ( n == 2 ) 
+	{
+		s = "_over";
+		color = "white";
+		
+	}
+
+	element.childNodes(0).rows(0).cells( p * 3  ).childNodes(0).src = System.SysImgPath+ "/button/tab_bgl" +s +".gif";
+	element.childNodes(0).rows(0).cells( p * 3 +1 ).style.backgroundImage = "url( " + System.SysImgPath+ "/button/tab_bgm" +s +".gif)";
+	element.childNodes(0).rows(0).cells( p * 3 +2 ).childNodes(0).src = System.SysImgPath+ "/button/tab_bgr" +s +".gif";
+		
+	element.childNodes(0).rows(0).cells( p * 3  ).style.color = color;
+	element.childNodes(0).rows(0).cells( p * 3 +1 ).style.color = color;
+	element.childNodes(0).rows(0).cells( p * 3 +2 ).style.color = color;
+}
+
+var overID = -1;
+function fnOnMouseOver()
+{
+  	var e = window.event.srcElement;
+	while ( e.tagName != "TABLE" && e.tagName !="TD" ) e = e.parentNode;
+	if ( e.tagName == "TD" )
+	{
+		var c = Math.floor( e.cellIndex / 3 );
+		
+		if ( c >= PageCount ) return;
+		
+		if ( overID != c )
+		{
+			if ( overID != -1 )
+				ShowTabBtn( overID , overID == curPage ? 1 : 0 );
+			overID = c;
+			
+			ShowTabBtn( overID , overID == curPage ? 1 : 2 );
+		}
+		
+				
+
+	}
+}
+
+function fnOnMouseOut()
+{
+	if ( overID != -1 )
+	{
+		ShowTabBtn( overID , overID == curPage ? 1 : 0 );
+		overID = -1;
+	}
+}
+
+
+function SetPage( c )
+{
+
+	HidePage( curPage );
+	
+	curPage = c;
+	
+	ShowPage( curPage );
+	
+	var evObj = createEventObject();
+	evonpageactivate.fire(evObj);
+
+}
+
+function fnOnClick()
+{
+  	var e = window.event.srcElement;
+
+	while ( e.tagName != "TABLE" && e.tagName !="TD" ) e = e.parentNode;
+	
+	if ( e.tagName == "TD" )
+	{
+		var c = Math.floor( e.cellIndex / 3 );
+		
+		if ( c >= PageCount ) return;
+		
+		if ( curPage != c ) 
+		{
+			SetPage( c );
+			
+		}
+		
+	}
+	
+}
+
+function GetCurrentPageNo()
+{
+	return curPage;
+}
+
+function GetCurrentPage()
+{
+	return tbl.rows(curPage + 1 );
+}
+
+
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="ESYS">
+</Property><Property Name="Solution File" Value="D:\Web\Lotus\gsys\ESYS.sln">
+</Property><Property Name="Date" Value="Saturday, May 26, 2012">
+</Property><Property Name="Time" Value="18:01 PM">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="ESYS.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="ESYS.sln" Description="Converted">
+</Event></UpgradeLog>

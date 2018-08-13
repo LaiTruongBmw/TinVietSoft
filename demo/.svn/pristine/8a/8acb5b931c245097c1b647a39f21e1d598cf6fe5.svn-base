@@ -1,0 +1,105 @@
+<PUBLIC:COMPONENT tagName="label" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+
+	<PUBLIC:METHOD name="GetControl" />
+		
+	<PUBLIC:PROPERTY  NAME="text"   PUT="setText" GET="getText"/>
+
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+	
+
+
+<SCRIPT Language="Javascript">
+
+
+var text="";
+var obj = null;
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+
+
+function GetData()
+{
+	text = obj.innerHTML;
+	return text;
+}
+
+function SetData( data )
+{
+	if ( data )
+		setText( data.text );
+	else
+		setText( "" );
+}
+
+function GetControl() {
+	return obj;
+}
+
+function SetDataText( txt )
+{
+	setText( txt );
+}
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function setText (vValue)
+{
+  
+   text = vValue;
+   if ( obj ) obj.innerHTML = vValue;
+}
+
+function getText()
+{
+	text = obj.innerHTML;
+	 return text;
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		return;
+	}
+	
+	element.print = true;
+
+	if ( text.length > 0 )
+		element.innerHTML = "<span style='font-weight:normal;font-size:9pt;width:100%;border:0px solid #6B9EB8;color: #000000;"+ element.styles +"' >" + text +"</span>" ;
+	else
+		element.innerHTML = "<span style='font-weight:normal;font-size:9pt;width:100%;border:0px solid #6B9EB8;color: #000000;"+ element.styles +"' >" + element.innerHTML +"</span>" ;
+
+	
+	obj = element.childNodes(0);
+}
+
+
+
+
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

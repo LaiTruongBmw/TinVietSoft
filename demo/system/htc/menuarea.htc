@@ -1,0 +1,95 @@
+<PUBLIC:COMPONENT lightweight = true  >
+
+	
+	<PUBLIC:METHOD name="ClickMenu" />
+
+	<PUBLIC:PROPERTY  NAME="ClickID"   GET="getClickID"/>	
+	<PUBLIC:PROPERTY  NAME="ClickObject"   GET="getClickObject"/>	
+
+	
+	<PUBLIC:METHOD name="SetParent" />
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >	
+	<public:event id="idonmenuclick" name="onmenuclick">
+	
+	
+</PUBLIC:COMPONENT>
+
+<SCRIPT Language="Javascript">
+
+var clickedObject = null;
+var ParentMenu = null;
+
+function SetParent( pObj )
+{
+	ParentMenu = pObj;
+}
+
+function fnMouseOver()
+{
+	
+}
+
+function fnMouseOut()
+{
+
+
+}
+
+function getClickID()
+{
+	if ( clickedObject )
+		return clickedObject.oid;
+	else
+		return null;
+}	
+
+function getClickObject()
+{
+	return clickedObject;
+}	
+
+
+function ClickMenu( obj )
+{
+	oPopup.show( 0 , 0, 0, 0, element.document.body );
+	oPopup.hide();			
+		
+	clickedObject = obj;	
+	var evObj = createEventObject()
+  	idonmenuclick.fire(evObj)
+  	
+  	if ( ParentMenu )
+  	{
+	 		if ( typeof( ParentMenu.ClickMenu ) != "undefined" )
+			{
+				ParentMenu.ClickMenu( obj );
+			}
+  	}
+
+}
+
+var oPopup;
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) return;
+	element.print = true;
+
+	oPopup = window.createPopup();
+	
+	if ( element.type == "pulldown" )
+	{
+	} else
+	{
+		// element.style.padding = "10 4 10 4";
+	}
+	
+	element.attachEvent("onmouseover", fnMouseOver );
+	element.attachEvent("onmouseout", fnMouseOut );
+
+}
+
+
+
+</SCRIPT>

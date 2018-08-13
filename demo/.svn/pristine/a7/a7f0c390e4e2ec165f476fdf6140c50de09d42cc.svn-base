@@ -1,0 +1,296 @@
+<PUBLIC:COMPONENT  lightweight = true  >
+
+	<PUBLIC:METHOD name="ShowPopup" />
+	<PUBLIC:METHOD name="Clear" />
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >	
+	
+	
+</PUBLIC:COMPONENT>
+
+<SCRIPT Language="Javascript">
+
+
+var bMenu = false ;
+var bPulldown = false;
+var oPopup = null ;
+
+function Clear()
+{
+	fnMouseOut();
+}
+
+function ShowPopup(  pos , elem )
+{
+
+	if ( sourceHTML.length == 0 )
+	{
+		fnPageLoad( top.SysMenuStyle +
+			''+
+			'<' + 'script>'+
+			'function GetMenu()'+
+			'{'+
+			'	return parent.GetMenu();'+
+			'}	'+
+			''+
+			'function GetUniqueID()'+
+			'{'+
+			'	return parent.GetUniqueID();'+
+			'}'+
+			''+
+			'function WriteMenu( x , doc , bRoot )'+
+			'{'+
+			'	return parent.WriteMenu( x , doc , bRoot  );'+
+			'}'+
+			''+
+			'function WriteMenuItem( )'+
+			'{'+
+			''+
+			'	var x = parent.GetMenu().selectNodes( "//menu[@oid=\'"+ menuid +"\']" );'+
+			'	parent.WriteMenu( x , document  , false);'+
+			'	'+
+			'}'+
+			''+
+			'</' + 'script>'+
+			'<body style="margin:0 0 0 0;overflow:hidden;border-width: 0 0 0 0" >'+
+			'<div id="idMenu" class="menuarea"  type="popup" >'+
+			'	<' + 'script>'+
+			'		WriteMenuItem( );'+
+			'	</' + 'script>'+
+			'</div>'+
+			''+
+			'</body>'+
+			'</html>'
+		
+		);
+		
+	}		
+		var x1, y1;
+		var x2, y2;
+		var x3, y3;
+		var x4, y4;
+
+		if (top.ConsX1 != -99) x1 = top.ConsX1;
+		else x1 = pos.x + top.AddX1;
+		if (top.ConsH1 != -99) y1 = top.ConsH1;
+		else y1 = pos.height + top.AddH1;
+
+		if (top.ConsX2 != -99) x2 = top.ConsX2;
+		else x2 = pos.width + top.AddX2;
+		if (top.ConsH2 != -99) y2 = top.ConsH2;
+		else y2 = pos.height + top.AddH2;
+
+		if (top.ConsX3 != -99) x3 = top.ConsX3;
+		else x3 = pos.x + top.AddX3; //not sure x or width
+		if (top.ConsH3 != -99) y3 = top.ConsH3;
+		else y3 = pos.height + top.AddH3;
+
+		if (top.ConsX4 != -99) x4 = top.ConsX4;
+		else x4 = elem.parentNode.offsetWidth + top.AddX4;
+		if (top.ConsH4 != -99) y4 = top.ConsH4;
+		else y4 = pos.height + top.AddH4;
+												
+		if ( bPulldown )
+		{
+				oPopup.show(x1 ,  y1 , 100, 1, elem);			
+		} else
+		{			oPopup.show( x2 , y2 , 100 , 1, elem);
+		}
+		
+		var h =  10 ;
+		var w =  10 ;
+		
+		if ( oPopup.document.body.childNodes.length > 0 )
+		{
+			
+			var ChildMenu = oPopup.document.body.childNodes(0);
+			
+			h =  ChildMenu.scrollHeight   ;
+			w =  ChildMenu.scrollWidth ;
+			
+			if ( ChildMenu.className == "menuarea" )
+			{
+				ChildMenu.SetParent( element.parentNode );
+			}
+
+		}		
+		
+		// oPopup.hide();
+		if ( bPulldown )
+		{
+			// oPopup.show(pos.x + 1 , pos.y + pos.height + 1, w, h, elem.document.body);
+			oPopup.show(x3 ,  y3 , w, h, elem);
+			
+		} else
+		{
+			//oPopup.show(pos.x + w - 8 , pos.y , w, h, elem.document.body);
+			
+			oPopup.show( x4, y4  , w , h, elem);
+		}
+		
+		
+		if ( oPopup.document.body.childNodes.length > 0 )
+		{
+			
+			var ChildMenu = oPopup.document.body.childNodes(0);
+			
+			for ( var i = 0 ; i < ChildMenu.childNodes.length ; i ++)
+			{
+				var node = ChildMenu.childNodes(i);
+				
+				if ( typeof( node.Clear ) != "undefined" )
+				{
+					node.Clear();
+				}
+			}
+		}		
+}
+
+function fnMouseOver()
+{
+	
+	
+	// if ( !System.bSystemFocus ) return;
+	if ( element.currentStyle.borderWidth != "0px")
+	{
+		element.style.borderColor = "#aaaaaa";	
+		element.style.backgroundColor = "#cccccc";
+	}
+
+	if ( bMenu )
+	{
+		if ( bPulldown ) return;
+		
+		var pos = new Object();
+		FindPos( event.srcElement   , pos );
+
+		ShowPopup( pos , element );	
+	
+	} else
+	{
+		oPopup.show( 0 ,0, 0, 0, element.document.body );
+		oPopup.hide();
+		// element.focus();
+	}
+	
+}
+
+function fnMouseOut()
+{
+	if ( element.currentStyle.borderWidth != "0px")
+	{
+		element.style.borderColor = "";
+		element.style.backgroundColor = "";
+	}
+}
+
+
+function fnClick()
+{
+	if ( !bMenu )
+	{
+		if ( typeof( element.parentNode.ClickMenu ) != "undefined" )
+		{
+			element.parentNode.ClickMenu( element );
+		}
+		
+	} 
+	
+	if ( bPulldown ) 
+	{
+		var pos = new Object();
+		FindPos( event.srcElement   , pos );
+
+		ShowPopup( pos , element );		
+	}
+	
+}
+
+var sourceHTML  = "";
+function fnPageLoad(src)
+{
+	//alert( src );
+	sourceHTML = src;
+	oPopup.document.write ( "<script> var menuid = '" + element.oid +  "'; </" + "script>");
+	oPopup.document.write(src); 
+}
+
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) return;
+	element.print = true;
+
+	
+	oPopup = window.createPopup();
+
+	if ( element.parentNode.type == "pulldown" )	
+	{
+		bPulldown = true;
+	}
+
+	
+	if ( element.type == "popup" )
+	{
+		bMenu = true;
+		if ( typeof ( element.url ) != "undefined" )
+			element.startDownload( element.url , fnPageLoad);
+		
+		if ( !bPulldown )
+		{
+			element.style.position = "relative";
+			
+			element.insertAdjacentHTML( "afterBegin" , "<img src='../images/arrow.gif' style='position:absolute;left:expression(parentNode.offsetWidth - 20);top:expression(parentNode.offsetHeight/2 - 4)' />");
+			
+			
+		}
+		
+	}
+	
+	
+	element.attachEvent("onmouseover", fnMouseOver );
+	element.attachEvent("onmouseout", fnMouseOut );
+	element.attachEvent("onclick", fnClick );	
+
+}
+
+//---------------------------------------------------------------------//
+
+function FindPos( obj , posinfo )
+{
+
+	var pobj ;
+	
+	var x = 0  , y = 0 ;
+	
+	
+	pobj = obj;
+	
+	while ( pobj )
+	{
+		x += pobj.offsetLeft;
+		y += pobj.offsetTop;
+		
+		// alert( pobj.offsetLeft + "="+pobj.outerHTML );
+		
+		if ( pobj != obj && pobj.offsetParent && pobj.tagName != "TABLE")
+		{
+			// alert( pobj.clientLeft + ":" + pobj.clientTop + "/" + pobj.offsetLeft + "="+pobj.outerHTML);
+			x += pobj.clientLeft;
+			y += pobj.clientTop;
+			
+		}
+		pobj = pobj.offsetParent;	
+	}
+
+	
+	posinfo.x = x;
+	posinfo.y = y;
+	posinfo.width = obj.offsetWidth;
+	posinfo.height = obj.offsetHeight;
+
+	
+}
+
+
+</SCRIPT>

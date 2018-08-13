@@ -1,0 +1,55 @@
+/* For Calendar */
+.smcalendar  		{background-color:#B3E7FF; border: 1 solid #FFFFFF;} 
+.smcalendar_table  	{border-top: 1 solid #B3E7FF; border-left: 1 solid #B3E7FF;} 
+.smcalendar_header 	{background-color:#EFEFEF ; font-family: "Tahoma" ;font-weight:bold; font-size:8pt; color: #01226F; text-align: center; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #B3E7FF; border-right: 1 solid #B3E7FF}
+.smcalendar_content  	{font-family: "Tahoma";color:#322E8C; text-align: center; background-color:#EFEFEF; font-size:8pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #B3E7FF; border-right: 1 solid #B3E7FF;cursor:hand}
+.smcalendar_last  	{font-family: "Tahoma";color:#7E7E7E; text-align: center; background-color:#EFEFEF; font-size:8pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #B3E7FF; border-right: 1 solid #B3E7FF; cursor:hand}
+.smcalendar_select  	{font-family: "Tahoma";color:#700035; text-weight:bold;text-align: center; background-color:#FEF68B; font-size:8pt ; border-bottom: 1 solid #B3E7FF; border-right: 1 solid #B3E7FF; cursor:hand}
+
+/* for Main.aspx */
+.tab {color: #000000; font-size:11px; cursor:hand;width:150px;padding-top:7px; text-align:center; cursor:pointer;border-right:1px solid #ffffff;}
+.activeTab {color: #ffffff;font-size:11px; cursor:hand;width:150px;padding-top:7px; text-align:center;border-right:1px solid #ffffff;}
+.overTab {color: #fdfcad;font-size:11px; cursor:hand;width:150px;padding-top:7px; text-align:center;border-right:1px solid #ffffff;}
+.ShowAppMenuOver { background-image:none;cursor:hand;height:24;width:31;padding-top:4px; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/demo/system/menu/images/iconShowAppMenuOver.png', sizingMethod='scale');}
+.ShowAppMenu { background-image:none;cursor:hand;height:24;width:31;padding-top:4px; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/demo/system/menu/images/iconShowAppMenu.png', sizingMethod='scale'); }
+.ShowPin { background-image:none;cursor:hand;height:24;width:31;padding-top:4px; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/demo/system/images/pinon.png', sizingMethod='scale'); }
+.ShowPinOver { background-image:none;cursor:hand;height:24;width:31;padding-top:4px; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/demo/system/images/pinon_over.png', sizingMethod='scale'); }
+.ShowPinOn { background-image:none;cursor:hand;height:24;width:31;padding-top:4px; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/demo/system/images/pinoff.png', sizingMethod='scale'); }
+.ShowPinOnOver { background-image:none;cursor:hand;height:24;width:31;padding-top:4px; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/demo/system/images/pinoff_over.png', sizingMethod='scale'); }
+#footer {position:absolute;top:0px;right:10px;}
+/*.footer {background-image:url(/demo/system/images/menutop/bg_footer.jpg);background-repeat:repeat-x;}*/
+.footer div{float:left;}
+
+.btn_left ul{list-style:none; margin:0; padding:0}
+.btn_left li {position:relative; float:left; margin-right:0px;height:20px;}
+.btn_left div.leftdiv{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-position:top left;width:12px;}
+.btn_left div.rightdiv{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-position:top right;left:-168px;width:12px;}
+.btn_left a.refresh{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705;padding:3 5 0 0;}
+.btn_left a.close{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:3 5 0 5;}
+.btn_left a.firebug{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:3 5 0 5;}
+.btn_left a.unpin{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:3 5 0 5;}
+.btn_left a.pin{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:3 5 0 5;}
+.btn_left a.left{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:3 5 0 5;}
+.btn_left a.right{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:3 5 0 5;}
+.btn_left a.dictionary{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:3 5 0 5;}
+.btn_left div.flag{float:left;background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;border-right:1px solid #237705; border-right:1px solid #237705;background-repeat:repeat-x;padding:4 5 0 5;}
+.btn_left a.logout{background-image:url(/demo/system/images/menutop/bg_mini_menu.jpg);height:20px;background-repeat:no-repeat;background-position:top;left:-20px;right:-20px;text-align:center;padding:3 0 0 5;}
+/* border-right:1px solid #237705;
+.btn_left a.firebug{background-image:url(/demo/system/images/menutop/btn_firebug.jpg);background-repeat:no-repeat;}
+.btn_left a.firebug:hover{background-image:url(/demo/system/images/menutop/btn_firebug_ov.jpg);background-repeat:no-repeat;}
+.btn_left a.refresh:hover{background-image:url(/demo/system/images/menutop/btn_refresh_ov.jpg);background-repeat:no-repeat;}
+.btn_left a.logout{background-image:url(/demo/system/images/menutop/btn_logout.jpg);background-repeat:no-repeat;}
+.btn_left a.logout:hover{background-image:url(/demo/system/images/menutop/btn_logout_ov.jpg);background-repeat:no-repeat;}
+.btn_left a.pin{background-image:url(/demo/system/images/menutop/btn_pin.jpg);background-repeat:no-repeat;}
+.btn_left a.pin:hover{background-image:url(/demo/system/images/menutop/btn_pin_ov.jpg);background-repeat:no-repeat;}
+.btn_left a.unpin{background-image:url(/demo/system/images/menutop/btn_unpin.jpg);background-repeat:no-repeat;}
+.btn_left a.unpin:hover{background-image:url(/demo/system/images/menutop/btn_unpin_ov.jpg);background-repeat:no-repeat;}
+.btn_left a.left{background-image:url(/demo/system/images/menutop/btn_left.jpg);background-repeat:no-repeat;}
+.btn_left a.left:hover{background-image:url(/demo/system/images/menutop/btn_left_ov.jpg);background-repeat:no-repeat;}
+.btn_left a.right{background-image:url(/demo/system/images/menutop/btn_right.jpg);background-repeat:no-repeat;}
+.btn_left a.right:hover{background-image:url(/demo/system/images/menutop/btn_right_ov.jpg);background-repeat:no-repeat;}
+.btn_left a.close{background-image:url(/demo/system/images/menutop/btn_close.jpg);background-repeat:no-repeat;}
+.btn_left a.close:hover{background-image:url(/demo/system/images/menutop/btn_close_ov.jpg);background-repeat:no-repeat;}
+*/
+.btn_left img.space{border:0px;width:50px;height:35px;}
+.navigator{background-image:url(/demo/system/menu/menudemo/natural-cross3.jpg);background-repeat:repeat-x;background-position:bottom;}

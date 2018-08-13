@@ -1,0 +1,273 @@
+﻿
+.Menu_Client_bg {
+  background-color: #E8E8E8;
+}
+
+.Menu_Client_child_bg {
+  background-color: #E8E8E8;
+}
+
+.Menu_Client_bg_left {
+  width: 8px;
+  background-color: #505050;
+}
+
+.Menu_Client_bg_right {
+  width: 8px;
+  background-color: #505050;
+}
+
+#Menu_Client {
+  font-family: tahoma, arial, helvetica, sans-serif;
+  font-size:	8pt;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+#Menu_Client table{
+  font-family: tahoma, arial, helvetica, sans-serif;
+  font-size: 8pt;
+  border: 0px none;
+  margin: 0px;
+  vertical-align: middle;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#Menu_Client table table tr.Normal{
+  height: 24px;
+  color: #343434;/*bigbutton.normal.png*/
+  background: url(../images/bgr_nomal.png) repeat-x;
+  background-color: #dee8f8;/* 292929*/
+  font-weight: normal;
+}
+
+#Menu_Client table table tr.Normal td img{
+  margin: 0px 6px 0px 4px;
+}
+
+#Menu_Client table table tr.Opened {
+  background: url(../images/bigbutton.opened.png) repeat-x;
+  background-color: #e8e8e8;
+  color: #333333;
+  font-weight: bold;
+}
+
+#Menu_Client table table tr.Hover {
+  background: url(../images/bgr_highlight.png) repeat-x;/*bigbutton.rollover.png*/
+  background-color: #dbdbdb;
+  color: #333333;
+  font-weight: bold;
+}
+
+#Menu_Client table table tr.Selected {
+  background: url(../images/bigbutton.selected.png) repeat-x;
+  background-color: #e8e8e8;
+  color: #333333;
+  font-weight: bold;
+}
+
+#Menu_Client table table tr.Pressed {
+  background: url(../images/bigbutton.pressed.png) repeat-x;
+  background-color: #dbdbdb;
+  color: #333333;
+  font-weight: bold;
+}
+
+#Menu_Client table table tr.Focused {
+  background: url(../images/bigbutton.focused.png) repeat-x;
+  color: #333333;
+  font-weight: bold;
+}
+
+
+#Menu_Client table table table tr.Normal {
+  height: 20px;
+  color: #404040;/*menu text color*/
+  background: none;
+  background-color: #E8E8E8;/*the second menu lavel background color*/
+  font-weight: normal;
+}
+
+#Menu_Client table table table tr.Normal td img{
+  margin: 0px 6px 0px 9px;
+}
+
+#Menu_Client table table table tr.Opened {
+  background: none;
+  background-color: #E8E8E8;
+  color: #404040;
+  font-weight: normal;
+}
+
+#Menu_Client table table table tr.Hover {
+  background: none;
+  background-color: #D4D4D4;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table tr.Selected {
+  background: none;
+  background-color: #BDBDBD;
+  color: #404040;
+  font-weight: normal;
+}
+
+
+#Menu_Client table table table tr.Pressed {
+  background: none;
+  background-color: #9B9B9B;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table tr.Focused {
+  background: none;
+  background: url(../images/smallbutton.focused.png) repeat-x;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table tr.Normal {
+  height: 20px;
+}
+
+#Menu_Client table table table table tr.Normal td img{
+  margin: 0px 6px 0px 18px;
+}
+
+
+#Menu_Client table table table table tr.Opened {
+  background: none;
+  background-color: #E8E8E8;
+  color: #404040;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table tr.Hover {
+  background: none;
+  background-color: #D4D4D4;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table tr.Selected {
+  background: none;
+  background-color: #BDBDBD;
+  color: #404040;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table tr.Pressed {
+  background: none;
+  background-color: #9B9B9B;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table tr.Focused {
+  background: none;
+  background: url(../images/smallbutton.focused.png) repeat-x;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table tr.Normal {
+  height: 20px;
+}
+
+#Menu_Client table table table table table tr.Normal td img{
+  margin: 0px 6px 0px 28px;
+}
+
+#Menu_Client table table table table table tr.Opened {
+  background: none;
+  background-color: #E8E8E8;
+  color: #404040;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table tr.Hover {
+  background: none;
+  background-color: #D4D4D4;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table tr.Selected {
+  background: none;
+  background-color: #BDBDBD;
+  color: #404040;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table tr.Pressed {
+  background: none;
+  background-color: #9B9B9B;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table tr.Focused {
+  background: none;
+  background: url(../images/smallbutton.focused.png) repeat-x;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table table tr.Normal {
+  height: 20px;
+}
+
+#Menu_Client table table table table table table tr.Normal td img{
+  margin: 0px 6px 0px 38px;
+}
+
+#Menu_Client table table table table table table tr.Opened {
+  background: none;
+  background-color: #E8E8E8;
+  color: #404040;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table table tr.Hover {
+  background: none;
+  background-color: #D4D4D4;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table table tr.Selected {
+  background: none;
+  background-color: #BDBDBD;
+  color: #404040;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table table tr.Pressed {
+  background: none;
+  background-color: #9B9B9B;
+  color: #333333;
+  font-weight: normal;
+}
+
+#Menu_Client table table table table table table tr.Focused {
+  background: none;
+  background: url(../images/smallbutton.focused.png) repeat-x;
+  color: #333333;
+  font-weight: normal;
+}
+
+.Menu_Client_Button_BigIcon {
+  width: 20px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+.Menu_Client_Button_Icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+

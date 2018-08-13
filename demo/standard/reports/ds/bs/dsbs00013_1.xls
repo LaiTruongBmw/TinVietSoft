@@ -1,0 +1,512 @@
+﻿<% Response.ContentType = "application/x-excel" %>
+
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:x="urn:schemas-microsoft-com:office:excel"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<!-- #include file="../db1.inc"  -->
+
+<%ConnectDBApp%>
+
+<%
+	dim p_date_type , p_from_dt , p_to_dt , p_slip_no , p_item , sSQL , wi , rs1
+	
+	p_date_type = request("idList") 
+	p_from_dt = request("dtFrom") 
+	p_to_dt = request("dtTo") 
+	p_slip_no = request("txtOrderNo") 
+	p_item = request("txtItem") 
+  	         
+
+
+SQL = " "
+SQL = SQL & "SELECT   a.order_dt, sf_get_buspartner_name (a.bill_to_pk) bill_to, "
+SQL = SQL & "         b.so_item_no, "
+SQL = SQL & "         comm.sf_get_codename ('SAAB0070', a.sale_type) sale_type, "
+SQL = SQL & "         comm.sf_get_codename ('SAAB0090', a.order_type) order_type, "
+SQL = SQL & "         c.stitem_code, sale.sf_get_dsbs00010_1 ('PRODUCT SPEC NAME', b.tco_item_pk) item , "
+SQL = SQL & "         (SELECT MAX (grp_nm) "
+SQL = SQL & "            FROM comm.tco_itemgrp "
+SQL = SQL & "           WHERE del_if = 0 "
+SQL = SQL & "             AND pk IN (SELECT tco_itemgrp_pk "
+SQL = SQL & "                          FROM comm.tco_item "
+SQL = SQL & "                         WHERE del_if = 0 AND pk = b.tco_item_pk)) group_name, "
+SQL = SQL & "         b.att05  pattern, "
+SQL = SQL & "         sf_get_dsbs00010_1 ('PROD COLOR', b.tco_item_pk) surface_color, "
+SQL = SQL & "         sale.sf_get_dsbs00010_1 ('THICKNESS', b.tco_item_pk) thickness, "
+SQL = SQL & "         sale.sf_get_dsbs00010_1 ('WIDTH', b.tco_item_pk) width, b.st_ord_qty, "
+SQL = SQL & "         b.item_unit, b.ord_qty, '' pc, "
+SQL = SQL & "         sale.sf_get_dsbs00010_1 ('BACK COLOR', b.tco_item_pk) back_color, "
+SQL = SQL & "         b.att11 USAGE, comm.sf_get_codename ('SAAB0160', b.att07) brand, "
+SQL = SQL & "         b.att08 model_name, b.att10 stage, b.att06 s_c_swatch, b.att03 note, "
+SQL = SQL & "         a.sale_rep, b.item_etd, b.item_eta pi_etd, '' sale_team, "
+SQL = SQL & "         comm.sf_get_partnerloc_nm (a.deli_loc_pk) deli_loc, "
+SQL = SQL & "         comm.sf_get_codename ('COAB0080', a.dest_nation) dest_nation, "
+SQL = SQL & "         a.po_no master_po_no, b.att02 po_detials_no, "
+SQL = SQL & "         comm.sf_get_codename ('ACAB0110', a.ccy_unit) ccy_unit, b.unit_price, "
+SQL = SQL & "         b.amount, '' deli_req_qty, '' output_qty, '' recall_qty, "
+SQL = SQL & "         '' consignment_qty, '' original_qty, '' reserved_qty, "
+SQL = SQL & "         '' stock_output_qty, a.exchange_rate, a.att01 vat_yn, b.vat_rate, "
+SQL = SQL & "         comm.sf_get_codename ('SAAB0030', a.deli_method) deli_method, "
+SQL = SQL & "         '' dealing_type, b.cust_item_nm cust_item_no, '' collection_type, "
+SQL = SQL & "         b.att09 style_no, '' line_number, '' inspection_m, '' inspection_d, "
+SQL = SQL & "         '' shipment_m, '' shipment_d, '' order_revision, b.crt_dt "
+SQL = SQL & "    FROM sale.tsa_saleorder a, "
+SQL = SQL & "         sale.tsa_saleorderd b, "
+SQL = SQL & "         (SELECT b1.tco_stitem_pk, b1.pk tco_item_pk, "
+SQL = SQL & "                 a1.item_code stitem_code, a1.item_name stitem_name "
+SQL = SQL & "            FROM comm.tco_stitem a1, comm.tco_item b1 "
+SQL = SQL & "           WHERE a1.del_if = 0 AND b1.del_if = 0 AND a1.pk = b1.tco_stitem_pk) c "
+    SQL = SQL & "   WHERE a.del_if = 0 "
+    SQL = SQL & "     AND b.del_if = 0 "
+    SQL = SQL & "     AND b.ord_item_status = '02' "
+    SQL = SQL & "     AND a.pk = b.tsa_saleorder_pk "
+    SQL = SQL & "     AND b.tco_item_pk = c.tco_item_pk(+) "
+    SQL = SQL & "     AND DECODE ('" & p_date_type & "', 'O', order_dt, etd) BETWEEN '" & p_from_dt & "' AND '" & p_to_dt & "' "
+    SQL = SQL & "     AND slip_no LIKE '%' || UPPER ('" & p_slip_no & "') || '%' "
+    SQL = SQL & "     AND NVL (sale.sf_get_dsbs00013_1 ('%', b.tco_item_pk), '%') LIKE "
+    SQL = SQL & "                                                          '%' || '" & p_item & "' || '%' "
+    SQL = SQL & " ORDER BY a.slip_no, b.so_item_no "  
+
+
+	TableReadOpen rs1, SQL
+
+
+
+			
+%>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=UTF-8">
+<meta name=ProgId content=Excel.Sheet>
+<meta name=Generator content="Microsoft Excel 11">
+<link rel=File-List href="dsbs00013_files/filelist.xml">
+<link rel=Edit-Time-Data href="dsbs00013_files/editdata.mso">
+<link rel=OLE-Object-Data href="dsbs00013_files/oledata.mso">
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Vinagenuwin</o:Author>
+  <o:LastAuthor>Vinagenuwin</o:LastAuthor>
+  <o:Created>2008-04-10T09:35:32Z</o:Created>
+  <o:LastSaved>2008-04-10T10:02:35Z</o:LastSaved>
+  <o:Company>Vinagenuwin</o:Company>
+  <o:Version>11.6360</o:Version>
+ </o:DocumentProperties>
+ <o:OfficeDocumentSettings>
+  <o:DownloadComponents/>
+  <o:LocationOfComponents HRef="file:///\\192.168.1.6\everybody\MS%20OFFICES\OFFICE11%20(E)\"/>
+ </o:OfficeDocumentSettings>
+</xml><![endif]-->
+<style>
+<!--table
+	{mso-displayed-decimal-separator:"\.";
+	mso-displayed-thousand-separator:"\,";}
+@page
+	{margin:1.0in .75in 1.0in .75in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;}
+tr
+	{mso-height-source:auto;}
+col
+	{mso-width-source:auto;}
+br
+	{mso-data-placement:same-cell;}
+.style0
+	{mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	white-space:nowrap;
+	mso-rotate:0;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	border:none;
+	mso-protection:locked visible;
+	mso-style-name:Normal;
+	mso-style-id:0;}
+td
+	{mso-style-parent:style0;
+	padding-top:1px;
+	padding-right:1px;
+	padding-left:1px;
+	mso-ignore:padding;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	border:none;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	mso-protection:locked visible;
+	white-space:nowrap;
+	mso-rotate:0;}
+.xl24
+	{mso-style-parent:style0;
+	border:.5pt solid windowtext;}
+.xl25
+	{mso-style-parent:style0;
+	border-top:.5pt solid windowtext;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl26
+	{mso-style-parent:style0;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:.5pt solid windowtext;}
+.xl27
+	{mso-style-parent:style0;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl28
+	{mso-style-parent:style0;
+	color:#333399;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	background:#CCFFCC;
+	mso-pattern:auto none;}
+.xl29
+	{mso-style-parent:style0;
+	color:#333399;
+	font-weight:700;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border:.5pt solid windowtext;
+	background:#CCFFCC;
+	mso-pattern:auto none;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <x:ExcelWorkbook>
+  <x:ExcelWorksheets>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet1</x:Name>
+    <x:WorksheetOptions>
+     <x:Print>
+      <x:ValidPrinterInfo/>
+      <x:HorizontalResolution>300</x:HorizontalResolution>
+      <x:VerticalResolution>300</x:VerticalResolution>
+     </x:Print>
+     <x:Selected/>
+     <x:Panes>
+      <x:Pane>
+       <x:Number>3</x:Number>
+       <x:ActiveRow>26</x:ActiveRow>
+       <x:ActiveCol>3</x:ActiveCol>
+      </x:Pane>
+     </x:Panes>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet2</x:Name>
+    <x:WorksheetOptions>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet3</x:Name>
+    <x:WorksheetOptions>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+  </x:ExcelWorksheets>
+  <x:WindowHeight>4650</x:WindowHeight>
+  <x:WindowWidth>11355</x:WindowWidth>
+  <x:WindowTopX>825</x:WindowTopX>
+  <x:WindowTopY>3825</x:WindowTopY>
+  <x:ProtectStructure>False</x:ProtectStructure>
+  <x:ProtectWindows>False</x:ProtectWindows>
+ </x:ExcelWorkbook>
+</xml><![endif]-->
+</head>
+
+<body link=blue vlink=purple>
+
+<table x:str border=0 cellpadding=0 cellspacing=0 width=4800 style='border-collapse:
+ collapse;table-layout:fixed;width:3600pt'>
+ <col width=120 span=55 style='mso-width-source:userset;mso-width-alt:4388;
+ width:90pt'>
+ <tr class=xl28 height=36 style='mso-height-source:userset;height:27.0pt'>
+  <td height=36 class=xl29 width=120 style='height:27.0pt;width:90pt'>OrderDate</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Order Cust</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Production No</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Production Type</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Order Type</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Item Code</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Item Name</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Item Type</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Pattern</td> 
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>S/C</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Thick</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Width</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Quantity</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Unit</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Quantity(M)</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>P/C</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>DW B/C</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Use Kind</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Brand</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Model</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Stage</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Swatch</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Note</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Issuer</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>ETD</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Delivery Req Date</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Sale Team</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Delivery Cust</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Destination</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Master PO No</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Detail PO No</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Currency</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Unit Price</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Total Price</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Delivery Req. Qty</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Output Qty</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Recall Qty</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Consignment Qty</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>ORIGINAL 
+Q'TY</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Reserved Qty(M)</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Stock Output Qty(M)</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Currency Rate</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>VAT YN</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>VAT Rate</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Delivery Way</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Dealing Type</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Customer Item#</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Collection Type</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Style Number</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Line Number</td>
+
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>Inspection M</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>inspection D</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>SHIPMENT M</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>SHIPMENT D</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'>ORDER REVISION</td>
+  <td class=xl29 width=120 style='border-left:none;width:90pt'></td>
+ </tr>
+ 
+ <%
+    while not rs1.EOF
+ %>
+ 
+ <tr height=20 style='mso-height-source:userset;height:15.0pt'>
+  <td height=20 class=xl24 style='height:15.0pt;border-top:none'><%=rs1(0)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(1)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(2)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(3)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(4)%></td>
+  
+  <td class=xl25 style='border-top:none'><%=rs1(5)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(6)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(7)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(8)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(9)%></td>
+  
+  <td class=xl25 style='border-top:none'x:num><%=rs1(10)%></td>
+  <td class=xl25 style='border-top:none'x:num><%=rs1(11)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"'x:num><%=rs1(12)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(13)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"'x:num><%=rs1(14)%></td>
+  
+  <td class=xl25 style='border-top:none'><%=rs1(15)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(16)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(17)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(18)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(19)%></td>
+  
+  <td class=xl25 style='border-top:none'><%=rs1(20)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(21)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(22)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(23)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(24)%></td>
+  
+  <td class=xl25 style='border-top:none'><%=rs1(25)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(26)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(27)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(28)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(29)%></td>
+  
+  <td class=xl25 style='border-top:none'><%=rs1(30)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(31)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(32)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(33)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(34)%></td>
+  
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(35)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(36)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(37)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(38)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(39)%></td>
+  
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0.00"' x:num><%=rs1(40)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0"' x:num><%=rs1(41)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(42)%></td>
+  <td class=xl25 style='border-top:none;mso-number-format:"\#\,\#\#0"' x:num><%=rs1(43)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(44)%></td>
+  
+  <td class=xl25 style='border-top:none'><%=rs1(45)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(46)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(47)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(48)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(49)%></td>
+  
+  <td class=xl25 style='border-top:none'><%=rs1(50)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(51)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(52)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(53)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(54)%></td>
+  <td class=xl25 style='border-top:none'><%=rs1(55)%></td>
+ </tr>
+ 
+ <%
+        rs1.movenext	
+	wend
+ %>
+ <tr height=20 style='mso-height-source:userset;height:15.0pt'>
+  <td height=20 class=xl26 style='height:15.0pt'>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+  <td class=xl27>&nbsp;</td>
+ </tr>
+ <![if supportMisalignedColumns]>
+ <tr height=0 style='display:none'>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+  <td width=120 style='width:90pt'></td>
+ </tr>
+ <![endif]>
+</table>
+
+</body>
+
+<%CloseDB%>
+
+</html>

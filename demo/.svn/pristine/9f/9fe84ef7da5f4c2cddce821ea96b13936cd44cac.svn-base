@@ -1,0 +1,862 @@
+
+
+<PUBLIC:COMPONENT tagName="treeview" lightweight = true  >
+
+	<public:method name="GetData" >
+	<public:method name="SetData" >
+	<public:method name="SetDataText" >
+	<public:method name="GetCurrentNode" >
+	<public:method name="GetParentNode" >
+	<public:method name="GetFirstNode" >
+	<public:method name="FindNode" >
+	<public:method name="RefreshNode" >
+	<public:method name="SelectNode" >
+
+	<public:event id="onclicknode"  name="onclicknode">
+    <public:event id="onNodeDrop" name="onnodedrop">
+	
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+
+	<public:method name="CheckDelay" >
+	
+</PUBLIC:COMPONENT>
+
+
+<SCRIPT Language="Javascript">
+
+
+
+var imgNone =0;
+var imgOpen = 1;
+var imgClose = 2;
+
+var path = System.SysImgPath;
+var imgList = new Array(path + "/tree/vline01.gif" , path + "/tree/plus01.gif" , path + "/tree/minus01.gif"  
+			,path + "/tree/vline02.gif" ,path + "/tree/plus02.gif" , path + "/tree/minus02.gif"  );
+var innerString  ;
+
+
+var nodeRoot = null;
+var nodeDownload = null;
+var nodeDefault = null;
+var nodeDefaultChild = null;
+
+var pURL = null;
+
+
+var currentNode = null;
+
+// when refreshed, Search currentnode again.
+var latecurrentid = null;
+var latecurrentitem = null;
+
+var oldWeight;
+var oldColor;
+
+// for Drag & Drop
+var nodeDragIcon = null;
+var bDragMode = false;
+
+// ------------------------------------------------------------------------------------//
+// Public Method
+// ------------------------------------------------------------------------------------//
+
+var modifyList = new Array() ;
+function GetData()
+{
+	var s = "";	
+	for ( var i = 0 ;  i< modifyList.length ; i++ )
+	{
+		if ( i > 0 ) s += RDelimiter;
+		
+		s += modifyList[i][0] + CDelimiter + modifyList[i][1] + CDelimiter + "16";
+		
+	}
+	
+	return s;
+}
+
+function ModifyData( oid , poid )
+{
+	for ( var i = 0 ;  i< modifyList.length ; i++ )
+	{
+		if ( modifyList[i][0] == oid ) 
+		{
+			modifyList[i][1] = poid;
+			return;
+		} 
+	}
+	
+	var len = modifyList.length  ;
+	modifyList[ len ] = new Array();
+	
+	modifyList[len][0] = oid;
+	modifyList[len][1] = poid;
+	
+}
+
+function SetData( data )
+{
+	if ( data )
+	{
+		modifyList = new Array();
+		var Data = new Array();
+		
+		
+		var firstlevel;
+
+		for ( var x = 0 ;  x < data.childNodes.length ; x ++ )
+		{
+			var row = data.childNodes(x).text ;
+			var arr = row.split(CDelimiter)
+			
+			if ( x == 0 )
+			{
+				firstlevel = arr[0];
+				
+			}
+			
+			arr[0] -= firstlevel;
+			AddList( Data , arr );
+			
+		}
+
+		var Sibling = new Array();
+		var oldlevel = -999;
+		var s = "";
+		
+		nodeRoot.innerHTML = "";
+		
+		var pDiv = nodeRoot;
+		
+		for ( var x = 0 ;  x < Data.length ; x ++ )
+		{
+			
+			var level = Data[x][0];
+			var name = Data[x][1];
+			var pk = Data[x][2];
+			var img = Data[x][3];
+			var bShow = !(Data[x][4] == 0);
+			
+					
+			if ( oldlevel != -999 )
+			{
+				
+				for ( var i = level ; i <=oldlevel ; i++ )
+				{
+					// s+= "</div></div>";	
+					
+					pDiv = pDiv.parentNode.parentNode;
+				}
+				
+			}
+
+			var bSibling = false;
+			var bChild = false;
+			for ( var y = x+1 ; y < Data.length ; y ++ )
+			{
+				if ( Data[y][0] < level ) 
+					break;
+				if ( Data[y][0] == level )
+				{
+					bSibling = true;
+					break;
+				}
+				bChild = true;
+			}
+			
+			Sibling[ level ] = bSibling;
+
+
+			var is = "";
+
+			for ( var j = 0 ; j < level  ; j++)
+			{
+			
+				if ( !Sibling[j] )
+					is += "<img align=\"absMiddle\"  border=0 src=\"" + System.SysImgPath + "/tree/none.gif\">" ;
+				else
+					is += "<img align=\"absMiddle\"  border=0 src=\"" + System.SysImgPath + "/tree/vline.gif\">" ;
+			} 
+
+
+			var imgid = imgOpen;
+			var imgurl;
+			if ( ! bChild  ) 
+				imgid = imgNone;
+			else if ( bShow )
+			{
+				imgid = imgClose;
+			} 
+			 
+	
+			if ( !bSibling )
+				imgurl = imgList[ imgid ];
+			else
+				imgurl = imgList[ imgid + 3 ];
+
+
+			is += "<img types=\"openclose\" align=\"absMiddle\" style=\"cursor:hand\" src=\"" + imgurl  + "\" border=0 >";
+			is += "<span><img align=\"absMiddle\" style=\"cursor:hand\" src=\"" + System.GetAppTreeImage( img )   + "\" border=0 >&nbsp;";
+			var _text = name;
+			name =  name + "</span>";
+
+			var sRead = "yes";
+			if ( !bChild ) 
+				sRead ="none";
+				
+			
+			
+			
+			if ( !bSibling )
+				s ="<div id='nodes' read='" + sRead +"' depth='" +  level + "' img='" +  img + "' oid='" + pk +"' text='"+ _text +"' lastnode=true ><nobr style='cursor:hand' internals='yes' >" + is +  name +  "</nobr>";
+			else
+				s ="<div id='nodes' read='" + sRead +"' depth='" +  level + "' img='" +  img + "' oid='" + pk +"' text='"+ _text +"' ><nobr style='cursor:hand'  internals='yes' >" + is +  name +  "</nobr>";
+			
+			
+			if ( !bChild || !bShow )
+				s +="<div style='display:none'></div></div>";
+			else
+				s+="<div></div></div>";
+
+			
+            
+			pDiv.insertAdjacentHTML( "beforeEnd" , s);
+
+			pDiv = pDiv.childNodes( pDiv.childNodes.length -1 );
+			pDiv = pDiv.childNodes( pDiv.childNodes.length -1 );
+			
+			oldlevel = level;
+		}
+		NavigateRecursive( nodeRoot );		
+	} 	
+	//alert(nodeRoot.innerHTML)
+}
+
+function NavigateRecursive( node )
+{
+	if ( !node ) return;
+	if ( node.childNodes.length == 0 ) return;
+	
+	for ( var i = 0 ; i < node.childNodes.length ; i++ )
+	{
+		var nd = node.childNodes(i);
+		if(nd.childNodes(0).childNodes.length == 0) continue;
+		var namend = nd.childNodes(0).childNodes( nd.childNodes(0).childNodes.length -1 ) ;
+
+		namend.attachEvent( "onmousedown" , NodeDown );
+		namend.attachEvent( "onmousemove" , NodeMove );
+		namend.attachEvent( "onmouseup" , NodeUp );
+		
+		NavigateRecursive( nd.childNodes(1) );	
+	}
+	return;
+}
+
+function SetDataText( s )
+{
+}
+function SetDataDownload( s )
+{
+	nodeCanvas = nodeRoot;
+	nodeDownload.innerHTML = s;
+	Parse( nodeCanvas , nodeDownload );	
+}
+
+function GetCurrentNode()
+{
+
+	if ( currentNode != null  )
+	{
+	
+		if ( currentNode.childNodes.length == 0 )
+			currentNode = null;
+	}
+
+	return currentNode ;
+}
+
+
+function FindNode( id , item )
+{
+	var list = element.all("nodes");
+
+	
+	for ( i = 0 ; i< list.length ; i ++)
+	{
+		if ( list[i].oid == id && list[i].item == item )
+			return list[i];
+	}
+	return null;
+	
+}
+function SelectNode(id)
+{
+    var node = FindNodeByID(id);
+    
+    if(node!= null)
+    {
+        SetCurrentNode(node);
+        if ( currentNode.clicktype == "openclose" )
+  		{
+  			ToggleChild( currentNode );
+  		} 
+  		
+		var evObj = createEventObject();
+		onclicknode.fire(evObj);
+    }
+}
+function FindNodeByID( id )
+{
+	var list = element.all("nodes");
+	//window.clipboardData.setData( "Text", element.outerHTML);
+	for ( i = 0 ; i< list.length ; i ++)
+	{
+		if ( list[i].oid == id )
+			return list[i];
+	}
+	return null;
+	
+}
+function RefreshNode( nd )
+{
+
+	if ( currentNode )
+	{
+		latecurrentid = currentNode.oid ;
+		latecurrentitem = currentNode.item ;
+	}
+	
+	nd.childNodes( nd.childNodes.length -1 ).innerHTML =  "";
+	
+	nd.read = "no";
+	ToggleChild( nd );
+}	
+
+function GetParentNode( nd )
+{
+	if ( nd == nodeRoot ) return null;
+	else
+		return nd.parentNode.parentNode;
+}
+
+function GetFirstNode()
+{
+	return nodeRoot.childNodes(0);
+}
+function SetImage( node , imgid )
+{
+	if (!( node.lastnode ) )
+		imgid += 3;
+		
+	node.childNodes(0).childNodes( node.depth ).src = imgList[ imgid ] ;
+}
+
+// ------------------------------------------------------------------------------------//
+// Internal Util Functions
+// ------------------------------------------------------------------------------------//
+
+function GetParentNodeFromCanvas( nd )
+{
+	if ( nd == nodeRoot ) return null;
+	else
+		return nd.parentNode;
+}
+
+function SetCurrentNode( node )
+{
+	var p ;
+
+	if (currentNode == node ) return;
+	
+	//reset node to normal
+	if ( currentNode != null  )
+	{
+	
+		if ( currentNode.childNodes.length >0 )
+		{
+		    p = currentNode.childNodes(0);
+			p.style.color = oldColor;
+			p.style.fontWeight = "normal";	
+		}
+	}
+	
+	currentNode = node ;
+	//set node to acive (selected node)
+	if ( currentNode ){
+		p = currentNode.childNodes(0);
+		oldColor = p.style.color;
+		oldWeight = p.style.fontWeight;
+		p.style.fontWeight = "bold";
+		//window.clipboardData.setData( "Text", p.outerHTML);
+		//alert(p.outerHTML);
+	
+	}
+	
+	
+}
+
+function ToggleChild( node )
+{
+	var e = node.childNodes(0).childNodes(0);
+	
+	
+	if ( node.read == "none" ) return;
+
+	if ( node.childNodes( node.childNodes.length -1 ).style.display != "none" )
+	{
+		node.childNodes( node.childNodes.length -1 ).style.display="none";
+		SetImage( node , imgOpen );
+	} else
+	{
+		// node.childNodes( node.childNodes.length -1 ).style.display = "block";
+		
+		node.childNodes( node.childNodes.length -1 ).style.display="block";
+		SetImage( node , imgClose );
+	}
+
+}
+
+// ------------------------------------------------------------------------------------//
+
+
+function fnOnClick()
+{
+  var e = window.event.srcElement;
+
+  if (e.types == "openclose" && e.parentNode.parentNode.read ) 
+  {
+		ToggleChild( e.parentNode.parentNode ); 
+
+  } else
+  {
+  	while ( e && e != element && e.internals != "yes" )
+  		e = e.parentNode;
+
+	if ( !e ) return;
+  		
+  	if ( e.internals == "yes")
+  	{
+  		SetCurrentNode( e.parentNode );
+  		
+  		
+  		if ( currentNode.clicktype == "openclose" )
+  		{
+  			ToggleChild( currentNode );
+  		} 
+  		
+  		
+		var evObj = createEventObject();
+		onclicknode.fire(evObj);
+  	}
+  }
+  
+}
+// ------------------------------------------------------------------------------------//
+//
+//	Constructor
+//
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) return;
+	element.print = true;
+
+	innerString = element.innerHTML;
+
+	element.innerHTML = 
+	  '<div class="tree_canvas" onselectstart="return false"></div>'  
+	  +  '<div  STYLE="behavior:url(#default#download);color:white;display:none" ></div>'
+	  +  '<div id="idnode" class="tree_node" ></div><div class="tree_child" ></div>'
+	  +  '<div style="position:absolute;display:none"></div>' ;
+	
+	nodeRoot = element.childNodes(0);
+	nodeDownload = element.childNodes(1);
+	nodeDefault = element.childNodes(2);
+	nodeDefaultChild = element.childNodes(3);
+	
+	nodeDragIcon = element.childNodes(4);
+	
+	if ( typeof ( element.dragmode ) != "undefined" ) 
+	{
+		bDragMode = true;
+		element.style.position = "relative";
+	}else {
+		bDragMode = false;
+	}
+
+	element.attachEvent("onclick", fnOnClick)
+	
+	if ( innerString.length >0 )
+	{
+		 SetDataDownload( innerString );
+	} else
+	if ( pURL )
+		fnPutURL ( pURL );
+	
+}
+
+
+//
+// For Drag & Drop
+//
+
+var bDrag = false;
+var bMouseDown = false;
+var bDragElement = null;
+
+function NodeDown()
+{
+	if ( bDrag )
+	{
+		bDrag = false;
+		TargetElement( null );
+		dragElement .releaseCapture();
+		nodeDragIcon.style.display ="none";
+	}
+	
+	bMouseDown = true;
+}
+
+function NodeUp()
+{
+	bMouseDown = false;
+	
+	if ( bDrag )
+	{
+		bDrag = false;
+		nodeDragIcon.style.display ="none";
+		dragElement .releaseCapture();
+		var targetElement = selElement;
+		TargetElement( null );
+		
+		
+		if ( targetElement )
+		{
+			var from = dragElement.parentNode.parentNode;
+			var to = targetElement.parentNode.parentNode.childNodes(1);
+
+			ModifyData( from.oid , targetElement.parentNode.parentNode.oid );
+			
+			var pfrom = from.parentNode.parentNode;
+			var pto = targetElement.parentNode.parentNode;
+			
+			var oDiv = window.document.createElement("DIV");
+			oDiv.innerHTML = "123123";
+			to.appendChild( oDiv );
+			oDiv.swapNode( from );
+			oDiv.removeNode( true );
+			
+			
+			var level = GetLevel( pfrom );			
+			
+			RefreshIcon( pfrom , level);
+			
+			level = GetLevel( pto );			
+			
+			RefreshIcon( pto , level);
+			
+		}
+		var evObj = createEventObject()
+	  onNodeDrop.fire(evObj);
+	}
+	
+
+
+}
+
+
+var Sibling = new Array();
+
+function GetLevel( pNode )
+{
+	if (  pNode == element ) return -1;
+	var level = GetLevel( pNode.parentNode.parentNode ) + 1;
+	
+	if ( pNode.lastnode ) 
+		Sibling[level] = false;
+	else
+		Sibling[level] = true;
+	
+	return level;
+}
+
+function RefreshIcon( pNode , level )
+{
+	
+	var bCorrect = pNode.childNodes(0).childNodes.length == level  + 2 ;
+	var bChild = pNode.childNodes(1).childNodes.length > 0 ;
+	var bShow = pNode.childNodes(1).style.display != "none";
+	var name = pNode.childNodes(0).childNodes( pNode.childNodes(0).childNodes.length-1).outerHTML ;
+	var bSibling = Sibling[level];
+
+	var childNodes;
+	if ( level >= 0 )
+	{
+	
+		var is = "";
+		for ( var j = 0 ; j < level  ; j++)
+		{
+		
+			if ( !Sibling[j] )
+				is += "<img align=\"absMiddle\"  border=0 src=\"" + System.SysImgPath + "/tree/none.gif\">" ;
+			else
+				is += "<img align=\"absMiddle\"  border=0 src=\"" + System.SysImgPath + "/tree/vline.gif\">" ;
+		} 
+	
+		var imgid = imgOpen;
+		var imgurl;
+		if ( ! bChild  ) 
+			imgid = imgNone;
+		else if ( bShow )
+		{
+			imgid = imgClose;
+		} 
+		 
+	
+		if ( !bSibling )
+			imgurl = imgList[ imgid ];
+		else
+			imgurl = imgList[ imgid + 3 ];
+	
+	
+		
+		is += "<img types=\"openclose\" align=\"absMiddle\" style=\"cursor:hand\" src=\"" + imgurl  + "\" border=0 >";
+		is += name;
+	
+		pNode.childNodes(0).innerHTML = is;
+		var namend = pNode.childNodes(0).childNodes( pNode.childNodes(0).childNodes.length -1 ) ;
+		namend.attachEvent( "onmousedown" , NodeDown );
+		namend.attachEvent( "onmousemove" , NodeMove );
+		namend.attachEvent( "onmouseup" , NodeUp );
+	
+		if ( !bChild )
+		{
+			pNode.read = "none";
+			pNode.childNodes(1).style.display = "none";
+		}
+		else
+			pNode.read = "yes";
+		
+		if ( !bSibling )
+			pNode.lastnode = true;
+		else
+			pNode.lastnode = false;
+		
+		pNode.depth = level;
+	
+		childNodes = pNode.childNodes(1).childNodes;
+	} else
+		childNodes = pNode.childNodes(0).childNodes;
+	
+	
+	var childLen = childNodes.length ;
+	for ( var i = 0 ; i < childLen ; i++ )
+	{
+		Sibling[level + 1] = !( i == childLen -1 );
+		
+		
+		RefreshIcon( childNodes(i) , level + 1 );
+	}
+	
+
+}
+
+
+var mx , my;
+var selElement = null;
+var varElement = null;
+
+function CheckDelay()
+{
+	if ( selElement == varElement )
+	{
+		var nd = varElement.parentNode.parentNode;
+		
+		if ( 	nd.childNodes( nd.childNodes.length -1 ).style.display == "none" )
+		{
+			ToggleChild( nd ); 		
+		}
+	}
+	varElement = null;
+}
+
+function TargetElement( t )
+{
+
+	if ( selElement )
+	{
+		if ( selElement != t )
+			selElement.style.backgroundColor = "";
+	} 
+	
+	selElement = t;
+	if ( selElement )
+	{
+		if ( !varElement )
+		{
+			varElement = selElement;
+			//alert( "document.all('" + element.id + "').CheckDelay()"  );
+			setTimeout( "document.all('" + element.id + "').CheckDelay()" , 300 );
+		}
+		selElement.style.backgroundColor = "yellow";
+	}
+	
+}
+
+function NodeMove()
+{
+	if (bDragMode) {
+		if  ( !bDrag )
+		{
+			if ( bMouseDown ) 
+			{
+				bDrag = true;
+				FindPos( event.srcElement );
+				nodeDragIcon.innerHTML = event.srcElement.innerHTML ;
+				nodeDragIcon.style.display ="";
+				dragElement = event.srcElement;
+				
+				while ( dragElement.tagName != "SPAN" ) dragElement = dragElement.parentNode;
+				
+				dragElement .setCapture();
+				TargetElement( null );
+				mx = event.clientX-nodeDragIcon.offsetLeft;
+				my = event.clientY-nodeDragIcon.offsetTop;
+				
+			}
+		} else
+		{
+		
+			nodeDragIcon.style.left = event.clientX - mx;
+			nodeDragIcon.style.top = event.clientY -my;
+			
+			if ( !SearchTarget( nodeRoot , event.clientX - mx + nodeDragIcon.offsetWidth /2 , event.clientY -my + nodeDragIcon.offsetHeight / 2 ))
+				TargetElement( null );
+		
+		}
+	} //end if bDragMode
+}
+
+function SearchTarget( node , x , y )
+{
+	if ( !node ) return;
+	if ( node.childNodes.length == 0 ) return;
+	if ( node.style.display == "none" ) return;
+	
+	for ( var i = 0 ; i < node.childNodes.length ; i++ )
+	{
+		var nd = node.childNodes(i);
+		// alert( i + ":" + nd.outerHTML );
+		var namend = nd.childNodes(0).childNodes( nd.childNodes(0).childNodes.length -1 ) ;
+
+
+		
+		if (( namend.offsetLeft < x ) && ( namend.offsetLeft + namend.offsetWidth > x ) && ( namend.offsetTop < y ) && ( namend.offsetTop+namend.offsetHeight >y ))
+		{
+			//alert( namend.offsetTop + "/" + element.scrollTop);
+			if ( namend.offsetTop < element.scrollTop )
+			{
+			
+				var dy = element.scrollTop;
+				element.scrollTop = namend.offsetTop;
+				dy -= element.scrollTop;
+				
+				my += dy;
+				
+			}
+			
+			if ( namend.offsetTop + namend.offsetHeight > element.scrollTop + element.offsetHeight ) 
+			{
+
+				var dy = element.scrollTop;
+				element.scrollTop = namend.offsetTop + namend.offsetHeight - element.offsetHeight;
+				dy -= element.scrollTop;
+				
+				my += dy;				
+				
+				
+			}
+
+
+			var pParent = namend.parentNode.parentNode;
+			var bNest = false;
+			
+			while ( pParent != element )
+			{
+				var nd = pParent.childNodes(0).childNodes( pParent.childNodes(0).childNodes.length -1 ) ;
+				
+				if ( nd == dragElement )
+				{
+					bNest = true;
+				}
+				
+				pParent = pParent.parentNode.parentNode;
+			}
+				
+			pParent = dragElement.parentNode.parentNode;
+			if ( pParent.childNodes(0).childNodes( pParent.childNodes(0).childNodes.length -1 ) == namend ) bNest = true;
+			
+			/*while ( pParent != element )
+			{
+				var nd = pParent.childNodes(0).childNodes( pParent.childNodes(0).childNodes.length -1 ) ;
+				
+				if ( nd == namend )
+				{
+					bNest = true;
+				}
+				
+				pParent = pParent.parentNode.parentNode;
+			}*/
+			
+			
+			if ( !bNest )
+			{
+				TargetElement( namend );
+				return true;
+			}
+		}
+		
+		if ( SearchTarget( nd.childNodes(1) , x, y) ) return true;	
+	}
+	
+	
+	return false;
+
+}
+
+function FindPos( obj )
+{
+
+	var pobj ;
+	
+	var x = 0  , y = 0 ;
+	
+	
+	pobj = obj;
+	
+	while ( pobj  != element)
+	{
+		x += pobj.offsetLeft;
+		y += pobj.offsetTop;
+		
+		// alert( pobj.offsetLeft + "="+pobj.outerHTML );
+		
+		if ( pobj != obj && pobj.offsetParent && pobj.tagName != "TABLE")
+		{
+			// alert( pobj.clientLeft + ":" + pobj.clientTop + "/" + pobj.offsetLeft + "="+pobj.outerHTML);
+			x += pobj.clientLeft;
+			y += pobj.clientTop;
+			
+		}
+		pobj = pobj.offsetParent;	
+	}
+	
+	nodeDragIcon.style.left = x;
+	nodeDragIcon.style.top = y;
+	nodeDragIcon.style.width = obj.offsetWidth;
+	nodeDragIcon.style.height = obj.offsetHeight;
+}
+
+</SCRIPT>

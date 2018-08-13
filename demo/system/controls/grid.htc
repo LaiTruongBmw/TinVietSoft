@@ -1,0 +1,2572 @@
+﻿<PUBLIC:COMPONENT tagName="grid" lightweight = true  >
+	
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="GetGridData" />
+	<PUBLIC:METHOD name="SetGridData" />
+	<PUBLIC:METHOD name="SetGridText" />
+	<PUBLIC:METHOD name="Validate" />
+	<PUBLIC:METHOD name="Subtotal" />
+	<PUBLIC:METHOD name="Cleartotal" />
+
+	<PUBLIC:METHOD name="GetGridControl" />
+	<PUBLIC:METHOD name="ClearData" />
+	<PUBLIC:METHOD name="SetComboFormat" />
+	<PUBLIC:METHOD name="AddRow" />
+	<PUBLIC:METHOD name="AddRowAt" />
+	<PUBLIC:METHOD name="DeleteRow" />
+	<PUBLIC:METHOD name="UpRow" />
+	<PUBLIC:METHOD name="DownRow" />
+	<PUBLIC:METHOD name="GoToRow" />	
+	<PUBLIC:METHOD name="SetColText" />
+	
+	<PUBLIC:METHOD name="RemoveRow" />	
+	<PUBLIC:METHOD name="DeleteRowAt" />		
+	<PUBLIC:METHOD name="DeleteAll" />	
+	<PUBLIC:METHOD name="AppendComboItem" />			
+	<PUBLIC:METHOD name="RemoveComboItem" />	
+	<PUBLIC:METHOD name="GetComboItemIndex" />		
+				
+	<PUBLIC:METHOD name="CopyRow" />
+	<PUBLIC:METHOD name="PasteRow" />
+
+	<PUBLIC:METHOD name="SetRowEditable" />
+
+
+	<PUBLIC:METHOD name="SetRowStatus" />
+	<PUBLIC:METHOD name="GetRowStatus" />
+	<PUBLIC:METHOD name="SetAllRowStatusModify" />
+	
+	<PUBLIC:METHOD name="SetEnable" />
+	
+	<PUBLIC:METHOD name="SelectRow" />
+	<PUBLIC:METHOD name="DeselectRow" />
+	<PUBLIC:METHOD name="Refresh" />	
+	<PUBLIC:METHOD name="GridRefresh" />
+	
+	<PUBLIC:METHOD name="SetColEdit" />
+	<PUBLIC:METHOD name="SetEditCol" />
+	
+	<PUBLIC:METHOD name="MergeGridCols" />	
+	<PUBLIC:METHOD name="ChangeBgColorFrTo" />		
+	<PUBLIC:METHOD name="SetColComboData" />		
+	<PUBLIC:METHOD name="SetWrapText" />			
+	<PUBLIC:METHOD name="SetHeaderFont" />			
+	<PUBLIC:METHOD name="SetHeaderBold" />			
+	<PUBLIC:METHOD name="SetHeaderFontColor" />			
+	<PUBLIC:METHOD name="SetHeaderFontSize" />				
+	<PUBLIC:METHOD name="SetCellFont" />			
+	<PUBLIC:METHOD name="SetCellBold" />			
+	<PUBLIC:METHOD name="SetCellFontColor" />		
+  <PUBLIC:METHOD name="SetCellBgColor" />				
+  <PUBLIC:METHOD name="GetCellBgColor" />
+  <PUBLIC:METHOD name="MergeByCol" />					
+  <PUBLIC:METHOD name="MergeByRow" />						
+  <PUBLIC:METHOD name="setFixedRows" />							
+  <PUBLIC:METHOD name="setFixedCols" />							
+	 	
+	<PUBLIC:METHOD name="UnDeleteRow" />		
+	<PUBLIC:METHOD name="UnDeleteRowAt" />			
+	<PUBLIC:METHOD name="RemoveRowAt" />			
+	<PUBLIC:METHOD name="GetColFormat" />		
+	<PUBLIC:METHOD name="PopupClose" />		
+	
+	
+	<PUBLIC:METHOD name="setHeader" />			
+	<PUBLIC:METHOD name="setFormat" />				
+	<PUBLIC:METHOD name="setAlign" />				
+	<PUBLIC:METHOD name="setWidth" />
+	<PUBLIC:METHOD name="setCusDateForCanlendar" />
+
+	<PUBLIC:PROPERTY  NAME="rows"  GET="getRows" PUT="setRows"/>
+	<PUBLIC:PROPERTY  NAME="cols"   GET="getCols" PUT="setCols"/>
+	<PUBLIC:PROPERTY  NAME="row"  GET="getRow" PUT="setRow"/>
+	<PUBLIC:PROPERTY  NAME="col"   GET="getCol" PUT="setCol"/>
+	<PUBLIC:PROPERTY  NAME="selrow"  GET="getSelRow"/>
+	
+
+	<public:event id="CellButtonClick" name="oncellbuttonclick">
+	<public:event id="CellClick" name="oncellclick">
+	<public:event id="CellDblClick" name="oncelldblclick">
+	<public:event id="EnterCell" name="onentercell">
+	<public:event id="AfterEdit" name="onafteredit">
+	<public:event id="BeforeEdit" name="onbeforeedit">	
+	<public:event id="BeforeSort" name="onbeforesort">	
+	<public:event id="AfterSort" name="onaftersort">	
+	<public:event id="SelChange" name="onselchange">	
+	<public:event id="KeyDownEdit" name="onkeydownedit">
+	<public:event id="KeyUpEdit" name="onkeyupedit">
+	<public:event id="KeyPressEdit" name="onKeyPressEdit">
+	<public:event id="AfterGrouping" name="onaftergrouping">
+	<public:event id="AfterResize" name="onafterresize">
+	<public:event id="AfterScroll" name="onafterscroll">
+              <public:event id="onkeydown" name="onkeydown">
+	
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+	
+
+</PUBLIC:COMPONENT>
+
+
+<SCRIPT Language="Javascript">
+
+var bModifing = false;
+var text;
+var ctrl = null;
+var objGroup = null;//Group button
+var obj = null;
+
+var innerData  = "";
+
+var bUploadAll = false;
+var beditColColor = false;
+var bAutoSize = false;
+var editCol = new Array();
+var colType = new Array();
+var colSize = new Array();
+var colCheck = new Array();
+var cusDateForCanlendar='';
+
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function GridRefresh(){
+   element.print = false;
+   event_oncontentready();
+}
+function GetColFormat( col) {
+	switch (colType[ col ]) {
+		case "4" : return "DATE";
+		case "3" : return "CHECKBOX";		
+		case "0" : return "STRING";		
+		case "2" : return "LIST";
+		default : return "UNKNOW";
+	}
+}
+
+function SetColComboData (col, val) {
+	obj.ColComboList(col) = val;
+}
+
+function DelDateDelimiter( s )
+{
+	if (Gb_Grid_DateLang != 1)
+	{
+       return  s.substring( 0, 4 ) +  s.substring( 5, 7 ) + s.substring( 8, 10 ) ;
+	}
+	else
+	{
+       return s.substring( 6, 10 ) +  s.substring( 3, 5 )  + s.substring( 0, 2 ) ;
+	}
+	//return  s.substring( 0, 4 ) +  s.substring( 5, 7 ) + s.substring( 8, 10 ) ;
+}
+function DelDateDelimiterMY( s )
+{
+       return s.substr( 3, 4 ) +  s.substr( 0, 2 );
+}
+
+function AddDateDelimiter( s ) {
+	if (Gb_Grid_DateLang == 1)
+		return s.substring( 6, 8  ) +"/"+ s.substring( 4, 6 ) +"/" + s.substring( 0, 4 ) ;
+	else
+		return s.substring( 0, 4 ) +"/"+ s.substring( 4, 6 ) +"/" +  s.substring( 6, 8  ) ;
+}
+function AddDateDelimiterMY( s ) {
+    return s.substr( 4, 2 ) +"/"+ s.substr( 0, 4 );
+}
+function getColIndexByName(col_name){
+    
+    for(var i=0;i<obj.Cols;i++){
+        if(obj.TextMatrix( obj.FixedRows - 1 , i ).toUpperCase() == col_name)
+        return i;
+    }
+    return -1;
+}
+function GetGridData( row , col )
+{
+   if(isNaN(col)){
+        var col_name= col.toString().toUpperCase();
+        //alert(obj.FixedRows)
+        col = getColIndexByName(col_name);
+        
+        if(col < 0 ) {
+            alert("Cannot find column '"+ col_name +"' in the datagrid '"+ element.id +"'.");
+            return;
+        }    
+   }
+   
+	if ( colType[ col ] == "4") 
+		return DelDateDelimiter( obj.TextMatrix( row , col ));
+	else if(colType[ col ] == "5")	
+	    return DelDateDelimiterMY( obj.TextMatrix( row , col ));
+	else
+	if ( colType[ col ] == "3") 
+	{
+		if ( obj.TextMatrix( row , col )  == "0" || obj.TextMatrix( row , col ).toString() == "" )
+				return  "0";
+		else
+				return  "-1";
+	}
+	else
+		return obj.TextMatrix( row , col );
+}
+
+
+function MakeData( param )
+{
+	var s = "";
+	var arr = param.split( "," );
+
+	
+	for ( var i = 1 ; i < obj.Rows ; i ++ )
+	{
+		if ( obj.TextMatrix( i , obj.Cols -1  ) > 0  )
+		{
+			for ( var j = 0 ;  j < arr.length ; j++ )
+			{
+				if ( j > 0 ) s += CDelimiter;
+				else
+				if ( s.length > 0  ) s += RDelimiter;
+	
+				if ( colType[ arr[j] ] == "4") 
+					s += DelDateDelimiter( obj.TextMatrix( i , arr[j] ));
+				else
+					if ( colType[ arr[j] ] == "3") 
+					{
+						if ( obj.TextMatrix( i , arr[j] ) == "0" )
+								s += "0";
+						else
+								s += "-1";
+					}
+				else
+					s += obj.TextMatrix( i , arr[j] );
+				
+			}
+
+			if ( bOldValue )
+			{
+				for ( var j = 0 ;  j < arr.length ; j++ )
+				{
+					s += CDelimiter;
+					
+					var ind = DataColumnLen + arr[ j ]*1.0  ;
+					
+					s += obj.TextMatrix( i , ind );
+				}
+			}
+			s += CDelimiter;
+			s += obj.TextMatrix( i , obj.Cols -1  );
+		}
+	}
+	return s;
+}
+
+function MakeDataAll()
+{
+	var s = "";
+	for ( var i = 1 ; i < obj.Rows ; i ++ )
+	{
+		if ( obj.TextMatrix( i , obj.Cols -1  ) > 0  )
+		{
+
+			for ( var j = 0 ;  j < obj.Cols ; j++ )
+			{
+				if ( j > 0 ) s += CDelimiter;
+				else
+				if ( s.length > 0  ) s += RDelimiter;
+	
+				if ( colType[ j  ] == "4") 
+					s += DelDateDelimiter( obj.TextMatrix( i , j ));
+				else
+				if ( colType[ j ] == "3") 
+				{
+					if ( obj.TextMatrix( i , j ) == "0" )
+							s+= "0";
+					else
+							s += "-1";
+				}				
+				else
+					s += obj.TextMatrix( i , j );
+			}
+		
+		}
+	}
+	return s;
+}
+
+function GetData( param )
+{
+	var s = "";
+	
+	
+	if (  bUploadAll ) 
+		SetAllRowStatusModify();
+	
+	if (  arguments.length > 0 )
+	{
+		if ( param.length > 0 )
+			s = MakeData( param );
+		else
+			s = MakeDataAll();
+			
+	} else
+	if ( typeof( element.dsoid ) != "undefined"  )
+	{
+		var ss ;
+		
+		var dso = FindDSOSQL( element.dsoid );
+		
+		ss = element.dsoid;
+		
+		if ( dso )
+		{
+			var list = dso.element ;
+			for ( var j = 0 ; j < list.length ; j ++ )
+			{
+				if ( list[j].type == 0 )
+				{
+					var v ;
+					if ( list[j].row >= 0 )
+						v = list[j].object.GetGridData( list[j].row  , list[j].col ) ;
+					else
+						v = list[j].object.GetData();
+					
+					ss += CDelimiter + v;
+				}
+			}
+			
+		}
+		
+		var sss = MakeData( element.param );
+		
+		if ( sss.length >0 )
+			s = ss + RDelimiter + sss
+		else
+			s = ss;
+	} else
+	{
+		s = MakeDataAll();
+	}
+	
+	return s; 	
+}
+
+function SetGridData( row , col , data )
+{
+	if ( data )
+	{
+		if ( colType[ col ] == "4" ) 
+		{
+			if ( data.text.length > 0 )
+				obj.TextMatrix( row , col ) =  AddDateDelimiter( data.text );
+			else
+				obj.TextMatrix( row , col ) = ValidDateValue( "" );
+			
+		}
+		else if ( colType[ col ] == "5" ) 
+		{
+			if ( data.text.length > 0 )
+				obj.TextMatrix( row , col ) =  AddDateDelimiterMY( data.text );
+			else
+				obj.TextMatrix( row , col ) = "";
+			
+		}
+		else
+		if ( colType[ col ] == "3") 
+		{
+			if ( data.text  == "0" )
+					obj.TextMatrix( row , col ) = "0";
+			else
+					obj.TextMatrix( row , col ) = "-1";
+		}
+		else
+			obj.TextMatrix( row , col ) =  data.text ;
+		obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x10;	
+	}
+	if(beditColColor){
+        SetColorNotEditCol();
+    }
+}
+
+function SetGridText( row , col , data )
+{
+        if(isNaN(col)){
+            var col_name= col.toString().toUpperCase();
+            col = getColIndexByName(col_name);
+            
+            if(col < 0 ) {
+                alert("Cannot find column '"+ col_name +"' in the datagrid '"+ element.id +"'.");
+                return;
+            }    
+       }
+   
+		if ( colType[ col ] == "4" ) 
+		{
+			if ( data.length > 0 )
+				obj.TextMatrix( row , col ) =  AddDateDelimiter( data);
+			else
+			{
+				obj.TextMatrix( row , col ) = "";
+			}
+		}
+		else if ( colType[ col ] == "5" ) 
+		{
+			if ( data.length > 0 )
+				obj.TextMatrix( row , col ) =  AddDateDelimiterMY( data);
+			else
+			{
+				obj.TextMatrix( row , col ) = "";
+			}
+		}
+		else { 
+			obj.TextMatrix( row , col ) =  data;
+		}
+	    obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x10;
+	    
+	    if(bAutoSize){
+            obj.AutoSize(0,obj.Cols-1);
+        }	
+}
+
+
+function SetData( data )
+{
+	ClearData();
+	this.Redraw  = 0;
+	if ( data )
+	{
+		
+		bModifing = true;
+		for ( var x = 0 ;  x < data.childNodes.length ; x ++ )
+		{
+			var row = data.childNodes(x).text ;
+			
+			
+			var arr = row.split(CDelimiter)
+		
+			var r = obj.Rows;
+			obj.Rows ++;
+			
+						
+			for ( var i = 0 ; i < arr.length ; i++ )
+			{
+				if ( i < obj.Cols - 1 )
+				{
+				
+					if ( colType[ i ] == "4" ) 
+					{
+						if ( arr[i].length > 0 )
+						{
+							obj.TextMatrix( r  , i ) = AddDateDelimiter(arr[i]);
+						}
+						else
+						{
+							obj.TextMatrix( r  , i ) = ValidDateValue("");
+						}
+					}
+					else if ( colType[ i ] == "5" ) 
+					{
+						if ( arr[i].length > 0 )
+						{
+							obj.TextMatrix( r  , i ) = AddDateDelimiterMY(arr[i]);
+						}
+						else
+						{
+							obj.TextMatrix( r  , i ) = "";
+						}
+					}
+					else
+					if ( colType[ i ] == "3") 
+					{
+						if ( arr[i]  == 0 )
+								obj.TextMatrix( r , i ) = "0";
+						else
+								obj.TextMatrix( r , i ) = "-1";
+					}
+					else				
+					{
+						obj.TextMatrix( r  , i ) = arr[i];
+					}
+				}
+				
+				if (bOldValue &&   ( i + DataColumnLen < obj.Cols - 1 ))
+				{
+					obj.TextMatrix( r , i + DataColumnLen ) = arr[i];
+				}			
+			}
+			
+			obj.TextMatrix( r  , obj.Cols -1  ) = 0;
+			obj.RowData(r) = 0;
+		}
+
+		
+		bModifing = false;
+	}
+	if(beditColColor){
+        SetColorNotEditCol();
+    }
+    if(bAutoSize){
+        obj.AutoSize(0,obj.Cols-1);
+    }	
+	this.Redraw  = 1;
+}
+
+function ClearData()
+{
+	obj.Row = -1;
+	obj.Rows = 1;//obj.FixedRows
+}
+
+function GetGridControl()
+{
+	return obj;
+}
+
+
+
+function UpRow()
+{
+	var row = obj.RowSel ;
+	if ( row > 1 )
+	{
+		ReplaceRow( row , row -1 );
+		
+	}
+
+}
+
+function DownRow()
+{
+	
+	var row = obj.RowSel ;
+	
+	if ( row > 0  && row < obj.Rows - 1 )
+	{
+		ReplaceRow( row , row +1 );
+		
+	}
+}
+
+function GoToRow(n) {
+	
+	var row = obj.RowSel ;
+	var next = row + n
+	if ( next > 0  && next < obj.Rows )
+	{
+		ReplaceRow( row , next );
+		
+	}
+	
+}
+
+function AddRow()
+{
+	var row = obj.Rows ;
+	obj.Rows ++;
+    obj.TopRow = obj.Rows-1;
+    
+	if ( typeof( element.defaults ) != "undefined" ) 	
+	{
+		var s = element.defaults;
+		var arr = s.split( "|" );
+	
+		for ( i = 0 ; i < arr.length ; i++ )
+		{
+					if ( colType[ i ] == "4" ) 
+					{
+						if ( arr[i].length > 0 )
+							obj.TextMatrix( row  , i ) = AddDateDelimiter(arr[i]);
+						else
+							obj.TextMatrix( row  , i ) = ValidDateValue("");
+					}
+					else
+					if ( colType[ i ] == "3") 
+					{
+						if ( arr[i]  == 0 )
+								obj.TextMatrix( row , i ) = "0";
+						else
+								obj.TextMatrix( row , i ) = "-1";
+					}
+					else				
+					{
+						obj.TextMatrix( row  , i ) = arr[i];
+					}
+
+		}	
+		
+	}
+
+	obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x20;
+	obj.RowData(row)=0;
+    if(beditColColor){
+        SetColorNotEditCol();
+    }
+}
+
+function AddRowAt(idx)
+{
+	var idx_new = idx;
+    if(obj.rows == obj.FixedRows)
+        return false;
+    if(idx_new < 0 && idx_new > obj.rows-1)
+        return false;
+    //obj.FormatString = element.header+ "|1";
+    var tmptext='';
+	if ( typeof( element.defaults ) != "undefined" ) 	
+	{
+		var s = element.defaults;
+		var arr = s.split( "|" );
+	
+		for ( i = 0 ; i < arr.length ; i++ )
+		{
+					if ( colType[ i ] == "4" ) 
+					{
+						if ( arr[i].length > 0 )
+							tmptext = tmptext + AddDateDelimiter(arr[i]);
+						else
+							tmptext = tmptext + ValidDateValue("");
+							tmptext = tmptext + '\t' ;
+					}
+					else
+					if ( colType[ i ] == "3") 
+					{
+						if ( arr[i]  == 0 )
+								tmptext = tmptext + "0";
+						else
+								tmptext = tmptext + "-1";
+						tmptext = tmptext + '\t' ;
+					}
+					else				
+					{
+						tmptext = tmptext + arr[i];
+						tmptext = tmptext + '\t' ;
+					}
+
+		}	
+		
+	}
+	else
+	{
+	    var arr1 = element.header.split( "|" );
+	    for ( i = 0 ; i < arr1.length ; i++ )
+		{
+		    tmptext = tmptext + '\t' ;
+		}
+	}
+	obj.Redraw = 0;
+    obj.AddItem( tmptext + '', idx_new);
+    obj.TextMatrix( idx_new , obj.Cols - 1 ) = obj.TextMatrix( idx_new , obj.Cols - 1 ) | 0x20;
+    obj.Redraw = 2;
+    SetRowEditable(idx_new,1);
+    if(beditColColor){
+        SetColorNotEditCol();
+    }
+    
+    return true;
+}
+
+function RemoveRow(){
+	for ( var i =  0 ; i < obj.SelectedRows ; i ++ )
+	{
+		var row = obj.SelectedRow(i);
+		if ( row > 0 ) {
+			//Remove Row from Grid
+			obj.RemoveItem(row);
+		}
+	}
+}
+
+function RemoveRowAt( idx ){
+		var row = idx;
+		if ( row > 0 ) {
+			//Remove Row from Grid
+			obj.RemoveItem(row);
+		}
+}
+
+
+function DeleteRow()
+{
+	for ( var i =  0 ; i < obj.SelectedRows ; i ++ )
+	{
+		var row = obj.SelectedRow(i);
+		if ( row > 0 )
+		{		
+			obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x40;
+			obj.Cell( 6 , row , 0 , row, obj.Cols - 1 ) = 0xeeeeee;
+			obj.Cell( 7 , row , 0 , row, obj.Cols - 1 ) = 0x808080;
+		}		
+	}
+	// obj.Cell(  1 , 0 , 0, 0 , obj.Cols ) = 0;
+}
+
+function DeleteRowAt(idxNo)
+{
+		var row = idxNo;
+		if ( row > 0 )
+		{		
+			obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x40;
+			obj.Cell( 6 , row , 0 , row, obj.Cols - 1 ) = 0xeeeeee;
+			obj.Cell( 7 , row , 0 , row, obj.Cols - 1 ) = 0x808080;
+		}		
+	// obj.Cell(  1 , 0 , 0, 0 , obj.Cols ) = 0;
+}
+
+function UnDeleteRow () {
+	for ( var i =  0 ; i < obj.SelectedRows ; i ++ )
+	{
+		var row = obj.SelectedRow(i);
+		if ( row > 0 )
+		{		
+		    if(obj.TextMatrix( row , obj.Cols - 1 ) ==64 || 
+		    obj.TextMatrix( row , obj.Cols - 1 ) == 80 || 
+		    obj.TextMatrix( row , obj.Cols - 1 ) == 112)
+		    {
+			    obj.TextMatrix( row , obj.Cols - 1 ) = 0x0;
+			    obj.Cell( 6 , row , 0 , row, obj.Cols - 1 ) = Gb_Grid_BColor;
+			    obj.Cell( 7 , row , 0 , row, obj.Cols - 1 ) = 0x000000;
+			}
+		}		
+	}
+}
+
+function UnDeleteRowAt (idxNo) {
+	var row = idxNo;
+		if ( row > 0 )
+		{		
+			obj.TextMatrix( row , obj.Cols - 1 ) = 0x0;
+			obj.Cell( 6 , row , 0 , row, obj.Cols - 1 ) = Gb_Grid_BColor;
+			obj.Cell( 7 , row , 0 , row, obj.Cols - 1 ) = 0x000000;
+		}		
+}
+
+function DeleteAll()
+{
+	var row, i;
+	for ( i =  1 ; i < obj.Rows ; i ++ )
+	{
+		row = i;
+		if ( row > 0 )
+		{		
+			obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x40;
+			obj.Cell( 6 , row , 0 , row, obj.Cols - 1 ) = 0xeeeeee;
+			obj.Cell( 7 , row , 0 , row, obj.Cols - 1 ) = 0x808080;
+		}		
+	}
+	// obj.Cell(  1 , 0 , 0, 0 , obj.Cols ) = 0;
+}
+
+function SetColText( col , data )
+{
+	var i ; 
+	
+	for ( i = 1 ; i < obj.Rows  ; i++ )
+		obj.TextMatrix( i , col ) = data;
+}
+
+function SetRowStatus( row , data )
+{
+	obj.TextMatrix( row , obj.cols -1   ) = data;
+}
+
+function GetRowStatus( row )
+{
+   if(row < obj.FixedRows) return 0;
+   
+	return obj.TextMatrix( row , obj.cols -1 );
+}
+
+function SetAllRowStatusModify( )
+{
+	var i;
+	for ( i = obj.FixedRows; i < obj.Rows  ; i++ )
+		obj.TextMatrix( i ,  obj.cols -1 ) |= 0x10;
+}
+
+
+function SetComboFormat( col  , s )
+{
+	obj.ColComboList( col ) = s ;
+}
+
+function AppendComboItem(col, data) {
+	var s;
+	var str;
+
+	arr = data.split("|");
+	if (arr.length == 2) {
+		s = "#" + arr[0] + ";" + arr[1];
+	}
+	str = obj.ColComboList(col);
+	if (str != "") {
+		s = "|" + s;
+	}
+	str = str + s;
+	obj.ColComboList( col ) = str ;
+}
+
+function RemoveComboItem (col, index) {
+	var str;
+	var i;
+	var item;
+	var fin;
+	fin = "";
+	str = "" + obj.ColComboList(col);
+	if (str != ""){
+		arr = str.split("|");
+		for (i=0;i<arr.length;i++) {
+			item = arr[i];
+			
+			if (i != index) {
+				if (fin != "") {
+					fin = fin + "|";
+				}
+				fin = fin + item;
+			}
+			
+		}
+		obj.ColComboList(col) = fin;
+	}
+}
+
+function GetComboItemIndex (col, input, byPK) {
+
+	if (byPK == "T" ) {
+		//alert("Call 1");
+		return GetComboItemIndexByPK(col, input);		
+	} else {
+		//alert("Call 2");	
+		return GetComboItemIndexByVal(col, input);
+	}
+
+}
+
+function GetComboItemIndexByPK (col, id) {
+	var str;
+	var i;
+	var item;
+  var pk;
+	var temp;
+	
+	str = "" + obj.ColComboList(col);
+  
+	if (str != ""){
+		arr = str.split("|");
+		for (i=0;i<arr.length;i++) {
+			item = arr[i];
+			arr2 = item.split(";");	
+			temp = arr2[0]; 
+			pk = temp.substr(1,temp.length);
+			if (pk == id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+}
+
+function GetComboItemIndexByVal (col, value) {
+	var str;
+	var i;
+	var item;
+  var val;
+	
+	str = "" + obj.ColComboList(col);
+  
+	if (str != ""){
+		arr = str.split("|");
+		for (i=0;i<arr.length;i++) {
+			item = arr[i];
+			arr2 = item.split(";");	
+			val = arr2[1];
+			if (val == value) {
+				return val;
+			}
+		}
+		return -1;
+	}
+}
+
+function SetEnable( s )
+{
+	if ( obj ) 
+	{
+
+		if ( s )
+			obj.Editable = 2;
+		else
+		{
+			obj.Editable = 0;
+		}
+	} 
+}
+
+
+function Refresh() {
+	var i;
+	for (i =0;i<obj.Rows;i++ ){
+		if (obj.isSelected(i) == true)
+			obj.isSelected(i) = false;
+	}
+}
+
+function DeselectRow (n) {
+	obj.RowSel = 0;
+	obj.isSelected (n) = false;
+}
+
+function SelectRow( n )
+{
+	obj.RowSel = n;
+	obj.isSelected (n) = true;
+	obj.Row = n;
+}
+
+function SetRowEditable( row , bEdit)
+{
+	obj.RowData(row) = bEdit ? 0 : 1;
+
+}
+
+
+//
+// Copy Row Data to Clipboard
+//
+
+function CopyRow()
+{
+	var data="";
+	
+	var r;
+					
+	for ( r = 1 ; r < obj.Rows  ; r ++ )
+	{
+		if ( obj.IsSelected( r ) )
+		{
+			
+			var s = "";
+			for ( var i = 0 ; i < obj.Cols -1 ; i ++ )
+			{
+				// shouldnt get hidden column
+				if (!obj.ColHidden(i)) {
+					if ( s == "" ){
+						if ( colType[i] == "4"){ 
+						    s += DelDateDelimiter(obj.TextMatrix( r , i )) ;
+						}
+						else{
+						    s += obj.TextMatrix( r , i );
+						}
+					}	
+					else{
+					    if ( colType[i] == "4"){ 
+						    s += '\t' + DelDateDelimiter(obj.TextMatrix( r , i )) ;
+						}
+						else{
+						    s += '\t' + obj.TextMatrix( r , i );
+						}
+					}
+				}
+			}
+			//alert(data)
+			if ( data == "" )
+				data += s ;
+			else
+				data += "\n" + s;
+		
+		}
+	}				
+	window.clipboardData.setData( "Text", data);
+}
+
+//
+// Paste Row Data from Clipboard
+//
+function Trim(sent){
+	var S=new String(sent);
+	S=S.replace(/^\s+/,"");
+	return S.replace(/\s+$/,"")
+}
+function PasteRow()
+{
+	var data= window.clipboardData.getData("Text") ;
+	
+	var arr = Trim(data).split ( "\n");
+	var curRow = obj.Row;
+	var curCol = obj.Col;
+	var r2;
+	var i,j, k, str;
+	var arr2;
+	var rows;
+	
+	i = 0;
+	str = "";
+	if (curCol <0 ) curCol = 0;
+	
+	if (curRow < 0) {
+		return;
+	}else {
+		if (confirm("Are you sure you want to paste data to grid ?")) {
+			r2 = curRow + obj.SelectedRows;
+			rows = obj.Rows;
+			for (i=0;i<arr.length-(rows - curRow);i++) {
+				AddRow();
+			}
+			
+			i = 0;
+			while (i<arr.length) {
+				str = arr[i];
+				arr2 = str.split("\t");	
+				j = k = 0;
+				while ((j<arr2.length)&&(k<obj.Cols)) {
+					//alert(j);
+					if (!obj.ColHidden(curCol + k)) {
+						obj.TextMatrix (curRow, curCol + k) = arr2[j];
+						j++;
+					}
+					k++;
+				} 			
+				
+				i ++;
+				//}
+				curRow ++;
+			}		
+		}
+			
+	}
+		
+	
+	/*var cr = obj.Row + 1;
+
+	var bInsert = confirm( "Insert = Y or Overwrite = N" );
+
+	if ( !bInsert ) 
+	{
+		//alert( cr + len  );
+		//alert( len );
+		//obj.Select( cr + len , 0  , cr + len + len -1  , 0);
+		DeleteRow();
+	}
+		
+	//if ( !bInsert ) cr --;
+	
+	var i,j , len=0;
+	// Insert 
+	for ( i = 0 ; i < arr.length ; i++)
+	{
+		if ( arr[i].length > 0 )
+		{
+			AddRow();
+			len ++;
+		}
+	}
+	
+	for ( i = obj.Rows - 1 - len  ; i >= cr   ;  i --)
+	{
+		for ( var j = 0 ; j < obj.Cols ; j ++ )
+		{
+			obj.TextMatrix( i + len  , j ) = obj.TextMatrix( i , j  ) ;
+		}
+			obj.Cell( 6 , i + len , 0 , i + len, obj.Cols - 1 ) = obj.Cell( 6 , i , 0 , i, obj.Cols - 1 ) ;
+			obj.Cell( 7 , i + len , 0 , i + len, obj.Cols - 1 ) = obj.Cell( 7 , i , 0 , i, obj.Cols - 1 );
+			obj.RowData(i + len) = obj.RowData(i);
+	
+	}
+
+	len = 0;
+	for ( i = 0 ; i < arr.length ; i++)
+	{
+		if ( arr[i].length > 0 )
+		{
+			var col = arr[i].split( "\t" );
+			
+			for ( var j = 0 ; j < obj.Cols-1 ; j ++ )
+			{
+				if ( j < col.length ) 
+					obj.TextMatrix( cr + len, j ) = col[j] ;	
+			}
+			
+			len ++;
+		}
+	} 
+
+	obj.Select( cr , 0 , cr + len -1 , 0 ); */
+}
+
+function MergeByCol ( col ) {
+	 obj.MergeCells = 3; // RestricCol or 4
+	 obj.MergeCol(col) = true;
+	 /*obj.Select (row1, col1, row2, col2);
+   obj.FillStyle = 1;
+   obj.CellBackColor = color;
+   obj.FillStyle = 0;
+   obj.Select (4, 1);*/
+}
+
+function MergeByRow ( row ) {
+	 obj.MergeCells = 2; // RestricRow or 4
+	 obj.MergeRow(row) = true;	 
+}
+
+function SetWrapText ( bWraped ) {
+	obj.WordWrap = bWraped;
+}
+
+function MergeGridCols () {
+	var i ;
+	obj.MergeCells = 1;
+	for (i=0;i<obj.Cols;i++) {
+		obj.MergeCol(i) = true;
+	}
+	SetWrapText(true);
+	//ChangeBgColorFrTo(1,5,0xFEBCBE);
+}
+
+function ChangeBgColorFrTo(col1, col2, color ) {
+	var i,j;
+	for (i=1;i<obj.Rows;i++) {
+		for (j=col1;j<=col2;j++) {
+			if (obj.TextMatrix(i,j) != "") {
+				obj.Cell (6, i,j) = color;
+			}
+		}
+	}
+}
+
+function SetHeaderFont( fnt) {
+	/*obj.Select (0, 0, 0, obj.Cols-2);
+	obj.CellFontName = fnt;*/
+	obj.Cell(11, 0, 0, 0, obj.Cols-2) = fnt
+}
+
+function SetHeaderBold( bBold ) {
+	obj.Cell(13, 0, 0, 0, obj.Cols-2) = bBold;
+}
+			
+function SetHeaderFontSize(sz) {
+	obj.Cell(12, 0, 0, 0, obj.Cols-2) = sz;
+}
+
+function SetHeaderFontColor( color ) {
+	obj.Cell(7, 0, 0, 0, obj.Cols-2) = color
+}
+
+function SetCellFont(row1, col1, row2, col2, fnt) {
+	/*obj.Select ( row1, col1, row2, col2 );
+	obj.CellFontName = fnt;*/
+	obj.Cell(11,row1, col1, row2, col2 ) = fnt
+}
+
+function SetCellBold( row1, col1, row2, col2, bBold ) {
+	obj.Cell(13, row1, col1, row2, col2) = bBold;
+}			
+
+function SetCellFontColor(row1, col1, row2, col2, color ) {
+	obj.Cell(7, row1, col1, row2, col2 ) = color
+}
+
+function SetCellBgColor(row1, col1, row2, col2, color) {
+	/*obj.Select ( row1, col1, row2, col2 );
+	obj.CellFontName = fnt;*/
+	obj.Cell(6,row1, col1, row2, col2 ) = color;
+}
+function GetCellBgColor(row1, col1, row2, col2) {
+	return obj.Cell(6,row1, col1, row2, col2 );
+}
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function getRow()
+{
+	return obj.Row;
+}
+function setRow(val)
+{
+	return obj.Row = val;
+}
+function getCol()
+{
+	return obj.Col;
+}
+function setCol(val)
+{
+	return obj.Col = val;
+}
+function getRows()
+{
+	return obj.Rows;
+}
+function setRows(val)
+{
+	return obj.Rows = val;
+}
+function getCols()
+{
+	return obj.Cols;
+}
+function setCols(val)
+{
+	return obj.Cols = val;
+}
+function getSelRow()
+{
+	return obj.RowSel;
+}
+
+
+// ************ Property Setting *****************
+function setCusDateForCanlendar(dt){
+	cusDateForCanlendar = dt;
+}
+
+var bOldValue = false;
+var DataColumnLen = 0;
+function setHeader( s )
+{
+	if ( obj ) 
+	{
+		var arr = s.split( "|" );
+		
+		if ( bOldValue )
+			obj.Cols = arr.length * 2 + 1;
+		else{
+			obj.Cols = arr.length  + 1;
+		}	
+			
+		DataColumnLen  = arr.length;
+		//alert('Test = ' + obj.Cols);
+		for ( i = 0 ; i < obj.Cols  - 1; i++ )
+		{
+			if ( i < arr.length )
+			{
+				obj.TextMatrix(0, i) = arr[i];		
+				
+				
+				if ( arr[i].substr( 0, 1 ) == "_" )
+				{
+					if ( element.debug != "true"	) 
+						obj.ColHidden(i) = true;
+				}
+				
+				editCol[i] = 1;
+			} else
+			{
+				obj.TextMatrix(0, i) = "[" + arr[i - arr.length] + "]";		
+				obj.ColHidden(i) = true;
+				editCol[i] = 0;
+			}
+					
+		}
+		
+		obj.TextMatrix( 0, i ) = "_Status";
+		
+		if ( element.debug != "true" ) 
+		{
+			obj.ColHidden(i) = true;
+		}
+	} 
+}
+
+function setWidth( s )
+{
+	if ( obj ) 
+	{
+
+		var arr = s.split( "|" );
+		for ( i =0 ; i < arr.length ; i++ )
+		{
+			switch (arr[i])
+			{
+				case "0" :
+				case "":
+				
+					break;
+				
+				default :
+					
+					obj.ColWidth(i) = arr[i];
+					
+					break;
+				
+			}
+			
+		}
+	} 
+}
+
+function setFormat( s )
+{
+	if ( obj ) 
+	{
+		var arr = s.split( "|" );
+		
+		if ( obj.Cols < arr.length + 1 )
+			obj.Cols = arr.length + 1;
+		
+		for ( i =0 ; i < arr.length ; i++ )
+		{
+			colSize[i] = 0;
+			colType[i] = arr[i].charAt(0);
+			
+			switch (arr[i].charAt(0))
+			{
+				case "N" :
+				
+					obj.ColFormat(i) = "#,###";
+					obj.ColAlignment(i) = flexAlignRightCenter;
+					break;
+				
+				case "S" :
+				
+					obj.ColAlignment(i) = flexAlignLeftCenter;
+					break;
+					
+				case "0" :
+					obj.ColAlignment(i) = flexAlignLeftCenter;
+					obj.ColDataType(i) = 8;
+					
+					if ( arr[i].length > 1 ) 
+					{
+						var k ;
+						var n = arr[i].substring(1, arr[i].length ) * 1 ;
+						colSize[i] = n ;
+					}
+					
+					break;
+					
+				case "1" : 
+					obj.ColDataType(i) = 5;
+
+					var ss = "#,###.##";
+					
+					if ( arr[i].length > 1 ) 
+					{
+						var k ;
+						var n = arr[i].substring(1, arr[i].length ) * 1 ;
+						
+						
+					}
+					
+					obj.ColFormat(i) = ss;
+					obj.ColAlignment(i) = flexAlignRightCenter;
+					break;
+					
+				case "-" :
+				    obj.ColDataType(i) = 5;
+				    	
+	                if(arr[i].charAt(1) == "0"){
+	                    obj.ColFormat(i) = "#,###";
+	                }else if(arr[i].charAt(1) == "1"){
+	                    obj.ColFormat(i) = "#,###.#";
+	                }else if(arr[i].charAt(1) == "2"){
+	                    obj.ColFormat(i) = "#,###.##";
+	                }else if(arr[i].charAt(1) == "3"){
+	                    obj.ColFormat(i) = "#,###.###";
+	                }else if(arr[i].charAt(1) == "4"){
+	                    obj.ColFormat(i) = "#,###.####";
+	                }else if(arr[i].charAt(1) == "5"){
+	                    obj.ColFormat(i) = "#,###.#####";
+	                }else if(arr[i].charAt(1) == "6"){
+	                    obj.ColFormat(i) = "#,###.######";
+	                }else if(arr[i].charAt(1) == "7"){
+	                    obj.ColFormat(i) = "#,###.#######";
+	                }
+	                
+	                obj.ColAlignment(i) = flexAlignRightCenter;
+					break;
+					
+				case "2" :  // list
+					break;
+	
+				case "3" :  // list
+					obj.ColDataType(i) = 11;
+					break;
+
+				case "4" :  // datetime
+					obj.ColComboList( i ) =  "..." ;
+					//  obj.ColFormat(i) = "yyyy/mm/dd" ;
+					break;
+					
+				case "5" :  // month-year-calendar
+					obj.ColComboList( i ) =  "..." ;
+					//  obj.ColFormat(i) = "mm/yyyy" ;
+					break;	
+			}
+			
+		}
+	} 
+}
+function setCheck( s )
+{
+	if ( obj ){
+	
+		var arr = s.split( "|" );
+		
+		for ( var i =0 ; i < arr.length ; i++ ){
+			colCheck[i] = arr[i];
+			
+		}
+	} 
+}
+function setAlign( s )
+{
+	if ( obj ) 
+	{
+	
+		var arr = s.split( "|" );
+		for ( i =0 ; i < arr.length ; i++ )
+		{
+			switch (arr[i])
+			{
+				case "1" : 
+					obj.ColAlignment(i) = flexAlignCenterCenter;
+					break;
+				
+				case "2" :
+					obj.ColAlignment(i) = flexAlignLeftCenter;
+					break;
+	
+				case "3" :
+					
+					obj.ColAlignment(i) = flexAlignRightCenter;
+					break;
+	
+				
+			}
+			//set align for fix rows
+			obj.FixedAlignment(i) = flexAlignCenterCenter;
+			
+		}
+	} 
+}
+
+
+//
+//
+// editFunc
+//	0 : No Edit
+//  1 : Edit
+//	2 : Insert Only Edit
+//	3 : Modify Only Edit
+
+function SetColEdit( col , editFunc )
+{
+	editCol[col] = editFunc;
+}
+
+
+
+function setEditCol( s )
+{
+
+	if ( obj ) 
+	{
+		var arr = s.split( "|" );
+		
+		for ( i =0 ; i < arr.length ; i++ )
+		{
+			if ( arr[i].length   >0 )
+			{
+				if (arr[i]=="F" )
+					editCol[i] = 0;
+				else
+					editCol[i] = arr[i] * 1.0;
+			
+			}
+			
+		}
+	} 
+}
+
+
+function setFixedCols( s )
+{
+	if ( obj ) 
+		obj.FixedCols = s;
+}
+
+function setFixedRows( s )
+{
+	if ( obj ) 
+		obj.FixedRows = s;
+}
+
+function setSorting( s )
+{
+	if ( obj ) 
+	{
+		
+		if ( s == "true" || s == "T" )
+		{
+			obj.ExplorerBar = flexExSortShow	;	
+		} else
+		{
+			
+			obj.ExplorerBar = flexExNone	;	
+		}
+	} 
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+function OnClick()
+{
+	if (obj.row >0) {
+	    PopupClose();
+		var evObj = createEventObject();
+		evObj.row = oldR;// Thai added [2004/01/28]
+		evObj.col = oldC;
+		CellClick.fire( evObj );
+	}
+}
+
+function OnSelChange()
+{
+   if(obj.row !=oldR){
+	var evObj = createEventObject();
+	evObj.row = obj.row;
+	evObj.col = obj.col;
+	SelChange.fire( evObj );
+	}
+}
+var gEditText = "";
+function OnKeyDownEdit(a,b,c,d)
+{
+ 
+  if(c == 190 || c == 110)
+  {
+     gEditText =  obj.EditText;
+  }
+    if ( typeof( element.onkeydownedit ) != "unknown" ) 
+	{
+	   var evObj = createEventObject();
+	   evObj.row = obj.row;
+	   evObj.col = obj.col;
+	   KeyDownEdit.fire( evObj );
+	}
+	
+}
+//this function fix input decimal problem
+function OnKeyUpEdit(a,b,c,d)
+{//alert(c)
+  if((c == 190 || c == 110) && (obj.ColEditMask(oldC).indexOf("\9")!= -1 || obj.ColEditMask(oldC).indexOf("\#")!= -1))
+  {
+    var dotIndex = gEditText.indexOf(".");
+    
+    obj.EditText = RemoveInvalidNumber(gEditText);
+    obj.EditSelStart = dotIndex + 1;
+    obj.EditSelLength = 0;
+    
+  }
+    
+	if ( typeof( element.onkeyupedit ) != "unknown" ) 
+	{
+	   var evObj = createEventObject();
+	   evObj.row = obj.row;
+	   evObj.col = obj.col;
+	   KeyUpEdit.fire( evObj );
+	}
+	
+}
+function OnDblClick()
+{
+	if (obj.row >0) {
+		var evObj = createEventObject();
+		evObj.row = oldR ;
+		evObj.col = oldC;
+		CellDblClick.fire( evObj );
+	}
+}
+
+function OnEnterCell()
+{
+   if (obj.row >0) { //Thai modify
+	var evObj = createEventObject();
+	evObj.row = obj.row;
+    evObj.col = obj.col;
+	EnterCell.fire( evObj );
+	}
+}	
+
+<!-- More function for new calendar -->
+function FindFrame( name )
+{
+
+	var i;
+	var list = element.document.frames;
+	for ( i = 0 ;  i< list.length ; i ++ )
+	{
+		if ( list(i).name == name )
+		{
+			return list(i);
+			
+		}
+	}
+	
+	return false;
+}
+
+var popupValue = "";
+var divPopup ;
+var divPopupIn ;
+
+function PopupClose()
+{
+	divPopup.style.display = "none";
+}
+
+function PopupSelect()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+
+	if ( szMonth < 10 ) szMonth = '0' + szMonth;
+	if ( szDay < 10 ) szDay = '0' + szDay;
+
+	var o ;
+	
+	if(Gb_Grid_DateLang == 1) {	
+		o = String(szDay) + "/" + String(szMonth) + "/" +  String(szYear);
+	} else {
+		o =  String(szYear) + "/" + String(szMonth) + "/" + String(szDay);
+	}
+	PopupClose();
+	//setValue( o );
+	if ( o )
+		{
+			obj.TextMatrix( obj.row , obj.col ) =  o ;
+			obj.TextMatrix( obj.row , obj.Cols - 1 ) = obj.TextMatrix( obj.row , obj.Cols - 1 ) | 0x10;
+			
+			var evObj = createEventObject();
+			evObj.row = row;
+			evObj.col = col;
+		  AfterEdit.fire(evObj);
+		}
+			
+}
+function PopupSelectMY()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	PopupClose();
+}
+function PopupClear()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	
+	PopupClose();
+	
+	obj.TextMatrix( obj.row , obj.col ) =  "" ;
+	obj.TextMatrix( obj.row , obj.Cols - 1 ) = obj.TextMatrix( obj.row , obj.Cols - 1 ) | 0x10;
+	
+	var evObj = createEventObject();
+	evObj.row = row;
+	evObj.col = col;
+    AfterEdit.fire(evObj);
+		
+}
+
+function PopupPrevMonth()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+	
+	szMonth = szMonth - 1;
+	if(szMonth == 0)
+	{
+		szMonth = 12
+		szYear = szYear - 1;
+	}
+	oCal.month = szMonth;
+	oCal.year = szYear;
+}
+
+
+
+function PopupNextMonth()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+	
+	szMonth = szMonth + 1;
+	if(szMonth == 11)
+	{
+		szMonth = 1
+		szYear = szYear + 1;
+	}
+	oCal.month = szMonth;
+	oCal.year = szYear;
+}
+function PopupPrevYear()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+
+	szYear = szYear - 1;
+	
+	oCal.year = szYear;
+}
+function PopupNextYear()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+
+	szYear = szYear + 1;
+	
+	oCal.year = szYear;
+}
+function PopupToDay()
+{
+	//Get Today's Date
+	var oDate = new Date();
+	
+	//Note here: Date object's format is different than calendar's date format
+	
+	//set as a calendar's current value
+	var m = oDate.getMonth()+1;
+	var d = oDate.getDate();
+	if(m<10)
+		m = '0' + m;
+	if(d < 10)
+		d = '0' + d;
+	var o = d + '/' + m + '/' + oDate.getFullYear();
+	
+	PopupClose();
+	//setValue(value);
+	
+	if ( o )
+		{
+			obj.TextMatrix( obj.row , obj.col ) =  o ;
+			obj.TextMatrix( obj.row , obj.Cols - 1 ) = obj.TextMatrix( obj.row , obj.Cols - 1 ) | 0x10;
+			
+			var evObj = createEventObject();
+			evObj.row = row;
+			evObj.col = col;
+		  AfterEdit.fire(evObj);
+		}
+}
+function SetPopupCalendar()
+{
+	divPopup.style.display = "";
+	//alert (popupValue);
+	var arr = popupValue.split("/");
+	
+	var  defaultValue;
+	if ( arr.length == 3 )
+	{
+		defaultValue = " year=" + arr[0] + " month=" + arr[1] + " day=" +arr[2] + " ";
+	} else
+	defaultValue = ' ';
+	
+	var src = 
+		'<html><style>'+
+		'.Calendar '+
+		'{'+
+		'	behavior: url(../../../../system/htc/calendar.htc) ;'+
+		'	width : 33%'+
+		'}'+
+		'.smcalendar {' + Gb_smcalendar + '} '+
+		'.smcalendar_table {' + Gb_smcalendar_table + '} '+
+		'.smcalendar_header	{' + Gb_smcalendar_header + '}'+
+		'.smcalendar_content {' + Gb_smcalendar_content + '}'+
+		'.smcalendar_last {' + Gb_smcalendar_last + '}'+
+		'.smcalendar_select {' + Gb_smcalendar_select + '}'+
+		'</style>'+
+		'<body bgcolor="' + Gb_Date_BColor + '" style="' + Gb_Date_Style + '" ><table align="center" width="100%"border="0" cellpadding="0"><tr><td>'+
+		'<div  style="width:100%;" onselect="document.body.CallSelect()" onclose="document.body.CallClose()" class="Calendar" id = "cur"  gridCellEffect="flat"  monthLength="short" dayLength="short" showTitle="false" img="' + System.SysImgPath  + '/delete.gif" ' + defaultValue +'></div></td></tr></table>'+
+		' </body></html>'
+		;
+    //alert(src)
+	divPopupIn.document.close();
+	divPopupIn.document.write (src );
+	
+	divPopupIn.document.body.CallClose = PopupClose ;
+	divPopupIn.document.body.CallSelect= PopupSelect;
+	divPopupIn.document.body.CallClear= PopupClear;
+	
+	divPopupIn.document.body.CallToDay = PopupToDay;
+	
+	divPopupIn.document.body.CallPrevMonth =  PopupPrevMonth ;
+	divPopupIn.document.body.CallNextMonth =  PopupNextMonth;
+	divPopupIn.document.body.CallPrevYear = PopupPrevYear ;
+	divPopupIn.document.body.CallNextYear =  PopupNextYear ;
+	
+	cusDateForCanlendar = '';
+}
+
+
+function ShowPopupCalendarMY( x , y )
+{
+	var w =  171 ;
+	var h =  135 ;
+	
+	SetPopupCalendarMY();
+	
+	divPopup.style.width = w;
+	divPopup.style.height = h;
+	divPopup.style.top = y ;
+	divPopup.style.left = x;
+	
+}
+
+function ShowPopupCalendar( x , y )
+{
+	var w =  163;//150 ;
+	var h =  183;//175 ;
+	SetPopupCalendar();
+	
+	divPopup.style.width = w;
+	divPopup.style.height = h;
+	divPopup.style.top = y ;
+	divPopup.style.left = x;
+	
+}
+function SetPopupCalendarMY()
+{
+	divPopup.style.display = "";
+	
+	var  defaultValue;
+	
+	defaultValue = GetGridData(obj.row,obj.col);
+	
+	if(defaultValue != ""){
+	    defaultValue =  defaultValue.substr(4,2)+ "/" +defaultValue.substr(0,4);
+	}
+	
+	var src = 
+		'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> '+
+		'<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en"> '+
+		'<head> ' +
+            '<link rel="stylesheet" type="text/css" href="../../../system/controls/css/StyleCalender.css"> ' +
+            '<script type="text/javascript" language="javascript" src="../../../system/controls/CalendarControl.js"></' + 'script>' +
+        '</head>' +
+        '<script> var curVal ="' + defaultValue + '", _parentID= "'+ this.id +'", _row='+obj.row+', _col='+obj.col+';  </' + 'script>' +
+		'<body style="margin:0px 0px 0px 0px;background-color:white;overflow:hidden" >'+
+		'<div  id="CalendarControl" style="width:100%;"></div>'+
+		'</body></html>';
+    //alert(src)
+	divPopupIn.document.close();
+	divPopupIn.document.write (src );
+	
+}
+
+//------------------------------ End neew function of calendar ------------------------------------------
+
+function FnOnCellButtonClick()
+{
+	var evObj = createEventObject();
+	var s, s_date;
+  	CellButtonClick.fire(evObj);
+	
+	if ( colType[ obj.col ] == "4" && editCol[obj.col] == 1) 
+	{
+//		alert(obj.ColPosition(obj.col ));
+		var d = new Date();
+		
+		s_date = GetGridData( obj.row , obj.col );
+		//alert(obj.TextMatrix( obj.row , obj.col));
+		obj.TextMatrix( obj.row , obj.col ) = ValidDateValue( obj.TextMatrix( obj.row , obj.col ) );
+		//alert("1:" + s_date);
+		if ( s_date.length > 0 ) {
+			s_date = s_date.substring(0,4) + "/" + s_date.substring(4,6) + "/" + s_date.substring(6,8);	
+		}
+		
+		popupValue = s_date;
+		
+		if(cusDateForCanlendar != '')
+		{
+			popupValue = cusDateForCanlendar;
+		}
+		
+		var x = evObj.x; 
+		var y = evObj.y; 
+		
+		var maxX, maxY;
+
+		maxX = self.document.body.clientWidth - 20;
+		maxY = self.document.body.clientHeight - 0;
+		if ((x+140)>maxX) x = maxX - 140;
+		if ((y+190)>maxY){ y = maxY - 190; };
+		
+		/*if ( (x + 140) >= obj.offsetWidth ) {
+			x = obj.offsetWidth - 140;
+		}
+		if ( (y+160) >= obj.offsetHeight) {
+			y = obj.offsetHeight - 160;
+		}	*/
+		//element.childNodes(1).attachEvent("onclick" , OnClickInternal )
+		//element.attachEvent("ondeactivate" , OnBlur  );
+
+		ShowPopupCalendar(x + 10, y);		//position of cell
+		
+	}
+	else if(colType[ obj.col ] == "5" && editCol[obj.col] == 1){
+	    var x = evObj.x; 
+		var y = evObj.y; 
+		
+		var maxX, maxY;
+
+		maxX = self.document.body.clientWidth - 20;
+		maxY = self.document.body.clientHeight - 20;
+		if ((x+140)>maxX) x = maxX - 140;
+		if ((y+160)>maxY) y = maxY - 140;
+		
+		s_date = GetGridData( obj.row , obj.col );
+		
+		//showCalendarControl(s_date, 0, 0, this.id, obj.row , obj.col);		//position of cell
+		
+		ShowPopupCalendarMY( x+10, y+15);		//position of cell
+	}
+	
+}
+
+function OnAfterEdit( row , col )
+{
+	if ( !bModifing )
+	{
+	
+		obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x10;
+
+		if ( colType[col] == "0"  && colSize[col] > 0 )
+		{
+			if ( obj.TextMatrix(row , col ).length > colSize[col] ) 
+			{
+				alert( "max length is " + colSize[col] );
+				
+				obj.TextMatrix(row , col ) = obj.TextMatrix(row , col ).substr( 0 , colSize[col] );
+			}
+		}
+		//Thai modified 21/06/2004
+        if(obj.ColEditMask(oldC).indexOf("\9")!= -1 || obj.ColEditMask(oldC).indexOf("\#")!= -1)
+        {
+          obj.TextMatrix(oldR , oldC ) = RemoveInvalidNumber(obj.TextMatrix(oldR , oldC ));
+        }
+        if(bAutoSize){
+            obj.AutoSize(0,obj.Cols-1);
+        }
+		var evObj = createEventObject();
+		evObj.row = row;
+		evObj.col = col;
+	    AfterEdit.fire(evObj);
+	}
+}
+//Thai modified 21/06/2004
+function RemoveInvalidNumber(s)
+{
+   var s1="";
+   for(var i=0;i<s.length;i++)
+   {
+     if(i==0 && s.charCodeAt(0)==45)
+	 {
+	   s1=s1+"-";
+	 }  
+	 else if(s.charCodeAt(i)>45 && s.charCodeAt(i)<58&&s.charCodeAt(i)!=47)
+	 {
+	   s1=s1+s.substr(i,1);
+	 }
+   }
+   
+   while(s1.substr(s1.length-1,1)==".")
+   {
+      s1=s1.substr(0,s1.length-1);
+	  
+   }
+   return s1;
+}
+
+function OnValidateEdit( row , col, cancel )
+{
+
+}
+
+function OnKeyPressEdit ( row , col , ch )
+{
+	
+	var status = obj.TextMatrix( row , obj.cols -1   ) * 1 ;
+	var bEdit = false;
+	
+	if ( obj.RowData(row) == 0 )
+	{
+		if  ( ( status & 0x40 ) || ( editCol[col] == 0 ) )
+		{
+			bEdit = false;
+		} else
+		if  ( editCol[col] == 1 ) 
+		{
+			bEdit = true;
+		} else
+		{
+			if  (( editCol[col] == 2 ) && ( status & 0x20 ) )
+			{
+				bEdit = true;
+			} else
+			if  (( editCol[col] == 3 ) && !( status & 0x20 ) )
+			{
+				bEdit = true;
+			} else
+				bEdit = false;
+		}
+	} else
+		bEdit = false;
+	
+	if ( !bEdit )	
+	{
+		obj.Col = -1;
+
+	}
+		var evObj = createEventObject();
+		evObj.row = row;
+		evObj.col = col;
+		evObj.keyAscii = ch;
+	  KeyPressEdit.fire(evObj);
+}
+
+var oldR , oldC;
+function OnBeforeEdit( row , col , cancel )
+{
+	oldR = row;
+	oldC = col;
+	
+	var evObj = createEventObject();
+	evObj.row = row;
+	evObj.col = col;
+  BeforeEdit.fire(evObj);
+	 
+}
+
+function OnBeforeSort(col, order) {
+		var evObj = createEventObject();
+		evObj.col = col;
+		evObj.order = order;
+  	BeforeSort.fire(evObj);
+}
+
+function SortDate (col, order) {
+    if(obj.Rows == 1) return;
+    
+	obj.Cols = obj.Cols + 1;
+	obj.ColHidden(obj.Cols-1) = true
+	var i, nCol;
+	nCol = obj.Cols-1;
+	
+	for (i=1;i<obj.Rows;i++) {
+		obj.TextMatrix(i,nCol) = DelDateDelimiter(obj.TextMatrix(i,col));
+	}
+	//sort
+	obj.ColSort(nCol) = order;
+    obj.Select( 1, 0,1,nCol);
+    obj.Sort = 10;
+	
+	//remove last column
+	obj.Cols = obj.Cols - 1;	
+	obj.Select( 1, 0, 1, 1);
+}
+
+function OnAfterSort(col, order) {
+	if ((colType[col]==4) || (obj.ColComboList(col) == "...")) {
+		//Resort
+		SortDate(col, order);
+	} 
+	var evObj = createEventObject();
+	evObj.col = col;
+	evObj.order = order;
+  	AfterSort.fire(evObj);
+}
+function OnAfterResize(row, col) {
+	var evObj = createEventObject();
+	evObj.row = row;
+	evObj.col = col;
+  	AfterResize.fire(evObj);
+}
+
+function OnAfterScroll(toprow1, leftcol1,toprow2, leftcol2)
+{
+	var evObj = createEventObject();
+	evObj.toprow = row;
+	evObj.leftcol = col;
+  	AfterScroll.fire(evObj);
+}
+
+function OnAfterGrouping() {
+	var evObj = createEventObject();
+  	AfterGrouping.fire(evObj);
+}
+function SetColorNotEditCol(){
+    if(obj.Rows <2) return;
+    for(var i=0;i<obj.Cols-1;i++){
+        if(editCol[i] == 0 || editCol[i] == "F"){
+            SetCellBgColor(obj.FixedRows, i, obj.Rows-1, i, 0xd9d9d9);
+        }
+    }    
+}
+function OnKeyDown()
+{
+
+	if ( obj.EditWindow == 0 )
+	{
+        /*
+		if ( event.keyCode ==46 )
+		{
+			if ( confirm( "Delete it?" ))
+			{
+				DeleteRow();
+			}
+		}*/
+
+		//Check
+		if (bAllowCopyPaste) {
+			if ( event.ctrlKey &&  event.keyCode == 67 )
+			{
+				CopyRow();
+				event.returnValue = false;			
+		  }
+		
+			if ( event.ctrlKey &&  event.keyCode == 86 )
+			{
+				PasteRow();
+				event.returnValue = false;			
+		  }
+		}
+		
+		if (bAllowDateNull  && editCol[obj.col] == 1) 
+	     {
+   			     if ( event.shiftKey && event.keyCode == 68 )
+   			     {
+            			    obj.TextMatrix( obj.row , obj.col ) =  "" ;
+            			    obj.TextMatrix( obj.row , obj.Cols - 1 ) = obj.TextMatrix( obj.row , obj.Cols - 1 ) | 0x10;
+            			
+            			    var evObj = createEventObject();
+            			    evObj.row = row;
+            			    evObj.col = col;
+            			    AfterEdit.fire(evObj);	
+    			    }
+		    }
+
+	    }
+	
+}
+
+/* validate data that user input in the grid (user must setup attribute check=||||||||| at the grid control)
+   0:must input, n:must be number, -: can not be negative, > 1 and < 4000: maximun allow character
+   example:check=||1|-||1||n|200||||||
+-	0:cot bat buoc phai nhap
+-	n:cot chi chap nhan gia tri la so
+-	-:cot chi chap nhan so duong
+-	0n:cot chi chap nhan la so va bat buoc phai nhap
+-	0-:cot chi chap nhan so duong va bat buoc phai nhap
+-   1 den 4000: so ky tu toi da ma cot co the chap nhan
+*/
+
+function Validate(r , c){
+    
+    if(colCheck.length == 0) return true;
+    
+    var headerName = GetGridData(0,c);
+    var data = Trim(GetGridData(r,c));
+    var checkType = colCheck[c];
+    
+    if(checkType == null || checkType == "") return true;
+    
+	if(checkType.charAt(0) == "0" ){
+	    if(data == "" || data == null){
+	        alert("Please input data for column '"+ headerName +"' at row " + r 
+	        + ".\n\nBạn phải nhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r );
+	        return false;
+	    }
+	     
+	}	
+	
+	if(checkType == "n" || checkType == "0n"){
+	    if(isNaN(data)){
+	        alert("The input data for column '"+ headerName +"' at row " + r 
+	        + " must be a number.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số.");
+	        return false;
+	    }
+	    
+	}
+	else if(checkType == "-" || checkType == "0-"){
+	    if(data.charAt(0) == "-"){
+	        alert("The input data for column '"+ headerName +"' at row " + r
+	        + " must be a number that can not be negative.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số dương.");
+	        return false;
+	    }
+	    if(isNaN(data)){
+	        alert("The input data for column '"+ headerName +"' at row " + r
+	        + " must be a number.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số.");
+	        return false;
+	    }
+	}
+	else if(checkType > 1 && checkType <=4000){
+	    if(data.length > checkType){
+	        alert("The input data for column '"+ headerName +"' at row " + r 
+	        + " that too long (maximun length must be "+ checkType +").\n\nNhập dữ liệu cho cột '"
+	        + headerName +"' ở dòng số " + r +" vượt quá số ký tự cho phép (tối đa là "+ checkType +" ký tự).");
+	        return false;
+	    }
+	
+	}
+	
+	return true;
+}
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+
+function event_oncontentready()
+{
+	if ( element.print  ) 
+	{
+	
+		obj = element.childNodes(0);
+		
+		obj.style.height="";
+		return;
+	}
+
+	element.print = true;
+
+	innerData = element.innerHTML;
+
+	//Get no for frame
+	var no = 1;
+	while ( FindFrame( "frmCal" + no ) )	no ++; 
+	
+	//if ( typeof( element.acceptNullDate ) != "undefined" ||  typeof( element.acceptnulldate ) != "undefined" )
+	//	bAllowDateNull = true;
+	//else bAllowDateNull = false;
+	
+	bAllowDateNull = true;
+	bAllowCopyPaste = true;
+	
+	if ( typeof( element.group ) == "undefined" ){
+		element.innerHTML = "<object id='idInternalGrid' name='wmode' value='transparent' classid='clsid:D76D7126-4A96-11D3-BD95-D296DC2DD072'  style='"+ element.styles + Gb_Grid_DefStyle + "' ></object><xml style='display:none'>"+ innerData +  "</xml><iframe name='frmCal" + no +"'  frameborder=0 id='iddiv'  style='z-index:30'></iframe>" ;
+	}
+	else{
+		element.innerHTML = "<object id='idInternalGrid' name='wmode' value='transparent' classid='clsid:49EC7E14-9F3D-44D8-A1A4-97CC5D4A7EE8'  style='"+ element.styles + Gb_Grid_DefStyle + "' ></object><xml style='display:none'>"+ innerData +  "</xml><iframe name='frmCal" + no +"'  frameborder=0 id='iddiv'  style='z-index:30'></iframe>" ;
+	}                                                                   
+	
+	//For calendar
+	divPopup = 	element.childNodes(element.childNodes.length-1);
+	divPopupIn =  FindFrame( "frmCal" + no );
+	divPopup.style.position = "absolute";
+	divPopup.style.display = "none";	
+	
+	ctrl = element.childNodes(0);
+	//alert(element.innerHTML)
+	if ( typeof( element.group ) == "undefined" ){
+	    obj = ctrl;
+	}
+	else{
+	    ctrl.GroupBGColor = Gb_Grid_Color;
+	    obj = ctrl.objGrid;
+	    ctrl.GroupRowBGColor = 0xA9EBD7;
+	}
+	obj.Appearance = 1;
+	obj.Rows = 1;
+	obj.Cols = 3;
+	obj.AllowUserResizing = flexResizeColumns ;
+	obj.FixedCols = 0;
+	obj.FixedAlignment(-1) = flexAlignCenterCenter;
+	obj.ColAlignment(-1) = flexAlignCenterCenter;
+	
+	// obj.AllowSelection = true;
+	// obj.AllowBigSelection = true;
+	
+	// obj.SelectionMode = 1; // flexSelectionByRow;
+	obj.SelectionMode = 3; // flexSelectionListBox;
+	obj.ExtendLastCol = true;
+	
+	obj.ExplorerBar = flexExSortShow	;
+	
+	obj.Editable = 2;
+
+    obj.BackColor = Gb_Grid_BColor;
+	obj.BackColorAlternate = Gb_Grid_BColorAlt;
+	obj.BackColorBkg = Gb_Grid_BColorBkg;
+	obj.BackColorFixed = Gb_Grid_BColorFixed; 
+	obj.BackColorSel = Gb_Grid_BColorSel;
+
+	obj.ForeColorSel = Gb_Grid_FColorSel;
+	obj.GridColor  = Gb_Grid_Color;
+	obj.GridColorFixed = Gb_Grid_ColorFixed;
+	obj.BorderStyle = Gb_Grid_BorderStyle;
+	obj.SheetBorder  = Gb_Grid_SheetBorder;
+	//obj.RowHeightMin = Gb_Grid_RowHeightMin;
+	obj.RowHeightMin = 300;
+		
+	obj.GridLines  = 1;
+	obj.GridLinesFixed = 1;
+	obj.TabBehavior =  1;
+    obj.FontSize = 9;
+	
+	if ( typeof( element.sendoldvalue ) != "undefined" ) 
+	{
+		bOldValue = true;
+	}
+    if ( typeof( element.editcolcolor ) != "undefined" ) 
+	{
+		beditColColor = true;
+	}
+	if ( typeof( element.check ) != "undefined" ) 
+	{
+		setCheck( element.check );
+	}
+	if ( typeof( element.header ) != "undefined" ) 
+		setHeader( element.header );
+		
+	if ( typeof( element.format ) != "undefined" ) 
+		setFormat( element.format );
+		
+	if ( typeof( element.aligns ) != "undefined" ) 
+		setAlign( element.aligns );
+
+	if ( typeof( element.widths ) != "undefined" ) 
+		setWidth( element.widths );
+
+	if ( typeof( element.fixedcols ) != "undefined" ) 
+		setFixedCols( element.fixedcols );
+
+	if ( typeof( element.fixedrows ) != "undefined" ) 
+		setFixedRows( element.fixedrows );
+
+	if ( typeof( element.sorting ) != "undefined" ) 
+		setSorting( element.sorting );
+	
+	if ( typeof( element.editcol ) != "undefined" ) 
+		setEditCol( element.editcol );
+	
+	if ( typeof( element.uploadall ) != "undefined" ) 
+		bUploadAll = ( element.uploadall  == "T" );
+
+	if ( innerData.length > 0 )
+	{
+	   	var xxx = element.childNodes(1);
+		SetData( xxx.childNodes(0) );
+		innerData = "";
+	}
+    SetHeaderBold(true);
+	SetHeaderFontSize(8);
+	if ( element.autosize  == "T" || element.autosize  == "Y" || element.autosize  == "true" || element.autosize  == "True") 
+	{
+		bAutoSize = true;
+		obj.AutoSize(0,obj.Cols-1);
+	}
+	if ( typeof( element.group ) == "undefined" ){
+	//-------------attach events----------------------------------
+        obj.attachEvent("onkeydown" , OnKeyDown );   
+        obj.attachEvent("AfterEdit", OnAfterEdit );
+        obj.attachEvent("BeforeEdit", OnBeforeEdit );
+        obj.attachEvent("CellButtonClick", FnOnCellButtonClick );
+        obj.attachEvent("SelChange" , OnSelChange );
+        obj.attachEvent("Click" , OnClick );
+        obj.attachEvent("DblClick" , OnDblClick );
+        obj.attachEvent("EnterCell" , OnEnterCell) ;
+        obj.attachEvent("KeyDownEdit" , OnKeyDownEdit) ;
+        obj.attachEvent("KeyUpEdit" , OnKeyUpEdit) ;
+        obj.attachEvent("KeyPressEdit" , OnKeyPressEdit) ;
+        obj.attachEvent("ValidateEdit" , OnValidateEdit );	
+        obj.attachEvent("BeforeSort" , OnBeforeSort );	
+        obj.attachEvent("AfterSort" , OnAfterSort );
+        obj.attachEvent("AfterUserResize" , OnAfterResize );
+		obj.attachEvent("AfterScroll" , OnAfterScroll );
+		
+    }	
+    else{
+        ctrl.attachEvent("onkeydown" , OnKeyDown );   
+        ctrl.attachEvent("AfterEdit", OnAfterEdit );
+        ctrl.attachEvent("BeforeEdit", OnBeforeEdit );
+        ctrl.attachEvent("CellButtonClick", FnOnCellButtonClick );
+        ctrl.attachEvent("SelChange" , OnSelChange );
+        ctrl.attachEvent("Click" , OnClick );
+        ctrl.attachEvent("DblClick" , OnDblClick );
+        ctrl.attachEvent("EnterCell" , OnEnterCell) ;
+        ctrl.attachEvent("KeyDownEdit" , OnKeyDownEdit) ;
+        ctrl.attachEvent("KeyUpEdit" , OnKeyUpEdit) ;
+        ctrl.attachEvent("KeyPressEdit" , OnKeyPressEdit) ;
+        ctrl.attachEvent("ValidateEdit" , OnValidateEdit );	
+        ctrl.attachEvent("BeforeSort" , OnBeforeSort );	
+        ctrl.attachEvent("AfterSort" , OnAfterSort );
+        ctrl.attachEvent("AfterGrouping" , OnAfterGrouping );
+		ctrl.attachEvent("AfterScroll" , OnAfterScroll );
+    }
+    
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Internal Functions
+// --------------------------------------------------------------------------------------------------------//
+var bAllowDateNull; // for accept null date in cell grid or not
+var bAllowCopyPaste; // for copy and paste in grid or not
+
+function ValidDateValue( obj )
+{
+    if((obj == null || obj == "")&& bAllowDateNull == true) return "";
+    
+	var today = new Date();
+	var s = '';
+	//alert(obj+":"+Gb_Grid_DateLang)
+	var sValue =  obj ;
+	var aValue = sValue.split('/');
+	
+	if ( aValue.length == 3 )
+	{
+		aValue[0]++ ; 
+		aValue[0]-= 1; 
+		aValue[1]++ ; 
+		aValue[1]-= 1  ; 
+		aValue[2]++ ; 
+		aValue[2]-= 1 ;
+		
+		if(Gb_Grid_DateLang == 1) {		
+			if (!( isNaN(aValue[0]) || isNaN(aValue[1]) || isNaN(aValue[2]) ) )
+				today = new Date( aValue[2] , aValue[1] -1 ,aValue[0] );
+		}else {
+					if (!( isNaN(aValue[0]) || isNaN(aValue[1]) || isNaN(aValue[2]) ) )
+				today = new Date( aValue[0] , aValue[1] -1 , aValue[2] );
+		}
+		/*if (!( isNaN(aValue[0]) || isNaN(aValue[1]) || isNaN(aValue[2]) ) )
+			today = new Date( aValue[2] , aValue[1] -1 , aValue[0] );*/
+	}else {
+		if (bAllowDateNull) return "";
+	} 
+
+	var y = "000" + (today.getFullYear());
+	var m = "0" + (today.getMonth()+1);
+	var d =  "0" + (today.getDate()) ;
+	
+	if(Gb_Grid_DateLang == 1) {
+		s = d.substr( d.length - 2 ) + "/"  + m.substr( m.length - 2 )   + "/" + y.substr( y.length - 4 );
+	} else {
+		s = y.substr( y.length - 4 ) + "/"  + m.substr( m.length - 2 )   + "/" + d.substr( d.length - 2 );
+	}	
+	//alert("r:"+s)
+	return s;
+
+}
+
+function ReplaceRow( a , b )
+{
+	
+	for ( var i = 0 ; i < obj.Cols ; i ++ )
+	{
+		var tmp = obj.TextMatrix( a , i ) ;
+		obj.TextMatrix( a , i ) = obj.TextMatrix( b , i );
+		obj.TextMatrix( b , i ) = tmp;
+		obj.Row = b;
+	}
+}
+//Method: Subtotal
+//Created: 09-Mar-2006   Phong
+//Please refer to vsflexgrid 7.0 Help for more details of Subtotal Method
+//Parameters: iPos (Position of Subtotal Row: 0:bottom    1: Above)
+//            All remain parameters are the same with Subtotal's parameters of vsflexgrid
+function Subtotal(iPos,iSubtotalSettings, iGroupOn, iTotalOn, sFormatString, bFontBold,iMatchFrom, sCaption,  bBkgColor, bForeColor, bTotalOnly)
+{
+    obj.SubtotalPosition= iPos;
+    bBkgColor = (bBkgColor==null ? 0xabcdef :bBkgColor);
+    bForeColor =(bForeColor==null ? 0x000000 :bForeColor);
+    bFontBold =(bFontBold==null ? true :bFontBold);
+    var aTotal = new Array();
+    var aCol = new Array();
+    aTotal = iTotalOn.split("!");
+    //alert(aTotal[0]);
+    for (i=0;i<aTotal.length;i++)
+    {
+		aCol = aTotal[i].split("-");
+		if (aCol.length>1)
+		{				
+			for (j=aCol[0];j<=aCol[aCol.length-1];j++)
+				obj.Subtotal(iSubtotalSettings, iGroupOn, j, sFormatString, bBkgColor, bForeColor, bFontBold, sCaption, iMatchFrom, bTotalOnly);
+		}
+		else
+		{
+			obj.Subtotal(iSubtotalSettings, iGroupOn, aTotal[i], sFormatString, bBkgColor, bForeColor, bFontBold, sCaption, iMatchFrom, bTotalOnly);
+		}	
+    }
+    
+}
+
+//Method: Cleartotal
+//Created: 09-Mar-2006   Phong
+function Cleartotal()
+{
+  obj.Subtotal(1);  
+}
+
+function MergeColByCol(iBaseCol,sColMerge) 
+{
+    obj.Subtotal(1);
+
+    obj.Subtotal(0, iBaseFCol,0,"#,###",0x0000,0x009,true,"%s",iBaseCol);
+    
+//    grdPOInquiry.GetGridControl().OutlineBar=2;
+    
+    for (i=0;i<obj.rows;i++)
+    {
+        if (obj.RowOutlineLevel(i)==2)
+        {
+            obj.RowHidden(i)=true;            
+        }
+    }
+    var aCol=new Array();
+    aCol=sColMerge.split(",");
+    obj.MergeCells = 3;
+    obj.MergeCol(iBaseFCol) = true;   
+    for (j=0;j<=aCol.length-1;j++)
+    {
+       obj.MergeCol(aCol[j]) = true; 
+    }
+}
+
+</SCRIPT>
+
+
+
+<SCRIPT LANGUAGE="VBScript">
+
+
+Sub   idInternalGrid_ValidateEdit(  row ,   col ,   cancel )
+
+	MsgBox 1
+	
+	cancel = true
+	
+End Sub  
+
+Sub VBEvent()
+	set d = getRef( "ValidateEdit" )
+	MsgBox element.childNodes(0).attachEvent  ( "ValidateEdit" , d )
+	
+End Sub
+
+Function GetRefVB()
+
+	set GetRefVB = getRef( "ValidateEdit" )
+End Function
+
+Function VBTest()
+
+	MsgBox obj.outerHTML
+	
+	Dim a  , b , c , d
+	a = CLng(0 )
+	b = CLng(0 )
+	c = CLng(0 )
+	d = CLng(0 )
+	call obj.GetSelection  ( a, b , c , d)
+End Function
+</SCRIPT>

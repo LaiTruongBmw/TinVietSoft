@@ -1,0 +1,940 @@
+<PUBLIC:COMPONENT tagName="DateBox" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="Validate" />
+	<PUBLIC:METHOD name="GetControl" />
+	<PUBLIC:METHOD name="Focus" />
+	
+	<PUBLIC:PROPERTY  NAME="text"   PUT="setText" GET="getText"/>
+	<PUBLIC:PROPERTY  NAME="value"   PUT="setValue" GET="getValue"/>
+	<PUBLIC:PROPERTY  NAME="acceptnull"   PUT="setAcceptNull" GET="getAcceptNull"/>
+
+	<public:event id="onChange" name="onchange">
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >	
+	
+	//instant property ==> lang [ lang = 1 'DD/MM/YYYY'  lang != 1 'YYYY/MM/DD']
+	
+<SCRIPT Language="Javascript">
+
+var text="";
+var value=null;
+var obj = null;
+var type = 0;
+
+var lang = 1;
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function Validate()
+{
+   return true;
+}
+function GetData()
+{
+	text = obj.value;
+	return DelDateDelimiter( text, lang );
+}
+function Focus()
+{
+	obj.focus();
+}
+function GetControl()
+{
+	return obj;
+}
+function SetData( data )
+{
+	if ( data )
+	{
+		SetDataText( data.text );
+		
+	}
+	else
+		setText( "" );
+}
+
+function SetDataText( txt )
+{
+
+	if ( txt.length > 0 )
+		//setText( ValidDateValue( AddDateDelimiter( txt, lang )));
+		setText( AddDateDelimiter( txt, lang ));
+	else
+		//setText( ValidDateValue(""));
+		setText("");
+}
+
+
+function SetEnable( bEnable )
+{
+	element.disabled = !bEnable;
+	if ( bEnable )
+	{
+		obj.contentEditable = "true";
+	} else
+	{
+		obj.contentEditable = "false";
+	}
+	
+}
+
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function setText (vValue)
+{
+
+   text = vValue;
+   if ( obj ) 
+   {
+   		obj.value = ValidDateValue(vValue);
+   }
+   
+}
+
+function getText()
+{
+	text = obj.value;
+	return text;
+}
+function getAcceptNull()
+{	
+   return bNullAccept;
+}
+function setAcceptNull( value)
+{	
+   bNullAccept = value;
+}
+function setValue (vValue)
+{
+   var s_date;
+   
+
+   var aValue = vValue.split('/');
+   if (aValue.length > 1)
+   {
+     if ( type == 0 )
+          value = aValue[0] + aValue[1] + aValue[2];
+     else if (type == 1)
+          value = aValue[0] + aValue[1];
+     else
+          value = aValue[0];
+     
+     s_date = vValue;
+   }
+   else
+   {
+     value = vValue;
+     if ( type == 0 )
+          s_date = value.substring(0,4) + "/" + value.substring(4,6) + "/" + value.substring(6,8);
+     else if (type == 1)
+          s_date = value.substring(0,4) + "/" + value.substring(4,6)
+     else
+          s_date = value.substring(0,4)
+   }
+     
+   if ( obj )
+   {
+       if(lang == 1)
+       {
+          if ( type == 0 )
+              s_date =  value.substring(6,8) + "/" + value.substring(4,6) + "/" + value.substring(0,4);
+          else if (type == 1)
+              s_date =  value.substring(4,6) + "/" + value.substring(0,4);
+          else
+              s_date =  value.substring(0,4);
+       }
+       obj.value = value;
+       setText(s_date);
+   }
+}
+
+function getValue()
+{
+	value = obj.value;
+	
+	if  ( obj.value.length == 0 ) return "";
+	
+	var aValue = value.split('/');
+	
+        if(lang == 1)
+        {
+              if ( type == 0 )
+              	 value = aValue[2] + aValue[1] + aValue[0];
+              else if (type == 1)
+                 value = aValue[1] + aValue[0];
+              else
+                 value = aValue[0];
+        }
+        else
+        {
+              if ( type == 0 )
+              	 value = aValue[0] + aValue[1] + aValue[2];
+              else if (type == 1)
+                 value = aValue[0] + aValue[1];
+              else
+                 value = aValue[0];
+        }
+        return value;
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+function OnClickPrev()
+{
+	if (  !element.disabled )
+		Change(-1);	
+}
+
+function OnClickNext()
+{
+	if (  !element.disabled )
+		Change(1);
+}
+
+function OnBlur( )
+{
+	var p = window.event.toElement;
+	
+	while ( p != element && p )
+	{
+		p = p.parentNode;
+	}
+	
+	
+	if ( !p )
+	{
+
+		PopupClose();
+	}
+	
+}
+
+function OnClickInternal()
+{
+	if ( event.srcElement.tagName == "IMG"  && !element.disabled )
+	{
+		
+		Validate();
+		
+		var s_date;
+		
+		var d = new Date();
+		
+		var y = GetPosTop( event.srcElement )  ;
+		var x = GetPosLeft( event.srcElement )  ;
+		
+		s_date = getValue()
+		
+		//alert("1:" + s_date);
+		
+		if ( s_date.length > 0 )
+			s_date = s_date.substring(0,4) + "/" + s_date.substring(4,6) + "/" + s_date.substring(6,8);
+		//alert("2:" + s_date);
+
+		popupValue = s_date;		
+		// mr Sung inserted 
+		var pos = new Object();
+		FindObjectPos( element , pos );
+		ShowPopupCalendar( pos.x, pos.y + 20 );		
+	
+		//ShowPopup();
+		return;
+		
+//		var url =System.SystemURL + "/lib/calendar.asp?id=" +  escape(s_date) + "&random=" + d ;
+//		
+//		o = window.showModalDialog(  url    , window, "unadorned:on ; center:yes; edge:sunken ; title: no; resizable:no;status:no; dialogWidth:145px; dialogHeight:160px;dialogLeft:" + x +"px;dialogTop:"+y+"px;");		
+//		//o = window.showModalDialog(  url    , window , "unadorned:on ; center:yes; edge:sunken ;  resizable:no;status:no; dialogWidth:160px; dialogHeight:200px;");		
+//		
+//		if ( o )
+//		{
+//			//setText( o[0] );
+//			setValue( o[0] );
+//			var evObj = createEventObject()
+//		  	onChange.fire(evObj)
+//			
+//		}
+	}
+	
+	
+}
+function OnChangeInternal()
+{
+	Validate();
+	var evObj = createEventObject()
+  	onChange.fire(evObj)
+}
+
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+var bNullAccept = false;
+
+// mr Sung added 03 Nov 2003
+function FindFrame( name )
+{
+
+	var i;
+	var list = element.document.frames;
+	
+	for ( i = 0 ;  i< list.length ; i ++ )
+	{
+		if ( list(i).name == name )
+		{
+			return list(i);
+		}
+	}
+	
+	return false;
+}
+
+
+function event_oncontentready()
+{
+	if(typeof( element.lang ) != "undefined"){
+	  lang = element.lang;
+    }else{
+		lang = 1;
+	} 
+	
+	if(lang == "" || lang == null){
+		lang = 1;
+	}
+	
+	if ( element.type=="month" ) 
+		type = 1;
+	else
+	if ( element.type=="year" ) 
+		type = 2;
+	else
+		type = 0;
+		
+    if ( element.print  ){
+	    if ( type == 0 ){
+		    obj = element.childNodes(0);
+	    } else
+	    {
+		    obj = element.childNodes(1);
+	    }
+	    return;
+    }
+	
+	element.print = true;
+	var style="";
+	
+    if(type == 0){
+	    style = "width:78;text-align:center;";
+	}
+	else if(type == 1){
+	    style = "width:55;text-align:center;";
+	}
+	else{
+	    style = "width:36;text-align:center";
+	}
+	
+     if (element.csstype) { // for css type
+		switch (element.csstype.toLowerCase()) {
+			case "filter" : {	
+				style += Gb_Text_FltStyle;
+				break;
+			}
+			case "mandatory" : {	
+				style += Gb_Text_ManStyle;
+				break;
+			}
+			case "general" : {	
+				style += Gb_Text_GenStyle;
+				break;
+			}						
+		}
+	} 
+
+	bNullAccept = ( typeof( element.nullaccept ) != "undefined" ) ;
+	//bNullAccept = true;
+	
+	if ( type == 0 )
+	{
+		var no = 1;
+
+		while ( FindFrame( "frmCal" + no ) )	no ++ 
+		
+		element.innerHTML = "<input style='font-size:9pt;"+ style + "' MaxLength=10  ><img src='" + System.SysImgPath + "/calendar.gif' style='margin-left:2' align='absMiddle'><iframe name='frmCal" + no +"'  frameborder=0 id='iddiv'  style='z-index:30'></iframe>";
+		
+		obj = element.childNodes(0);
+		obj.attachEvent("onchange", OnChangeInternal);
+		element.childNodes(1).attachEvent("onclick" , OnClickInternal )
+		
+		divPopup = 	element.childNodes(element.childNodes.length-1);
+		
+		divPopupIn =  FindFrame( "frmCal" + no );
+		
+		divPopup.style.position = "absolute";
+		divPopup.style.display = "none";
+		
+		element.attachEvent("ondeactivate" , OnBlur  );
+
+	} else
+	{
+		if ( type == 1 )
+			element.innerHTML = "<img src='" + System.SysImgPath + "/prev_orange.gif' style='margin-left:2'align='absMiddle'><input style='"+"'font-size:9pt;'"+ style + element.styles + "' MaxLength=7 size=7><img src='" + System.SysImgPath + "/next_orange.gif' style='margin-left:2'align='absMiddle'>";
+		else
+			element.innerHTML = "<img src='" + System.SysImgPath + "/prev_orange.gif' style='margin-left:2'align='absMiddle'><input style='"+"'font-size:9pt;'"+ style + element.styles + "' MaxLength=4 size=4><img src='" + System.SysImgPath + "/next_orange.gif' style='margin-left:2'align='absMiddle'>";
+	   // alert(element.innerHTML);		
+		obj = element.childNodes(1);
+		obj.attachEvent("onchange", OnChangeInternal);
+		element.childNodes(0).attachEvent("onclick" , OnClickPrev )
+		element.childNodes(2).attachEvent("onclick" , OnClickNext )
+
+	}
+
+    if (value == null) 	
+	    setText( text );
+	else    
+	    setValue( value );
+	
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Internal Funcitons
+// --------------------------------------------------------------------------------------------------------//
+
+function Change( d )
+{
+	var today ;
+	var sValue =  getText() ;
+	var aValue = sValue.split('/');
+
+	
+	
+	if ( type == 1 )
+	{
+		aValue[0]++ ; 
+		aValue[0]-= 1; 
+		aValue[1]++ ; 
+		aValue[1]-= 1   ; 
+		
+		if(lang != "1")
+		{
+		        aValue[1] += d;
+	        	today = new Date( aValue[0] , aValue[1]-1  , 1 );
+	        }
+	   	else
+	   	{
+	   	        aValue[0] += d;
+	        	today = new Date( aValue[1] , aValue[0]-1  , 1 );
+	        }
+		
+	}
+	else
+	{
+		aValue[0]++ ; 
+		aValue[0]-= 1; 
+		aValue[0] += d;
+		
+		today = new Date( aValue[0]  , 0 , 1 );
+		
+	}
+
+
+	var y = "000" + (today.getFullYear());
+	var m = "0" + (today.getMonth()+1);
+	var d =  "0" + (today.getDate()) ;
+
+	if ( type==1 )
+        {
+	   if(lang != "1")
+	        s =  y.substr( y.length - 4 )   + "/"  + m.substr( m.length - 2 );
+	   else
+	        s =   m.substr( m.length - 2 )  + "/"  +  y.substr( y.length - 4 );
+	}
+	else
+		s =  y.substr( y.length - 4 )    ;
+
+
+	setText( s );
+
+	var evObj = createEventObject()
+  	onChange.fire(evObj)
+	
+}
+
+
+
+function ValidDateValue( obj )
+{
+        
+	var today;
+	
+	if ( bNullAccept ) 
+		today = "";
+	else 
+		today = new Date();
+		
+		
+	
+	var testday;
+	var t_yy, t_mm, t_dd;
+	
+	var sValue =  obj ;
+	var aValue = sValue.split('/');
+
+	
+	if ( type == 0 )
+	{	
+		if ( aValue.length == 3 )
+		{
+			aValue[0]++ ; 
+			aValue[0]-= 1; 
+			aValue[1]++ ; 
+			aValue[1]-= 1  ; 
+			aValue[2]++ ; 
+			aValue[2]-= 1 ;
+			
+			
+			// Date availability Test
+		          
+		          if(lang != "1")
+		          {
+			        testday = new Date( aValue[0] , aValue[1] -1 , aValue[2] );
+			        t_yy = aValue[0];
+			        t_mm = aValue[1] - 1;
+			        t_dd = aValue[2];
+			  }
+			  else
+			  {
+			        testday = new Date( aValue[2] , aValue[1] -1 , aValue[0] );
+			        t_yy = aValue[2];
+			        t_mm = aValue[1] - 1;
+			        t_dd = aValue[0];
+			  }
+			  
+			  
+			 // alert("system[" + testday.getYear() + "][" + testday.getMonth() + "][" + testday.getDate() + "]");
+			 // alert("t[" + t_yy + "][" + t_mm + "][" + t_dd + "]");
+		          			  
+		          if (!((testday.getYear() % 100) != (t_yy % 100) || testday.getMonth() != t_mm || testday.getDate() != t_dd))
+		          {
+ 	 		  	if(lang != "1")
+				        today = new Date( aValue[0] , aValue[1] -1 , aValue[2] );
+			        else
+				        today = new Date( aValue[2] , aValue[1] -1 , aValue[0] );
+			  }
+			
+		}
+	} else
+	if ( type == 1 )
+	{
+		if ( aValue.length == 2 )
+		{
+			aValue[0]++ ; 
+			aValue[0]-= 1; 
+			aValue[1]++ ; 
+			aValue[1]-= 1  ; 
+                        // Date Availability Inspection
+		          
+		          if(lang != "1")
+		          {
+			        testday = new Date( aValue[0] , aValue[1] -1 , 1 );
+			        t_yy = aValue[0];
+			        t_mm = aValue[1] - 1;
+			  }
+			  else
+			  {
+			        testday = new Date( aValue[1] , aValue[0] -1 , 1 );
+			        t_yy = aValue[1];
+			        t_mm = aValue[0] - 1;
+			  }
+			  
+			  //alert("system[" + testday.getYear() + "][" + testday.getMonth()+ "]");
+			  //alert("t[" + t_yy + "][" + t_mm + "]");
+		          			  
+		          if (!((testday.getYear() % 100) != (t_yy % 100) || testday.getMonth() != t_mm ))
+		          {
+ 	 		  	if(lang != "1")
+				        today = new Date( aValue[0] , aValue[1] -1 , 1 );
+			        else
+				        today = new Date( aValue[1] , aValue[0] -1 , 1 );
+			  }			
+		}	
+	} else
+	{
+		if ( aValue.length == 1 )
+		{
+			
+			aValue[0]++ ; 
+			aValue[0]-= 1; 
+			
+
+			if (!( isNaN(aValue[0])) && aValue[0]>0 ) 
+				today = new Date( aValue[0] , 0 , 1 );
+		}
+	}
+	
+	
+	if ( typeof( today ) == "string" )
+		return "";
+	
+	var y = "000" + (today.getFullYear());
+	var m = "0" + (today.getMonth()+1);
+	var d =  "0" + (today.getDate()) ;
+
+	if ( type==0 )
+	{
+		if(lang != "1")
+	 	   s =  y.substr( y.length - 4 )   + "/"  + m.substr( m.length - 2 )   + "/" +d.substr( d.length - 2 )  ;
+		else
+		   s =  d.substr( d.length - 2 )   + "/"  + m.substr( m.length - 2 )   + "/" + y.substr( y.length - 4 );
+	}
+	else if ( type==1 )
+	        if(lang != "1")
+		   s =  y.substr( y.length - 4 )   + "/"  + m.substr( m.length - 2 );
+		else
+		   s =  m.substr( m.length - 2 )   + "/"  + y.substr( y.length - 4 );
+		
+	else
+		s =  y.substr( y.length - 4 )    ;
+	
+	return s;
+}
+
+
+
+function Validate()
+{
+	//setText( ValidDateValue(getText() ));
+	setText( getText());
+}
+
+
+function AddDateDelimiter( s, o )
+{
+
+        if (o != 1)
+        {
+            if ( type == 0 )
+                 return s.substring( 0, 4 ) +"/"+ s.substring( 4, 6 ) +"/" +  s.substring( 6, 8  ) ;
+            else if (type == 1)
+                 return s.substring( 0, 4 ) +"/"+ s.substring( 4, 6 );
+            else
+                 return s.substring( 0, 4 );
+        }
+        else
+        {
+	    if ( type == 0 )
+                 return s.substring( 6, 8 ) +"/"+ s.substring( 4, 6 ) +"/" +  s.substring( 0, 4  ) ;
+            else if (type == 1)
+                 return s.substring( 4, 6 ) +"/" +  s.substring( 0, 4  ) ;
+            else
+                 return s.substring( 0, 4 ) ;
+        }
+      
+}
+	
+function DelDateDelimiter( s, o )
+{
+	if (o != 1)
+	{
+	    if ( type == 0 )
+                 return s.substring( 0, 4 ) +  s.substring( 5, 7 )  + s.substring( 8, 10 ) ;
+            else if (type == 1)
+                 return s.substring( 0, 4 ) +  s.substring( 5, 7 );
+            else
+                 return s.substring( 0, 4 );
+	}
+	else
+	{
+	    if ( type == 0 )
+                 return s.substring( 6, 10 ) +  s.substring( 3, 5 )  + s.substring( 0, 2 ) ;
+            else if (type == 1)
+                 return s.substring( 3, 7 )  +  s.substring( 0, 2 ) ;
+            else
+                 return s.substring( 0, 4 ) ;
+        }
+}
+
+//---------------------------------------
+
+//var oPopup = null;
+//var bPopupSetup = true;
+
+var popupValue = "";
+var divPopup ;
+var divPopupIn ;
+
+/*
+	divPopupIn.document.body.CallPrevMonth =  PopupPrevMonth ;
+	divPopupIn.document.body.CallNextMonth =  PopupNextMonth;
+	divPopupIn.document.body.CallPrevYear = PopupPrevYear ;
+	divPopupIn.document.body.CallNextYear =  PopupNextYear ;
+*/
+
+//------------------------------------------------------------------------
+function PopupPrevMonth()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+	
+	szMonth = szMonth - 1;
+	if(szMonth == 0)
+	{
+		szMonth = 12
+		szYear = szYear - 1;
+	}
+	oCal.month = szMonth;
+	oCal.year = szYear;
+}
+
+function PopupNextMonth()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+	
+	szMonth = szMonth + 1;
+	if(szMonth == 11)
+	{
+		szMonth = 1
+		szYear = szYear + 1;
+	}
+	oCal.month = szMonth;
+	oCal.year = szYear;
+}
+function PopupPrevYear()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+
+	szYear = szYear - 1;
+	
+	oCal.year = szYear;
+}
+function PopupNextYear()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+
+	szYear = szYear + 1;
+	
+	oCal.year = szYear;
+}
+function PopupToDay()
+{
+	//Get Today's Date
+	var oDate = new Date();
+	
+	//Note here: Date object's format is different than calendar's date format
+	
+	//set as a calendar's current value
+	var m = oDate.getMonth()+1;
+	var d = oDate.getDate();
+	if(m<10)
+		m = '0' + m;
+	if(d < 10)
+		d = '0' + d;
+	value =oDate.getFullYear() + '/' + m + '/' + d ;
+	
+	PopupClose();
+	setValue(value);
+}
+
+function PopupClear()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	
+	PopupClose();
+	
+	/*obj.TextMatrix( obj.row , obj.col ) =  "" ;
+	obj.TextMatrix( obj.row , obj.Cols - 1 ) = obj.TextMatrix( obj.row , obj.Cols - 1 ) | 0x10;
+	
+	var evObj = createEventObject();
+	evObj.row = row;
+	evObj.col = col;
+    AfterEdit.fire(evObj);*/
+		
+}
+
+function PopupClose()
+{
+	divPopup.style.display = "none";
+}
+
+function PopupSelect()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+
+	if ( szMonth < 10 ) szMonth = '0' + szMonth;
+	if ( szDay < 10 ) szDay = '0' + szDay;
+
+	var o = String(szYear) + "/" + String(szMonth) + "/" + String(szDay) 
+	
+	PopupClose();
+	setValue( o );
+	
+	var evObj = createEventObject()
+  	onChange.fire(evObj)
+
+}
+
+// mr Sung added 03 Nov 2003
+function SetPopupCalendar()
+{
+	divPopup.style.display = "";
+
+	var arr = popupValue.split("/");
+	var  defaultValue;
+	if ( arr.length == 3 )
+	{
+		defaultValue = " year=" + arr[0] + " month=" + arr[1] + " day=" +arr[2] + " ";
+	} else
+	defaultValue = ' ';
+	
+
+	var src = 
+		'<html><style>'+
+		'.Calendar '+
+		'{'+
+		'	behavior: url(../../../../system/htc/calendar.htc) ;'+
+		'	width : 33%'+
+		'}'+
+		'.smcalendar {' + Gb_smcalendar + '} '+
+		'.smcalendar_table {' + Gb_smcalendar_table + '} '+
+		'.smcalendar_header	{' + Gb_smcalendar_header + '}'+
+		'.smcalendar_content {' + Gb_smcalendar_content + '}'+
+		'.smcalendar_last {' + Gb_smcalendar_last + '}'+
+		'.smcalendar_select {' + Gb_smcalendar_select + '}'+
+		'</style>'+
+		'<body bgcolor="' + Gb_Date_BColor + '" style="' + Gb_Date_Style + '" ><table align="center" width="100%"border="0" cellpadding="0"><tr><td>'+
+		'<div  style="width:100%;" onselect="document.body.CallSelect()" onclose="document.body.CallClose()" class="Calendar" id = "cur"  gridCellEffect="flat"  monthLength="short" dayLength="short" showTitle="false" img="' + System.SysImgPath  + '/delete.gif"' + defaultValue + '></div></td></tr></table>'+
+		' </body></html>'
+		;
+	
+	divPopupIn.document.close();
+	divPopupIn.document.write (src );
+	
+	divPopupIn.document.body.CallClose = PopupClose ;
+	divPopupIn.document.body.CallSelect = PopupSelect;
+	divPopupIn.document.body.CallClear = PopupClear;
+	divPopupIn.document.body.CallToDay = PopupToDay;
+	
+	divPopupIn.document.body.CallPrevMonth =  PopupPrevMonth ;
+	divPopupIn.document.body.CallNextMonth =  PopupNextMonth;
+	divPopupIn.document.body.CallPrevYear = PopupPrevYear ;
+	divPopupIn.document.body.CallNextYear =  PopupNextYear ;
+	
+}
+
+function ShowPopupCalendar( x , y )
+{
+	var w =  163 ;
+	var h =  183 ;
+
+	SetPopupCalendar();
+	
+	divPopup.style.width = w;
+	divPopup.style.height = h;
+	divPopup.style.top = y ;
+	divPopup.style.left = x;
+	
+	obj.select();
+	
+}
+
+function SetPopup()
+{
+/*smcalendar, smcalendar_table, ... get from globalVar.js*/
+	oPopup = window.createPopup();
+	var src = 
+		'<html><style>'+
+		'.Calendar '+
+		'{'+
+		'	behavior: url(' + System.SystemURL + '/htc/calendar.htc) ;'+
+		'	width : 33%'+
+		'}'+
+		'.smcalendar {' + Gb_smcalendar + '} '+
+		'.smcalendar_table {' + Gb_smcalendar_table + '} '+
+		'.smcalendar_header	{' + Gb_smcalendar_header + '}'+
+		'.smcalendar_content {' + Gb_smcalendar_content + '}'+
+		'.smcalendar_last {' + Gb_smcalendar_last + '}'+
+		'.smcalendar_select {' + Gb_smcalendar_select + '}'+
+		'</style>'+
+		'<body bgcolor="' + Gb_Date_BColor + '" style="' + Gb_Date_Style + '" ><table align="center" width="100%"border="0" cellpadding="0"><tr><td>'+
+		'<div  style="width:100%;"  class="Calendar" id = "cur"  gridCellEffect="flat"  monthLength="short" dayLength="short" showTitle="false" img="' + System.SysImgPath  + '/delete.gif"></div></td></tr></table>'+
+		' </body></html>'
+		;
+
+	oPopup.document.write(src); 
+	/*
+		'.smcalendar  		{background-color:#FEBCBE; border: 1 solid #FFFFFF;} '+
+		'.smcalendar_table  	{border-top: 1 solid #CACACA; border-left: 1 solid #CACACA;} '+
+		'.smcalendar_header 	{background-color:#EFEFEF ; font-family: "Tahoma" ;font-weight:bold; font-size:8pt; color: #01226F; text-align: center; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #CACACA; border-right: 1 solid #CACACA}'+
+		'.smcalendar_content  	{font-family: "Tahoma";color:#322E8C; text-align: center; background-color:#EFEFEF; font-size:8pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #CACACA; border-right: 1 solid #CACACA;cursor:hand}'+
+		'.smcalendar_last  	{font-family: "Tahoma";color:#7E7E7E; text-align: center; background-color:#EFEFEF; font-size:8pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #CACACA; border-right: 1 solid #CACACA; cursor:hand}'+
+		'.smcalendar_select  	{font-family: "Tahoma";color:#700035; text-weight:bold;text-align: center; background-color:#FEF68B; font-size:8pt ; border-bottom: 1 solid #CACACA; border-right: 1 solid #CACACA; cursor:hand}'+	
+	*/
+}
+
+function PopupSetup()
+{
+	if ( bPopupSetup )
+	{
+		if ( popupValue.length > 0 ) 
+		oPopup.document.all("cur").value = popupValue;
+				
+		oPopup.document.all("cur").attachEvent( "onselect" ,PopupSelect);
+		oPopup.document.all("cur").attachEvent( "onclose" , PopupClose );
+		oPopup.document.all("cur").attachEvent( "onclear" , PopupClear );
+		oPopup.document.all("cur").attachEvent( "ontoday" , PopupToDay );
+		oPopup.document.all("cur").attachEvent( "onprevday" , PopupPrevMonth );
+		oPopup.document.all("cur").attachEvent( "onnextday" , PopupNextMonth );
+		oPopup.document.all("cur").attachEvent( "onprevweek" , PopupPrevYear );
+		oPopup.document.all("cur").attachEvent( "onnextweek" , PopupNextYear );
+		bPopupSetup = false;
+	}
+}
+
+function ShowPopup(  )
+{
+	if ( !oPopup ) 
+	{
+		SetPopup();
+		
+	}
+	
+	var w =  Gb_Date_Width ; //globalVar.js
+	var h = Gb_Date_Height  ;
+	
+	oPopup.show(0 , 10 , w, h, event.srcElement);
+	if ( bPopupSetup )
+		oPopup.document.attachEvent( "onactivate"  , PopupSetup );	
+		
+	if ( popupValue.length > 0 )
+	oPopup.document.all("cur").value = popupValue;
+}
+
+
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

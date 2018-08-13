@@ -1,0 +1,154 @@
+/* CSS Document */		
+
+/* BUTTONS */
+.buttons a, .buttons button{
+    display:block;
+    float:left;
+    margin:0 0px 0 0;
+    background-color:#f5f5f5;
+    border:1px solid #dedede;
+    /*border-top:1px solid #eee;*/
+    /*border-left:1px solid #eee;*/
+
+    font-family:Tahoma;
+    font-size:11px;
+    line-height:130%;
+    text-decoration:none;
+    font-weight:bold;
+    color:#49b919;
+    cursor:pointer;
+    padding:0px 6px 2px 3px; /*top right bottom left*/
+}
+/*
+.buttons button{
+    overflow:visible;
+    padding:4px 10px 3px 7px; 
+}
+
+.buttons button[type]{
+    padding:5px 10px 5px 7px; 
+    line-height:17px; 
+}
+*:first-child+html button[type]{
+    padding:4px 10px 3px 7px; 
+}*/
+
+.buttons a img{
+    margin:2px 4px -3px 0 !important;
+    padding:0;
+    border:none;
+    width:16px;
+    height:16px;
+    text-decoration:none;
+}
+
+.buttons span{
+    text-transform:capitalize;
+}
+
+/* STANDARD */
+
+button:hover, .buttons a:hover{
+    background-color:#62ac0d;
+    border:1px solid #c2e1ef;
+    color:#336699;
+}
+/*
+.buttons a:active{
+    background-color:#6299c5;
+    border:1px solid #6299c5;
+    color:#fff;
+}
+*/
+/*Vina Style*/
+.buttons a.xanhdam{
+    color:#6299c5;
+    white-space:nowrap;
+}
+.buttons a.xanhdam:hover{
+    background-color:#6299c5;
+    border:1px solid #6299c5;
+    color:#ffffff;
+	text-decoration:none;
+	white-space:nowrap;
+	font-size:11px;
+}
+
+.buttons a.xanhla{
+    color:#62ac0d;
+    white-space:nowrap;
+}
+.buttons a.xanhla:hover{
+    background-color:#62ac0d;
+    border:1px solid #62ac0d;
+    color:#ffffff;
+	text-decoration:none;
+	white-space:nowrap;
+	font-size:11px;
+}
+
+.buttons a.xam{
+    color:#c7c8c9;
+    white-space:nowrap;
+}
+.buttons a.xam:hover{
+    background-color:#c7c8c9;
+    border:1px solid #c7c8c9;
+    color:#ffffff;
+	text-decoration:none;
+	white-space:nowrap;
+	font-size:11px;
+}
+/* POSITIVE */
+
+button.positive, .buttons a.positive{
+    color:#529214;
+    white-space:nowrap;
+}
+.buttons a.positive:hover, button.positive:hover{
+    background-color:#E6EFC2;
+    border:1px solid #C6D880;
+    color:#529214;
+	text-decoration:none;
+	white-space:nowrap;
+	font-size:11px;
+}
+/*
+.buttons a.positive:active{
+    background-color:#529214;
+    border:1px solid #529214;
+    color:#fff;
+}
+*/
+/* NEGATIVE */
+
+.buttons a.negative, button.negative{
+    color:#d12f19;
+    white-space:nowrap;
+}
+.buttons a.negative:hover, button.negative:hover{
+    background:#d12f19;
+    border:1px solid #d12f19;
+    color:#ffffff;
+    text-decoration:none;
+    white-space:nowrap;
+	font-size:11px;
+}
+
+/* REGULAR */
+
+button.regular, .buttons a.regular{
+    color:#336699;
+}
+.buttons a.regular:hover, button.regular:hover{
+    background-color:#dff4ff;
+    border:1px solid #c2e1ef;
+    color:#336699;
+	font-size:11px;
+}
+.buttons a.regular:active{
+    background-color:#6299c5;
+    border:1px solid #6299c5;
+    color:#fff;
+	font-size:11px;
+}

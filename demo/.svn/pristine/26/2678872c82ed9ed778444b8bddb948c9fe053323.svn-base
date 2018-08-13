@@ -1,0 +1,205 @@
+
+body { font-family: "Tahoma"; font-size:10pt; 
+	   margin  : 1 1 1 1; 
+	   text-decoration  : none;
+	   background-color :#FBFBFB;
+ 	}
+button { font-family: "Tahoma"; font-size:8pt;font-weight:bold; }
+select {  font-family: "Tahoma"; font-size:8pt; }
+input  {font-family: "Tahoma"; font-size:8pt; }
+img    { border: 0 }
+div	{ font-weight:normal;}
+p { margin-top:1 ; margin-bottom:1 }
+TEXTAREA {
+	BORDER-RIGHT: #cccccc 1px solid; 
+	BORDER-TOP: #cccccc 1px solid; 
+	PADDING-LEFT: 5px; FONT-SIZE: 11px; 
+	BORDER-LEFT: #cccccc 1px solid; 
+	PADDING-TOP: 2px; 
+	BORDER-BOTTOM: #cccccc 1px solid; 
+	FONT-SIZE: 12px;
+	FONT-FAMILY: Tahoma;
+}
+TABLE {
+	FONT-WEIGHT: normal; FONT-SIZE: 11px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: tahoma, verdana, arial, helvetica
+}
+TR {
+	FONT-WEIGHT: normal; FONT-SIZE: 11px; COLOR: #323232; FONT-STYLE: normal; FONT-FAMILY: tahoma, verdana, arial, helvetica
+}
+td   		{ font-size: 9pt; font-family: "Tahoma";} 
+
+
+TABLE.debugtable { 	border-width:1px ; border-color:#237705; border-style: solid ; border-collapse: collapse; }
+TD.debug_content {	 font-size: 9pt; color:#000000; padding:0 0 0 0;background-color: #F4F4F4 }
+TD.debug_title2 { 	font-family: Tahoma; font-size: 9pt; color:white; background-color: #4040af; font-weight:700;padding:2 5 2 5 }
+TD.debug_title {	font-family: Tahoma; font-size: 9pt;  background-color: #c0a0ff;padding:2 5 2 5 }
+
+TABLE.table 	{ border-top: 0 solid #E1CC4F; border-left: 0 solid #E1CC4F; border-right:0 solid black ; border-bottom:0 solid black} 
+TD.table_title 	{ font-family: "Tahoma"; padding: 3 3 3 3; background-color:#bde9ff; ; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #E1CC4F; border-right: 1 solid #E1CC4F}
+TD.table_title1 { font-family: "Tahoma";padding: 5 5 5 5; background-color:#015C90  ; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #81D7F3; border-right: 1 solid #81D7F3;color:white}
+TD.table_title2 	{ font-family: "Tahoma"; padding: 3 3 3 3; background-color:#FFFFBF ; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #E1CC4F; border-right: 1 solid #E1CC4F; TEXT-ALIGN:LEFT;}
+TD.table_title3 { font-family: "Tahoma";padding: 5 5 5 5; background-color:#FFFFDF  ; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #E1CC4F; border-right: 1 solid #E1CC4F}
+TD.table_content 	{ font-family: "Tahoma";padding: 2 2 2 2; background-color:white; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #E1CC4F; border-right: 1 solid #E1CC4F}
+
+TABLE.itable 	{ border-top: 1 solid #003284; border-left: 1 solid #003284;border-right:0 solid black ; border-bottom:0 solid black} 
+TD.itable_title 	{ font-family: "Tahoma"; padding: 2 2 2 2; background-color:#FFF0A3 ; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #E1CC4F; border-right: 1 solid #E1CC4F}
+TD.itable_content 	{ font-family: "Tahoma";padding: 0 0 0 0; background-color:#015C90;color:white; font-size:10pt ; border-top:0 solid white ; border-left:0 solid white ; border-bottom: 1 solid #E1CC4F; border-right: 1 solid #E1CC4F}
+
+TD.gwTitle {
+	FONT-WEIGHT: bold; 
+	FONT-SIZE: 12px; 
+	FONT-STYLE: normal; 
+	font-family:  Verdana, Arial, Helvetica, sans-serif;
+	TEXT-DECORATION: none;
+	color: #COCOCO;
+}
+
+TABLE.grid		{ border-top: 1 solid #C7C7C7; border-left: 1 solid #C7C7C7;} 
+/*
+TD.grid_title 		{ font-family: "Tahoma"; padding: 3 3 3 3; background-color:#C5E2F7 ; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #C2D1E5; border-right: 1 solid #FFFFFF}/**/
+TD.grid_title 		{ font-family: "Tahoma"; padding: 3 3 3 3; background-color:#000000 ; font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #C2D1E5; border-right: 1 solid #FFFFFF}
+TD.grid_content 	{ font-family: "Tahoma";padding: 2 2 2 2;  font-size:10pt ; border-top:1 solid white ; border-left:1 solid white ; border-bottom: 1 solid #C7C7C7; border-right: 1 solid #C7C7C7}
+TR.grid_content	{ background-color:#EEEEEE; padding:2 2 2 2 }
+
+TABLE.standalone
+{
+border-collapse:collapse; border:1px solid #003284;
+}
+
+A {
+	 FONT-SIZE: 12px; COLOR: #4267B2; FONT-STYLE: normal; FONT-FAMILY: tahoma, verdana, arial; TEXT-DECORATION: none
+}
+A:link,A:visited,A:active {
+	 FONT-SIZE: 12px; COLOR: #4267B2; FONT-STYLE: normal; FONT-FAMILY: tahoma, verdana, arial; TEXT-DECORATION: none
+}
+A:hover {
+	FONT-SIZE: 12px; COLOR: #4267B2; FONT-STYLE: normal; FONT-FAMILY: tahoma, verdana, tahoma, verdana, arial; TEXT-DECORATION: underline
+}
+.tree_canvas {  }
+.tree_node    { color: black ;  }	
+.tree_clicknode    {  behavior:url( /ijaram/lib/hilight.htc) ; cursor: hand }	
+.tree_child    { }	   
+
+.title { 
+	color:#095E88; 
+	text-align:right;
+}
+b.topic { color:#095E88; 
+		 text-transform:uppercase;
+		 text-indent:6px;
+		 font-size:12px;
+}
+
+.btnLogin
+{
+	PADDING-RIGHT: 1px;
+	PADDING-LEFT: 1px;
+	FONT-SIZE: 11px;
+	PADDING-BOTTOM: 0px;
+	PADDING-TOP: 0px;
+	COLOR:  #000;
+	border: 1px solid #cccccc;
+	background-color: #ffffff;	
+	font-weight:bold;
+	width: 80px;
+	height:20px;
+}
+
+.table_login
+{
+    width:	385px;
+    height:	360px;
+    background-image: url(images/login/bg_login.jpg);
+    background-repeat: no-repeat;
+    background-position: left top;
+}
+.table_login td {text-align:center;vertical-align:top;}
+.table_login td.user 
+{
+	background-image: url(images/login/user.jpg);
+	background-repeat: no-repeat;
+	background-position: bottom;
+	padding-left:45px;
+	height:91px;
+	padding-top:50px;
+	}
+.table_login td.pass 
+{
+	background-image: url(images/login/pass.jpg);
+	background-repeat: no-repeat;
+	background-position: bottom;
+	padding-left:45px;
+	height:91px;
+	padding-top:50px;
+	}
+.table_login a.btn_login 
+{
+	background-image: url(images/login/btn_login.gif);
+	background-repeat: no-repeat;
+	background-position: bottom;}
+.table_login a.btn_login:hover
+{
+	background-image: url(images/login/btn_login_over.gif);
+	background-repeat: no-repeat;
+	background-position: bottom;}
+.textbox_login{border-width:0px;font-size:15px;height:25px;}
+
+.eco_line
+{
+	/**/
+	border:1px solid #62ac0d;
+	/*
+	border:1px solid #81d7f3;
+	/**/
+}
+
+.eco_line_t
+{
+	/**/
+	border-top:1px solid #62ac0d;
+	/*
+	border-top:1px solid #81d7f3;
+	/**/
+}
+
+.eco_line_l
+{
+	/**/
+	border-left:1px solid #62ac0d;
+	/*
+	border-left:1px solid #81d7f3;
+	/**/
+}
+
+.eco_line_b
+{
+	/**/
+	border-bottom:1px solid #62ac0d;
+	/*
+	border-bottom:1px solid #81d7f3;
+	/**/
+}
+
+.eco_bg
+{
+	/**/
+	background-color: #eaf8d2;
+	/*
+	background-color: #ffffff;
+	/**/
+}
+
+.eco_link
+{
+	/**/
+	color: #336699 !important;
+	font-size: 9px;
+	/*
+	color: #0000ff !important;
+	/**/
+}
+.eco_blue
+{
+	color: #336699 !important;
+	FONT-SIZE: 11px;
+}

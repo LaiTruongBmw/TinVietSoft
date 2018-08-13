@@ -1,0 +1,63 @@
+body {margin:0 0 0 0; font:11px Tahoma;}
+ul.menu {list-style:none; margin:0; padding:0}
+ul.menu * {margin:0; padding:0}
+ul.menu a {display:block; color:#000; text-decoration:none;}
+ul.menu li {position:relative; float:left; margin-right:0px;}
+ul.menu ul {position:absolute; top:38px; left:0; background:#d1d1d1; display:none; opacity:0; list-style:none;}
+ul.menu ul li {position:relative; border:0px solid #aaa; border-top:none; width:68px; margin:0;}
+ul.menu ul li a {display:block; padding:0px 12px 0px 6px; background-color:#666666;line-height:25px;color:#000000;}
+ul.menu ul li a:hover {
+	padding-left:15px;
+	background-color:#ffffff;
+	color:#000000;
+	/* CSS3 standard */
+	opacity:0.6;
+	/* for IE */
+	filter:alpha(opacity=60);}
+ul.menu ul ul {left:165px; top:-1px}
+ul.menu .menulink {border:0px solid #aaa; padding:5px 14px;font-weight:bold; width:63px; height:28px; color:#a7a7a7;line-height:30px;border-left:2px solid #3CBC8C;}
+ul.menu .menulink:hover, ul.menu .menuhover .active{background-color:#49b919; color:#ffffff;}
+ul.menu .active{background-color:#49b919; color:#f0ff00;}
+ul.menu .sub {background:#666666 url(arrow.gif) 125px 8px no-repeat;}
+ul.menu .topline {border-top:0px solid #aaa}
+
+#header {
+	width:100%;
+	height:48px;
+	background-color:#666666;background:url(natural-cross.jpg);
+	float:left;
+}
+#logo{background:url(ms.jpg);background-repeat:no-repeat;width:200px;height:48px;background-position:10px;}
+#main_navi{position:absolute;width:100%;left:165px;top:10px;height:48px;text-transform:uppercase;}
+#content {position:absolute;width:100%;height:350px;top:48px;border:1px solid #62ac0e;background:url(natural-cross2.jpg);background-repeat:repeat-x;background-position:top;}
+ul.sub {list-style:none; margin:0; padding:0}
+ul.sub * {margin:0; padding:0}
+ul.sub a {display:block; color:#FFFFFF; text-decoration:none;font:11px Arial;line-height:30px;font-weight:bold;}
+ul.sub li {position:relative; float:left; margin-right:0px;border:0px solid #aaa; width:190px; height:28px; color:#a7a7a7;text-align:center;font-weight:bold;text-transform:uppercase;}
+ul.sub ul {list-style:none;overflow: auto; overflow-x: hidden;-ms-overflow-x: hidden; height:305px;}
+ul.sub ul li {border:0px solid #aaa; border-top:none; width:170px;margin:0;text-decoration:none;text-align:left;height:20px;padding-left:5px;}
+ul.sub ul li a{text-decoration:none;font:bold 11px Tahoma;line-height:20px;color:#49b919;}/*49b919 */
+ul.sub ul li a:hover {
+    cursor:pointer;
+	padding-left:5px;
+	background-color:#3CBC8C;
+	font-weight:bold;
+	border:1px solid #49b919;
+	color:#ffffff;
+	/* CSS3 standard */
+	/*opacity:0.3;*/
+	/* for IE */
+	/*filter:alpha(opacity=30);*/}
+	
+.bodyscroll{
+	color: #000000;
+	font-weight:none;
+	scrollbar-face-color: #ffffff;
+	scrollbar-shadow-color: #A8A8A8;
+	scrollbar-base-color : #666666;
+	scrollbar-highlight-color: #A8A8A8;
+	scrollbar-3dlight-color: #ffffff;
+	scrollbar-darkshadow-color: #ffffff;
+	scrollbar-track-color: #f8f8f8;
+	scrollbar-arrow-color: #000000;
+}

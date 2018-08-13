@@ -1,0 +1,2773 @@
+﻿<PUBLIC:COMPONENT tagName="grid" lightweight = true  >
+	
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="GetGridData" />
+	<PUBLIC:METHOD name="SetGridData" />
+	<PUBLIC:METHOD name="SetGridText" />
+	<PUBLIC:METHOD name="Validate" />
+
+	<PUBLIC:METHOD name="GetGridControl" />
+
+	<PUBLIC:METHOD name="SetComboFormat" />
+	<PUBLIC:METHOD name="AppendComboItem" />			
+	<PUBLIC:METHOD name="RemoveComboItem" />	
+	<PUBLIC:METHOD name="GetComboItemIndex" />		
+
+	
+	<PUBLIC:METHOD name="SetColText" />
+
+	<PUBLIC:METHOD name="AddRow" />
+	<PUBLIC:METHOD name="DeleteRow" />
+	<PUBLIC:METHOD name="UpRow" />
+	<PUBLIC:METHOD name="DownRow" />
+
+	<PUBLIC:METHOD name="DeleteRowAt" />		
+	<PUBLIC:METHOD name="DeleteAll" />	
+
+	<PUBLIC:METHOD name="CopyRow" />
+	<PUBLIC:METHOD name="PasteRow" />
+
+	<PUBLIC:METHOD name="SetRowEditable" />
+	<PUBLIC:METHOD name="SetColEditable" />	
+
+	<PUBLIC:METHOD name="SetRowStatus" />
+	<PUBLIC:METHOD name="GetRowStatus" />
+	<PUBLIC:METHOD name="SetAllRowStatusModify" />
+	<PUBLIC:METHOD name="SetRowStatusModify" />
+
+
+	<PUBLIC:METHOD name="MergeGridCols" />	
+	<PUBLIC:METHOD name="ChangeBgColorFrTo" />		
+	<PUBLIC:METHOD name="SetColComboData" />		
+	<PUBLIC:METHOD name="SetWrapText" />			
+	<PUBLIC:METHOD name="SetHeaderFont" />		
+	<PUBLIC:METHOD name="SetHeaderFontSize" />		
+	<PUBLIC:METHOD name="SetHeaderBold" />			
+	<PUBLIC:METHOD name="SetHeaderFontColor" />			
+	<PUBLIC:METHOD name="SetCellFont" />			
+	<PUBLIC:METHOD name="SetCellBold" />			
+	<PUBLIC:METHOD name="SetCellFontColor" />		
+  <PUBLIC:METHOD name="SetCellBgColor" />					
+
+  <PUBLIC:METHOD name="UnDeleteRow" />						
+  <PUBLIC:METHOD name="UnDeleteRowAt" />						
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="SelectRow" />
+
+	<PUBLIC:PROPERTY  NAME="rows"  GET="getRows"/>
+	<PUBLIC:PROPERTY  NAME="cols"   GET="getCols"/>
+	<PUBLIC:PROPERTY  NAME="row"  GET="getRow"/>
+	<PUBLIC:PROPERTY  NAME="col"   GET="getCol"/>
+	<PUBLIC:PROPERTY  NAME="selrow"  GET="getSelRow"/>
+
+
+	<public:event id="CellButtonClick" name="oncellbuttonclick">
+	<public:event id="CellClick" name="oncellclick">
+	<public:event id="CellDblClick" name="oncelldblclick">
+	<public:event id="EnterCell" name="onentercell">
+	<public:event id="AfterEdit" name="onafteredit">
+	<public:event id="BeforeSort" name="onbeforesort">	
+	<public:event id="AfterSort" name="onaftersort">	
+	
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+	
+
+</PUBLIC:COMPONENT>
+
+
+<SCRIPT Language="Javascript">
+
+// --------------------------------------------------------------------------------------------------------//
+//  Variables
+// --------------------------------------------------------------------------------------------------------//
+var colCheck = new Array();
+var DataColumnLen  = 0;
+var ColumnInfo = new Array();
+//
+//  ColumnInfo has array of the following record
+//
+//  ColumnInfo[i].title		: string , presentation header
+//  ColumnInfo[i].align		: alignment "L" : left , "R" : right ,  "M" : middle
+//  ColumnInfo[i].sorting	: sort flag 	true/false
+//  ColumnInfo[i].width		: column width 
+//  ColumnInfo[i].editmode	: edit flag 	
+						//	0 : No Edit
+						//  	1 : Edit
+						//	2 : Insert Only Edit
+						//	3 : Modify Only Edit
+//  ColumnInfo[i].hidden	: define or not  	
+//  ColumnInfo[i].value		: default value
+//  ColumnInfo[i].editfunc	: 
+						
+
+
+var GridCtrl = null;
+
+var bOldValue = false ; 		// preserve old data in each cell
+var bDebug = false;
+
+
+// internal use variables
+var bModifing = false;
+var 	bUploadAll = false;
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+
+
+
+/*
+  return data to send server
+  
+  	if bUploadAll set , process all row , otherwise process updated or inserted or deleted row
+*/
+// --------------------------------------------------------------------------------------------------------//
+
+function Validate(r , c){
+    
+    if(colCheck.length == 0) return true;
+    
+    var headerName = GetGridData(0,c);
+    var data = Trim(GetGridData(r,c));
+    var checkType = colCheck[c];
+    
+    if(checkType == null || checkType == "") return true;
+    
+	if(checkType.charAt(0) == "0" ){
+	    if(data == "" || data == null){
+	        alert("Please input data for column '"+ headerName +"' at row " + r 
+	        + ".\n\nBạn phải nhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r );
+	        return false;
+	    }
+	     
+	}	
+	
+	if(checkType == "n" || checkType == "0n"){
+	    if(isNaN(data)){
+	        alert("The input data for column '"+ headerName +"' at row " + r 
+	        + " must be a number.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số.");
+	        return false;
+	    }
+	    
+	}
+	else if(checkType == "-" || checkType == "0-"){
+	    if(data.charAt(0) == "-"){
+	        alert("The input data for column '"+ headerName +"' at row " + r
+	        + " must be a number that can not be negative.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số dương.");
+	        return false;
+	    }
+	    if(isNaN(data)){
+	        alert("The input data for column '"+ headerName +"' at row " + r
+	        + " must be a number.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số.");
+	        return false;
+	    }
+	}
+	else if(checkType > 1 && checkType <=4000){
+	    if(data.length > checkType){
+	        alert("The input data for column '"+ headerName +"' at row " + r 
+	        + " that too long (maximun length must be "+ checkType +").\n\nNhập dữ liệu cho cột '"
+	        + headerName +"' ở dòng số " + r +" vượt quá số ký tự cho phép (tối đa là "+ checkType +" ký tự).");
+	        return false;
+	    }
+	
+	}
+	
+	return true;
+}
+
+function GetData( param )
+// --------------------------------------------------------------------------------------------------------//
+{
+
+	var s = "";
+
+	if (  bUploadAll ) 
+		SetAllRowStatusModify();
+
+
+	if (  arguments.length > 0 )
+	{
+		s = MakeData( param );
+			
+	} else
+	{
+		s = MakeDataAll();
+	}
+
+	return s;
+}
+ 
+// Set sorting
+function setSorting( s )
+{
+	if ( GridCtrl ) 
+	{
+		if ( s == "true" || s == "T" )
+		{
+			GridCtrl.ExplorerBar = flexExSortShow	;	
+		} else
+		{
+			GridCtrl.ExplorerBar = flexExNone	;	
+		}
+	} 
+}
+
+//
+// 
+function SetData( data )
+{
+	ClearData();
+	if ( data )
+	{
+		
+		bModifing = true;
+		for ( var x = 0 ;  x < data.childNodes.length ; x ++ )
+		{
+			var row = ExtractFirstTag( data.childNodes(x).xml );
+            row = row.replace(/&amp;/g, "&");
+		
+			var arr = row.split(CDelimiter)
+		
+			var r = GridCtrl.Rows;
+			GridCtrl.Rows ++;
+			
+			for ( var i = 0 ; i < arr.length ; i++ )
+			{
+				if ( i < DataColumnLen )
+				{
+					GridCtrl.TextMatrix( r  , i ) = ColumnInfo[i].GetValueToPresent ( arr[i] , r , i );
+					GridCtrl.TextMatrix( r   , i + DataColumnLen ) = arr[i];
+
+					ColumnInfo[i].SetConfig( r , i  ,  false );
+					
+					if (bOldValue)
+					{
+						GridCtrl.TextMatrix( r   , i + DataColumnLen*2 ) = arr[i];
+					}
+				}
+				
+			}
+			
+			GridCtrl.TextMatrix( r  , GridCtrl.Cols -1  ) = 0;
+			GridCtrl.RowData(r) = 0;
+		}
+
+		
+		bModifing = false;
+	}
+			
+}
+
+
+function ClearData()
+{
+	GridCtrl.Rows = 1;
+
+}
+
+
+function GetGridData( r , c )
+{
+	var row = r * 1;
+	var col = c * 1;
+
+	if ( col < DataColumnLen )
+	{
+		return GridCtrl.TextMatrix( row , col*1 +DataColumnLen );
+	} else
+		return "";
+
+}
+
+function CheckReferDynamicType( row, col )
+{
+	
+	if ( col <  DataColumnLen && col >=0 && ColumnInfo[col].refee  )
+	{
+		var i;
+		
+		for ( i = 0 ; i < DataColumnLen ; i++ )
+		{
+			if ( i != col && ColumnInfo[i].ref == col )
+			{
+				ColumnInfo[i].SetConfig( row , i  ,  false );
+				GridCtrl.TextMatrix( row  , i ) = ColumnInfo[i].GetValueToPresent ( 
+					GridCtrl.TextMatrix( row , i + DataColumnLen )
+					 , row , col);
+			}
+		}
+	}
+}
+
+function SetGridData( r , c , data )
+{
+	var row = r * 1;
+	var col = c * 1;
+	if ( col < DataColumnLen )
+	{
+		var d = ExtractFirstTag(data.xml) ;
+		GridCtrl.TextMatrix( row , col*1 + DataColumnLen ) = d;
+		GridCtrl.TextMatrix( row  , col ) = ColumnInfo[col].GetValueToPresent ( d , row , col );
+		CheckReferDynamicType( row, col );
+		
+		SetRowStatusModify( row )
+	} 
+	
+}	
+
+function SetGridText( r , c , data )
+{
+	var row = r * 1;
+	var col = c * 1;
+	
+	if ( col < DataColumnLen )
+	{
+		/*var str;	
+		if ( (data != "") && (ColumnInfo[c].celltype == "datebox")) {
+			// if format cell is date
+			switch ( ColumnInfo[c].type )
+			{
+				case "year":
+					
+					str = data.substring( 0, 4 );
+					break;
+					
+				case "month":
+				
+					str = data.substring( 0, 4 ) + "/" + data.substring( 4, 6 );
+					break;
+		
+				default:
+					str = data.substring( 0, 4 ) + "/" + data.substring( 4, 6 )+"/" +  data.substring( 6, 8 );
+					break;
+					
+			}
+			
+		}
+		
+		data = str;
+	  //alert(data);	
+	 */
+		GridCtrl.TextMatrix( row , col + DataColumnLen ) =  ColumnInfo[col].GetPresentToValue( data , row , col );
+		GridCtrl.TextMatrix( row  , col ) = ColumnInfo[col].GetValueToPresent ( GridCtrl.TextMatrix( row , col + DataColumnLen ) , row , col );
+		CheckReferDynamicType( row, col );
+		SetRowStatusModify( row )
+	}
+}
+
+function GetGridControl()
+{
+	return GridCtrl;
+}
+
+
+
+// 
+//  Combo Operation
+// 
+
+function SetComboFormat( col  , s )
+{
+	GridCtrl.ColComboList( col ) = s ;
+}
+
+function AppendComboItem(col, data) {
+	var s;
+	var str;
+
+	arr = data.split("|");
+	if (arr.length == 2) {
+		s = "#" + arr[0] + ";" + arr[1];
+	}
+	str = GridCtrl.ColComboList(col);
+	if (str != "") {
+		s = "|" + s;
+	}
+	str = str + s;
+	GridCtrl.ColComboList( col ) = str ;
+}
+
+function RemoveComboItem (col, index) {
+	var str;
+	var i;
+	var item;
+	var fin;
+	fin = "";
+	str = "" + GridCtrl.ColComboList(col);
+	if (str != ""){
+		arr = str.split("|");
+		for (i=0;i<arr.length;i++) {
+			item = arr[i];
+			
+			if (i != index) {
+				if (fin != "") {
+					fin = fin + "|";
+				}
+				fin = fin + item;
+			}
+			
+		}
+		GridCtrl.ColComboList(col) = fin;
+	}
+}
+
+function GetComboItemIndex (col, input, byPK) {
+
+	if (byPK == "T" ) {
+		//alert("Call 1");
+		return GetComboItemIndexByPK(col, input);		
+	} else {
+		//alert("Call 2");	
+		return GetComboItemIndexByVal(col, input);
+	}
+
+}
+
+function GetComboItemIndexByPK (col, id) {
+	var str;
+	var i;
+	var item;
+  var pk;
+	var temp;
+	
+	str = "" + GridCtrl.ColComboList(col);
+  
+	if (str != ""){
+		arr = str.split("|");
+		for (i=0;i<arr.length;i++) {
+			item = arr[i];
+			arr2 = item.split(";");	
+			temp = arr2[0]; 
+			pk = temp.substr(1,temp.length);
+			if (pk == id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+}
+
+function GetComboItemIndexByVal (col, value) {
+	var str;
+	var i;
+	var item;
+  var val;
+	
+	str = "" + GridCtrl.ColComboList(col);
+  
+	if (str != ""){
+		arr = str.split("|");
+		for (i=0;i<arr.length;i++) {
+			item = arr[i];
+			arr2 = item.split(";");	
+			val = arr2[1];
+			if (val == value) {
+				return val;
+			}
+		}
+		return -1;
+	}
+}
+
+
+function SetColText( col , data )
+{
+	var i ; 
+	
+	for ( i = 1 ; i < GridCtrl.Rows  ; i++ )
+		SetGridText( i, col,  data );
+}
+
+// 
+//  Row Status Operation
+// 
+
+function SetRowStatus( row , data )
+{
+	GridCtrl.TextMatrix( row , GridCtrl.cols -1   ) = data;
+}
+
+function GetRowStatus( row )
+{
+	return GridCtrl.TextMatrix( row , GridCtrl.cols -1 );
+}
+
+
+function SetAllRowStatusModify( )
+{
+	var i;
+	for ( i = 1 ; i < GridCtrl.Rows  ; i++ )
+		GridCtrl.TextMatrix( i ,  GridCtrl.cols -1 ) |= 0x10;
+}
+
+function SetRowStatusModify( row )
+{
+	GridCtrl.TextMatrix( row ,  GridCtrl.cols -1 ) |= 0x10;
+}
+
+function AddRow()
+{
+	var row = GridCtrl.Rows ;
+	GridCtrl.Rows ++;
+
+	for ( var i = 0 ; i < DataColumnLen ; i++ )
+	{
+		GridCtrl.TextMatrix( row  , i ) = ColumnInfo[i].GetValueToPresent ( ColumnInfo[i].value  , row , i );
+		GridCtrl.TextMatrix( row   , i + DataColumnLen ) = ColumnInfo[i].value;
+		ColumnInfo[i].SetConfig( row , i  ,  false );
+	}
+	
+	GridCtrl.TextMatrix( row ,  GridCtrl.cols -1 ) |= 0x20;
+	GridCtrl.RowData(row)=0;
+
+}
+
+function DeleteRow()
+{
+	for ( var i =  0 ; i < GridCtrl.SelectedRows ; i ++ )
+	{
+		var row = GridCtrl.SelectedRow(i);
+		
+		DeleteRowAt( row );
+	}
+}
+
+function DeleteRowAt(idxNo)
+{
+	var row = idxNo;
+	if ( row > 0 )
+	{		
+		GridCtrl.TextMatrix( row , GridCtrl.Cols - 1 ) = GridCtrl.TextMatrix( row , GridCtrl.Cols - 1 ) | 0x40;
+		GridCtrl.Cell( 6 , row , 0 , row, GridCtrl.Cols - 1 ) = 0xeeeeee;
+		GridCtrl.Cell( 7 , row , 0 , row, GridCtrl.Cols - 1 ) = 0x808080;
+	}		
+	
+}
+
+function DeleteAll()
+{
+	var row, i;
+	for ( i =  1 ; i < GridCtrl.Rows ; i ++ )
+	{
+		DeleteRowAt( i );
+	}
+
+}
+
+function UpRow()
+{
+	var row = GridCtrl.RowSel ;
+	if ( row > 1 )
+	{
+		ReplaceRow( row , row -1 );
+		
+	}
+
+}
+
+function DownRow()
+{
+	
+	var row = GridCtrl.RowSel ;
+	
+	if ( row > 0  && row < GridCtrl.Rows - 1 )
+	{
+		ReplaceRow( row , row +1 );
+		
+	}
+}
+
+function SetRowEditable( row , bEdit)
+{
+	GridCtrl.RowData(row) = bEdit ? 0 : 1;
+}
+
+function SetColEditable( col , bEdit)
+{
+	ColumnInfo[col].editmode = bEdit ? "1" : "0";
+}
+
+//
+// Copy Row Data to Clipboard
+//
+
+function CopyRow()
+{
+		var data="";
+	
+	var r;
+					
+	for ( r = 1 ; r < GridCtrl.Rows  ; r ++ )
+	{
+		if ( GridCtrl.IsSelected( r ) )
+		{
+			
+			var s = "";
+			for ( var i = 0 ; i < DataColumnLen ; i ++ )
+			{
+				// shouldnt get hidden column
+				if (!ColumnInfo[i].hidden ) {
+					if ( s == "" )
+						s += GridCtrl.TextMatrix( r , i + DataColumnLen) ;
+					else
+						s +=  '\t' + GridCtrl.TextMatrix( r , i + DataColumnLen) ;
+				}
+			}
+			
+			if ( data == "" )
+				data += s ;
+			else
+				data += "\n" + s;
+		
+		}
+	}		
+	window.clipboardData.setData( "Text", data);
+	
+	/*var data="";
+	
+	var r;
+	
+	
+	for ( r = 1 ; r < GridCtrl.Rows  ; r ++ )
+	{
+		if ( GridCtrl.IsSelected( r ) )
+		{
+			
+			var s = "";
+			for ( var i = 0 ; i < DataColumnLen ; i ++ )
+			{
+			
+				if ( i == 0 )
+					s += GridCtrl.TextMatrix( r , i + DataColumnLen ) ;
+				else
+					s +=  '\t' + GridCtrl.TextMatrix( r , i + DataColumnLen ) ;
+				
+			}
+			
+			if ( r == 1 )
+				data += s ;
+			else
+				data += "\n" + s;
+		
+		}
+	}
+	window.clipboardData.setData( "Text", data);*/
+}
+
+//
+// Paste Row Data from Clipboard
+//
+function Trim(sent){
+	var S=new String(sent);
+	S=S.replace(/^\s+/,"");
+	return S.replace(/\s+$/,"")
+}
+
+function PasteRow()
+{
+var data= window.clipboardData.getData("Text") ;
+	
+	var arr = Trim(data).split ("\n");
+	var cr = GridCtrl.Row ;
+	var rows = GridCtrl.Rows;
+	// in case no row 03.09.19
+	if ( GridCtrl.Rows > 1  )
+	{
+		var i,j , k, l;
+		if (confirm("Are you sure you want to paste data to grid ?")) {
+			for (i=0;i<arr.length-(rows - cr);i++) {
+				AddRow();
+			}
+			k = cr;			
+			for ( i = 0 ; i < arr.length ; i++)
+			{
+				if (arr[i].length > 0 )  
+				{
+					var col = arr[i].split( "\t" );
+					l = j = 0;
+					if (GridCtrl.Col != -1) {
+						j = GridCtrl.Col;
+					}
+					while ((j<DataColumnLen) && (l<col.length)) {
+						if (!ColumnInfo[j].hidden )
+						{
+							GridCtrl.TextMatrix(k , j + DataColumnLen ) = col[l] ;	
+							GridCtrl.TextMatrix( k , j  ) = ColumnInfo[j].GetValueToPresent (  Trim(col[l]) , k, j );
+							ColumnInfo[j].SetConfig( k, j  ,  false );
+							l ++;
+						}	
+						j++;
+					}
+	
+					GridCtrl.Cell( 6 , k , 0 , k, GridCtrl.Cols - 1 ) = 0 ;
+					GridCtrl.Cell( 7 , k , 0 , k, GridCtrl.Cols - 1 ) = 0 ;
+					GridCtrl.TextMatrix( k  , GridCtrl.Cols-1 ) = 0x20;
+					GridCtrl.RowData(k) = 0;
+				
+					k++;
+				}
+				
+			}
+						
+		}
+
+	}
+	/*var data= window.clipboardData.getData("Text") ;
+	
+	var arr = data.split ( "\n");
+	
+	var cr = GridCtrl.Row + 1;
+	
+	// in case no row 03.09.19
+	if ( GridCtrl.Rows > 1  )
+	{
+	
+
+		var bInsert = confirm( "Insert = Y or Overwrite = N" );
+	
+		if ( !bInsert ) 
+		{
+			//alert( cr + len  );
+			//alert( len );
+			//GridCtrl.Select( cr + len , 0  , cr + len + len -1  , 0);
+			DeleteRow();
+		}
+
+	}  else
+		cr = 1;
+	
+	//if ( !bInsert ) cr --;
+	
+	var i,j , len=0;
+	// Insert 
+	for ( i = 0 ; i < arr.length ; i++)
+	{
+		if ( arr[i].length > 0 )
+		{
+			AddRow();
+			len ++;
+		}
+	}
+	
+	
+	for ( i = GridCtrl.Rows - 1 - len  ; i >= cr   ;  i --)
+	{
+		for ( var j = 0 ; j < GridCtrl.Cols ; j ++ )
+		{
+
+			GridCtrl.TextMatrix( i + len  , j ) = GridCtrl.TextMatrix( i , j  ) ;
+		}
+		
+		GridCtrl.Cell( 6 , i + len , 0 , i + len, GridCtrl.Cols - 1 ) = GridCtrl.Cell( 6 , i , 0 , i, GridCtrl.Cols - 1 ) ;
+		GridCtrl.Cell( 7 , i + len , 0 , i + len, GridCtrl.Cols - 1 ) = GridCtrl.Cell( 7 , i , 0 , i, GridCtrl.Cols - 1 );
+		GridCtrl.RowData(i + len) = GridCtrl.RowData(i);
+	}
+	
+	
+
+	len = 0;
+	for ( i = 0 ; i < arr.length ; i++)
+	{
+		if ( arr[i].length > 0 )
+		{
+			var col = arr[i].split( "\t" );
+			
+			for ( var j = 0 ; j < DataColumnLen ; j ++ )
+			{
+				if ( j < col.length ) 
+				{
+					GridCtrl.TextMatrix( cr + len , j + DataColumnLen ) = col[j] ;	
+					GridCtrl.TextMatrix( cr + len , j  ) = ColumnInfo[j].GetValueToPresent (  col[j] , cr+len , j );
+					ColumnInfo[i].SetConfig( cr +len , j  ,  false );
+				}	
+			}
+			
+
+			GridCtrl.Cell( 6 , cr + len , 0 , cr + len, GridCtrl.Cols - 1 ) = 0 ;
+			GridCtrl.Cell( 7 , cr + len , 0 , cr + len, GridCtrl.Cols - 1 ) = 0 ;
+			GridCtrl.TextMatrix( cr + len  , GridCtrl.Cols-1 ) = 0x20;
+			GridCtrl.RowData(cr + len) = 0;
+			len ++;
+		}
+	}
+	
+	
+	// in case no copy  03.09.19
+	if ( len > 0 )
+		GridCtrl.Select( cr , 0 , cr + len -1 , 0 );*/
+}
+
+
+//
+// Etc
+//
+
+function SetEnable( s )
+{
+	if ( GridCtrl ) 
+	{
+
+		if ( s )
+			GridCtrl.Editable = 2;
+		else
+		{
+			GridCtrl.Editable = 0;
+		}
+	} 
+}
+
+
+function SelectRow( n )
+{
+	GridCtrl.RowSel = n;
+	GridCtrl.isSelected (n) = True;
+}
+
+
+
+function MergeByCol ( col ) {
+	 GridCtrl.MergeCells = 3; // RestricCol or 4
+	 GridCtrl.MergeCol(col) = true;
+	 /*GridCtrl.Select (row1, col1, row2, col2);
+   GridCtrl.FillStyle = 1;
+   GridCtrl.CellBackColor = color;
+   GridCtrl.FillStyle = 0;
+   GridCtrl.Select (4, 1);*/
+}
+
+function MergeByRow ( row ) {
+	 GridCtrl.MergeCells = 2; // RestricRow or 4
+	 GridCtrl.MergeRow(row) = true;	 
+}
+
+function SetWrapText ( bWraped ) {
+	GridCtrl.WordWrap = bWraped;
+}
+
+function MergeGridCols () {
+	var i ;
+	GridCtrl.MergeCells = 1;
+	for (i=0;i<GridCtrl.Cols;i++) {
+		GridCtrl.MergeCol(i) = true;
+	}
+	SetWrapText(true);
+	//ChangeBgColorFrTo(1,5,0xFEBCBE);
+}
+
+function ChangeBgColorFrTo(col1, col2, color ) {
+	var i,j;
+	for (i=1;i<GridCtrl.Rows;i++) {
+		for (j=col1;j<=col2;j++) {
+			if (GridCtrl.TextMatrix(i,j) != "") {
+				GridCtrl.Cell (6, i,j) = color;
+			}
+		}
+	}
+}
+
+function SetHeaderFont( fnt) {
+	/*obj.Select (0, 0, 0, obj.Cols-2);
+	obj.CellFontName = fnt;*/
+	GridCtrl.Cell(11, 0, 0, 0, GridCtrl.Cols-2) = fnt
+}
+
+function SetHeaderBold( bBold ) {
+	GridCtrl.Cell(13, 0, 0, 0, GridCtrl.Cols-2) = bBold;
+}
+			
+function SetHeaderFontSize(sz) {
+	GridCtrl.Cell(12, 0, 0, 0, GridCtrl.Cols-2) = sz;
+}
+
+function SetHeaderFontColor( color ) {
+	GridCtrl.Cell(7, 0, 0, 0, GridCtrl.Cols-2) = color
+}
+
+function SetCellFont(row1, col1, row2, col2, fnt) {
+	/*obj.Select ( row1, col1, row2, col2 );
+	obj.CellFontName = fnt;*/
+	GridCtrl.Cell(11,row1, col1, row2, col2 ) = fnt
+}
+
+function SetCellBold( row1, col1, row2, col2, bBold ) {
+	GridCtrl.Cell(13, row1, col1, row2, col2) = bBold;
+}			
+
+function SetCellFontColor(row1, col1, row2, col2, color ) {
+	GridCtrl.Cell(7, row1, col1, row2, col2 ) = color
+}
+
+function SetCellBgColor(row1, col1, row2, col2, color) {
+	/*obj.Select ( row1, col1, row2, col2 );
+	obj.CellFontName = fnt;*/
+	GridCtrl.Cell(6,row1, col1, row2, col2 ) = color;
+}
+
+function UnDeleteRow () {
+	for ( var i =  0 ; i < GridCtrl.SelectedRows ; i ++ )
+	{
+		var row = GridCtrl.SelectedRow(i);
+		if ( row > 0 )
+		{		
+			GridCtrl.TextMatrix( row , GridCtrl.Cols - 1 ) = 0x0;
+			GridCtrl.Cell( 6 , row , 0 , row, GridCtrl.Cols - 1 ) = Gb_Grid_BColor;
+			GridCtrl.Cell( 7 , row , 0 , row, GridCtrl.Cols - 1 ) = 0x000000;
+		}		
+	}
+}
+
+function UnDeleteRowAt (idxNo) {
+	var row = idxNo;
+		if ( row > 0 )
+		{		
+			GridCtrl.TextMatrix( row , GridCtrl.Cols - 1 ) = 0x0;
+			GridCtrl.Cell( 6 , row , 0 , row, GridCtrl.Cols - 1 ) = Gb_Grid_BColor;
+			GridCtrl.Cell( 7 , row , 0 , row, GridCtrl.Cols - 1 ) = 0x000000;
+		}		
+}	
+
+// --------------------------------------------------------------------------------------------------------//
+//  Internal Functions
+// --------------------------------------------------------------------------------------------------------//
+
+function MakeData( param )
+{
+	var s = "";
+	var arr = param.split( "," );
+
+	if ( param.length == 0 )
+	{
+		for ( var i = 0 ; i < DataColumnLen ; i ++ )
+		{
+			arr[i] =i;
+		}
+		
+	}
+	
+	for ( var i = 1 ; i < GridCtrl.Rows ; i ++ )
+	{
+		if ( GridCtrl.TextMatrix( i , GridCtrl.Cols -1  ) > 0  )
+		{
+						
+			for ( var j = 0 ;  j < arr.length ; j++ )
+			{
+				arr[j]  = arr[j] * 1.0;
+			
+				if ( j > 0 ) s += CDelimiter;
+				else
+				if ( s.length > 0  ) s += RDelimiter;
+
+
+				s += GridCtrl.TextMatrix( i , arr[j] + DataColumnLen );
+				
+			}
+
+			if ( bOldValue )
+			{
+				for ( var j = 0 ;  j < arr.length ; j++ )
+				{
+					s += CDelimiter;
+					
+					var ind = DataColumnLen * 2 + arr[ j ] ;
+					
+					s += GridCtrl.TextMatrix( i , ind );
+				}
+			}
+			s += CDelimiter;
+			s += GridCtrl.TextMatrix( i , GridCtrl.Cols -1  );
+		}
+	}
+	return s;
+}
+
+function MakeDataAll()
+{
+	var s = "";
+	for ( var i = 1 ; i < GridCtrl.Rows ; i ++ )
+	{
+			
+		for ( var j = 0 ;  j < DataColumnLen ; j++ )
+		{
+			if ( j > 0 ) s += CDelimiter;
+			else
+			if ( s.length > 0  ) s += RDelimiter;
+
+
+			s += GridCtrl.TextMatrix( i , j + DataColumnLen );
+			
+		}
+
+		if ( bOldValue )
+		{
+			for ( var j = 0 ;  j < DataColumnLen; j++ )
+			{
+				s += CDelimiter;
+				
+				var ind = DataColumnLen * 2 + j ;
+				
+				s += GridCtrl.TextMatrix( i , ind );
+			}
+		}
+		s += CDelimiter;
+		s += GridCtrl.TextMatrix( i , GridCtrl.Cols -1  );
+	}
+	return s;
+
+}
+
+function ReplaceRow( a , b )
+{
+	
+	for ( var i = 0 ; i < GridCtrl.Cols ; i ++ )
+	{
+		var tmp = GridCtrl.TextMatrix( a , i ) ;
+		GridCtrl.TextMatrix( a , i ) = GridCtrl.TextMatrix( b , i );
+		GridCtrl.TextMatrix( b , i ) = tmp;
+		GridCtrl.Row = b;
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function getRow()
+{
+	return GridCtrl.Row;
+}
+
+function getCol()
+{
+	return GridCtrl.Col;
+}
+
+function getRows()
+{
+	return GridCtrl.Rows;
+}
+
+function getCols()
+{
+	return GridCtrl.Cols;
+}
+
+function getSelRow()
+{
+	return GridCtrl.RowSel;
+}
+
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+var editCell = new Object();
+editCell.row = 0;
+
+function OnAfterEdit( row , col )
+{
+	var v;
+	if ( !bModifing )
+	{
+	
+		if ( col < DataColumnLen )
+		{
+			SetRowStatusModify( row );
+			
+			/* */
+			v = ColumnInfo[col].GetPresentToValue( GridCtrl.TextMatrix( row  , col ) , row , col );	
+			GridCtrl.TextMatrix( row  , col + DataColumnLen ) = v
+			GridCtrl.TextMatrix( row  , col ) = ColumnInfo[col].GetValueToPresent ( v , row , col  );	
+			CheckReferDynamicType( row, col );
+			
+			PopupClose();	
+			editCell.row = 0;
+			
+			var evObj = createEventObject();
+			evObj.row = row;
+			evObj.col = col;
+		  	AfterEdit.fire(evObj);		
+		}
+	}	
+	
+}
+
+function OnClick()
+{
+	var evObj = createEventObject();
+	CellClick.fire( evObj );
+}
+
+var oldR , oldC;
+function OnDblClick()
+{
+	var evObj = createEventObject();
+	evObj.row = oldR ;
+	evObj.col = oldC;
+	CellDblClick.fire( evObj );
+	
+}
+
+function OnEnterCell()
+{
+	var evObj = createEventObject();
+	EnterCell.fire( evObj );
+}	
+
+function OnBeforeEdit( row , col , cancel )
+{
+	oldR = row;
+	oldC = col;
+	
+	if ( col < DataColumnLen )
+	{
+	
+		var status = GetRowStatus( row );
+		
+		var bEdit = false;
+
+		if ( GridCtrl.RowData(row) == 0 )
+		{
+			if ( ColumnInfo[col].editmode == 0 ||  status ==  0x40 )
+				bEdit = false;
+			else	if ( ColumnInfo[col].editmode == 1 )
+				bEdit = true;
+			else
+			{
+				if  (( ColumnInfo[col].editmode == 2 ) && ( status & 0x20 ) )
+				{
+					bEdit = true;
+				} else
+				if  (( ColumnInfo[col].editmode== 3 ) && !( status & 0x20 ) )
+				{
+					bEdit = true;
+				} else
+					bEdit = false;
+			}
+		} else
+			bEdit = false;	
+
+		if ( !bEdit )	
+		{
+			GridCtrl.Col = -1;
+			return;
+		}
+		
+		editCell.row = row;
+		editCell.col = col;
+		GridCtrl.TextMatrix( row  , col ) = ColumnInfo[col].GetValueToEditPresent ( GridCtrl.TextMatrix( row  , col + DataColumnLen) , row , col );	
+		ColumnInfo[col].SetConfig( row ,col  ,  false );
+	}
+}
+
+function OnBlur( )
+{
+	// alert( window.event.toElement.outerHTML );
+	// alert( event.srcElement );
+	
+	var p = window.event.toElement;
+	
+	while ( p != element && p )
+	{
+		p = p.parentNode;
+	}
+	
+	
+	if ( !p )
+	{
+		OnLeaveCell();
+	}
+	
+}
+
+function OnLeaveCell ()
+{
+	
+	if ( editCell.row != 0 )
+	{
+		var r = editCell.row;
+		var c = editCell.col;
+		
+		if ( c < DataColumnLen )
+		{
+			GridCtrl.TextMatrix( r  , c ) = ColumnInfo[c].GetValueToPresent ( GridCtrl.TextMatrix( r  , c + DataColumnLen ) , r, c );
+			CheckReferDynamicType( row, col );
+		}
+		PopupClose();
+		
+	}
+	
+
+}
+
+function FnOnCellButtonClick()
+{
+	var col = GridCtrl.col;
+	var row = GridCtrl.row;
+
+	editCell.row = row;
+	editCell.col = col;
+	
+	var pos = new Object();
+	FindObjectPos( GridCtrl , pos );
+	
+	
+	// var x = ((GridCtrl.CellLeft + GridCtrl.CellWidth )/ 15 )  + pos.x ;
+	var x = ((GridCtrl.CellLeft  )/ 15 )  + pos.x ;
+	var y = ((GridCtrl.CellTop + GridCtrl.CellHeight )/ 15) + pos.y;
+
+	if ( col < DataColumnLen )
+	{
+		if ( ColumnInfo[ col ].celltype == "datebox" || ( ColumnInfo[ col ].celltype == "multiple" &&  ColumnInfo[ col ].curcelltype == "datebox")) 
+		{
+			var value = GridCtrl.TextMatrix( row , col +  DataColumnLen );
+			value = ColumnInfo[col].GetPresentToValue (  ColumnInfo[col].GetValueToEditPresent ( value , row , col  ) , row , col);		
+			if ( value.length > 0 )
+				value = value.substring(0,4) + "/" + value.substring(4,6) + "/" + value.substring(6,8);
+				
+			popupValue = value;
+			ShowPopupCalendar( x, y );		
+		} else
+		if ( ColumnInfo[ col ].celltype == "htmledit" || ( ColumnInfo[ col ].celltype == "multiple" &&  ColumnInfo[ col ].curcelltype == "htmledit")) 
+		{
+			var value = GridCtrl.TextMatrix( row , col +  DataColumnLen );
+			popupValue = ColumnInfo[col].GetPresentToValue (  ColumnInfo[col].GetValueToEditPresent ( value  , row , col ) , row , col);		
+			ShowPopup( x, y );
+		} 
+	}	
+	var evObj = createEventObject();
+  	CellButtonClick.fire(evObj);
+	
+		
+}
+
+function OnKeyDown()
+{
+
+	if ( GridCtrl.EditWindow == 0 )
+	{
+
+		if ( event.keyCode ==46 )
+		{
+			if ( confirm( "Delete it?" ))
+			{
+				DeleteRow();
+			}
+		}
+		
+		if ( event.ctrlKey &&  event.keyCode == 67 )
+		{
+			CopyRow();
+			event.returnValue = false;			
+	  	}
+	
+		if ( event.ctrlKey &&  event.keyCode == 86 )
+		{
+			PasteRow();
+			event.returnValue = false;			
+	  	}
+	}
+}
+
+function OnBeforeSort(col, order) {
+	//alert(ColumnInfo[col]);
+		if ((ColumnInfo[col]==4) || (GridCtrl.ColComboList(col) == "...")) {
+			GridCtrl.ColDataType(col) = 7 ;
+		} 
+		var evObj = createEventObject();
+		evObj.col = col;
+		evObj.order = order;
+  	BeforeSort.fire(evObj);
+}
+
+function OnAfterSort(col, order) {
+		var evObj = createEventObject();
+		evObj.col = col;
+		evObj.order = order;
+  	AfterSort.fire(evObj);
+}
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+
+function FindFrame( name )
+{
+
+	var i;
+	var list = element.document.frames;
+	for ( i = 0 ;  i< list.length ; i ++ )
+	{
+		if ( list(i).name == name )
+		{
+			return list(i);
+			
+		}
+	}
+	
+	return false;
+}
+
+function event_oncontentready()
+{
+	if ( element.print  ) 
+	{
+		GridCtrl = element.childNodes(0);
+		GridCtrl.style.height="";
+		return;
+	}
+	element.print = true;
+
+	var innerData = "";
+	var xmlDoc = element.childNodes(0);
+
+  // check if xml block
+	if ( xmlDoc.nodeType  ==  9 )
+	{
+		
+		// initial setup 
+		
+		var p = xmlDoc.XMLDocument.selectSingleNode("//data");
+		if ( p )
+		{
+			innerData = p.xml;
+		}
+		
+		var list = xmlDoc.XMLDocument.selectNodes("//column");
+
+		// get column information
+				
+		if ( list.length > 0 )
+		{
+			DataColumnLen  = list.length;
+			
+			for ( var i = 0 ; i < list.length ; i ++ )
+			{
+				ColumnInfo[i] = new Object();
+				
+				ColumnInfo[i].title = list[i].getAttribute("title");				
+				ColumnInfo[i].refee = false;
+				ColumnInfo[i].align = list[i].getAttribute("align");			
+				ColumnInfo[i].sorting = list[i].getAttribute("sorting") == "T" ;
+				ColumnInfo[i].width= list[i].getAttribute("width") ;
+				ColumnInfo[i].editmode = list[i].getAttribute("editmode");
+				ColumnInfo[i].hidden = list[i].getAttribute("hidden") == "T" ;
+				
+				colCheck[i]= list[i].getAttribute("check");
+				
+				if ( !ColumnInfo[i].title ) ColumnInfo[i].title = "";
+				if ( !ColumnInfo[i].align ) ColumnInfo[i].align = "L";
+				if ( !ColumnInfo[i].width ) ColumnInfo[i].width = "";
+				if ( !ColumnInfo[i].editmode ) ColumnInfo[i].editmode = "1";
+				ColumnInfo[i].editmode *= 1;
+				
+				var pTypeInfo = list[i].childNodes(0);
+				
+				ColumnInfo[i].celltype = list[i].childNodes(0).tagName;
+				
+				if (!CheckFunction( "init_" , ColumnInfo[i].celltype  ))
+					ColumnInfo[i].celltype = "textbox" ;
+					
+				ColumnInfo[i].type = pTypeInfo.getAttribute("type");
+				if ( !ColumnInfo[i].type ) ColumnInfo[i].type = "";
+				ColumnInfo[i].value = pTypeInfo.getAttribute("value");
+				if ( !ColumnInfo[i].value ) ColumnInfo[i].value = "";
+				ColumnInfo[i].format = pTypeInfo.getAttribute("format");
+				if ( !ColumnInfo[i].format ) ColumnInfo[i].format = "";
+
+				eval( "init_" + ColumnInfo[i].celltype  + " (ColumnInfo[i] ,  pTypeInfo );" );
+				eval( "ColumnInfo[i].GetPresentToValue = getptv_" + ColumnInfo[i].celltype + ";" );
+				eval( "ColumnInfo[i].GetValueToPresent = getvtp_" + ColumnInfo[i].celltype + ";" );
+				eval( "ColumnInfo[i].GetValueToEditPresent = getvtep_" + ColumnInfo[i].celltype + ";" );
+				eval( "ColumnInfo[i].SetConfig = setconfig_" + ColumnInfo[i].celltype + ";" );
+				
+
+			}
+		}		
+	}
+
+
+	var no = 1;
+
+	while ( FindFrame( "frmCal" + no ) )
+		no ++ 
+
+	element.innerHTML = "<object id='idInternalGrid' classid='clsid:D76D7126-4A96-11D3-BD95-D296DC2DD072'  style='"+ element.styles + "; font-family: Tahoma;font-size:9pt;scrollbar-base-color:#FFFFBF; ' ></object><xml style='display:none'>"+ innerData +  "</xml><iframe name='frmCal" + no +"'  frameborder=0 id='iddiv'  style='z-index:30'></iframe>" ;
+
+
+	GridCtrl = element.childNodes(0);
+	GridCtrl.style.zIndex = "-5";
+	divPopup = 	element.childNodes(2);
+	divPopupIn =  FindFrame( "frmCal" + no );
+	
+	divPopup.style.position = "absolute";
+	divPopup.style.display = "none";
+	
+	
+	SetupGridControl();	
+	
+	setSorting(element.sort);
+	
+	GridCtrl.attachEvent("BeforeSort" , OnBeforeSort );	
+	GridCtrl.attachEvent("AfterSort" , OnAfterSort );		
+	
+	if ( innerData.length > 0 )
+	{
+	   	var xxx = element.childNodes(1);
+		SetData( xxx.childNodes(0) );
+		innerData = "";
+	}
+
+}
+
+
+function CheckFunction( hfn , fn )
+{
+	var b; 
+	eval ( "b = typeof(" + hfn +  fn + ") == 'function'" );
+	
+	if ( !b )
+	{
+		alert( "[" + fn + "] is not cell type !! " );
+	}
+	
+	return b;
+}
+
+
+// initial setup activex grid control
+function SetupGridControl()
+{
+
+	GridCtrl.Rows = 1;
+	
+	GridCtrl.AllowUserResizing = flexResizeColumns ;
+	GridCtrl.FixedCols = 0;
+	GridCtrl.FixedAlignment(-1) = flexAlignCenterCenter;
+	GridCtrl.ColAlignment(-1) = flexAlignCenterCenter;
+	
+	GridCtrl.SelectionMode = 3; // flexSelectionListBox;
+	GridCtrl.ExtendLastCol = true;
+	
+	// GridCtrl.ExplorerBar = flexExSortShow	;
+	GridCtrl.ExplorerBar = flexExNone	;
+	 
+	
+	GridCtrl.Editable = 2;
+
+	GridCtrl.BackColor = Gb_Grid_BColor;
+	GridCtrl.BackColorAlternate =Gb_Grid_BColorAlt;
+	GridCtrl.BackColorBkg = Gb_Grid_BColorBkg;
+	GridCtrl.BackColorFixed = Gb_Grid_BColorFixed; 
+	GridCtrl.BackColorSel =  Gb_Grid_BColorSel;
+
+
+	GridCtrl.ForeColorSel = Gb_Grid_FColorSel;
+	GridCtrl.GridColor  = Gb_Grid_Color;
+	GridCtrl.GridColorFixed = Gb_Grid_ColorFixed;
+
+	GridCtrl.BorderStyle = Gb_Grid_BorderStyle;
+	GridCtrl.SheetBorder  = Gb_Grid_SheetBorder;
+	GridCtrl.RowHeightMin = Gb_Grid_RowHeightMin;
+
+
+	GridCtrl.GridLines  = 1;
+	GridCtrl.GridLinesFixed = 1;
+	
+
+	element.attachEvent("ondeactivate" , OnBlur  );
+	
+	GridCtrl.attachEvent("LeaveCell" , OnLeaveCell  );
+	
+	GridCtrl.attachEvent("AfterEdit", OnAfterEdit );
+	GridCtrl.attachEvent("BeforeEdit", OnBeforeEdit );
+	
+	GridCtrl.attachEvent("SelChange" , OnClick );
+	GridCtrl.attachEvent("CellButtonClick", FnOnCellButtonClick );
+	GridCtrl.attachEvent("DblClick" , OnDblClick );
+	GridCtrl.attachEvent("EnterCell" , OnEnterCell) ;
+	GridCtrl.attachEvent("onkeydown" , OnKeyDown );       
+	
+	
+	/*	temporary comment
+	
+	GridCtrl.attachEvent("ValidateEdit" , OnValidateEdit );
+	element.attachEvent( "onclick" , OnClickElement );
+	
+	GridCtrl.FontSize =9;
+
+	*/
+
+	if ( typeof( element.sendoldvalue ) != "undefined" ) 
+		bOldValue = true;
+
+	if ( typeof( element.uploadall ) != "undefined" ) 
+		bUploadAll = true;
+
+	if ( typeof( element.debug ) != "undefined" ) 
+		bDebug = true;
+
+
+	// third area is for old value
+	// second area is for value
+	// first area is for presentation
+	
+	if ( bOldValue )
+		GridCtrl.Cols = DataColumnLen * 3 + 1;
+	else
+		GridCtrl.Cols = DataColumnLen * 2 + 1;
+	
+	var i ;
+	for ( i = DataColumnLen ; i < GridCtrl.Cols ; i ++ )
+	{
+		GridCtrl.Cell(6, 0, i, 0, i) = 0xdddddd;	
+		if ( ! bDebug )
+			GridCtrl.ColHidden(i) = true;
+	}
+	
+	for ( i = 0 ; i  < DataColumnLen ; i ++ )
+	{
+	
+		// Set title
+		
+		GridCtrl.TextMatrix( 0, i ) = ColumnInfo[i].title;
+		GridCtrl.TextMatrix( 0, i + DataColumnLen ) = "[" + ColumnInfo[i].title + "]";
+		
+		if ( bOldValue )
+			GridCtrl.TextMatrix( 0, i + DataColumnLen*2 ) = "<" + ColumnInfo[i].title + ">";
+			
+		if ( ColumnInfo[i].hidden  )
+		{
+			GridCtrl.Cell(6, 0, i, 0, i) = 0xdddddd;	
+
+			if (  !bDebug )
+				GridCtrl.ColHidden(i) = true;
+		}
+		
+		
+		
+		// set width
+		if ( ColumnInfo[i].width > 0 ) 
+			GridCtrl.ColWidth(i) = ColumnInfo[i].width;
+
+
+		
+		
+		GridCtrl.ColAlignment(i) = flexAlignLeftCenter;		
+		
+		ColumnInfo[i].SetConfig( -1 , i  ,  false );
+		
+/*		
+		switch ( ColumnInfo[i].celltype )
+		{
+			case "textbox":
+					if ( ColumnInfo[i].type == "number" )
+						GridCtrl.ColAlignment(i) = flexAlignRightCenter;
+				break;
+			case "datebox":
+				if ( ColumnInfo[i].type != "year" && ColumnInfo[i].type != "month" )
+					GridCtrl.ColComboList( i ) =  "..." ;
+				else
+					GridCtrl.ColAlignment(i) = flexAlignCenterCenter;
+				break;		
+
+			case "htmledit":
+				GridCtrl.ColComboList( i ) =  "..." ;
+				break;		
+
+			case "checkbox":
+				GridCtrl.ColDataType(i) = 11;	
+				break;		
+
+			case "radio":
+				GridCtrl.ColComboList( i ) =  "..." ;
+				break;		
+
+			case "list":
+				{
+					var s = "";
+					for ( j = 0 ;  j < ColumnInfo[i].list.length ; j ++ )
+					{
+						if ( j > 0 ) s = s + "|";
+						
+						s = s + "#" + j + ";" + ColumnInfo[i].text[j];
+					}
+					GridCtrl.ColComboList( i ) = s ;
+				}
+				break;		
+
+
+		}			
+
+*/
+		if ( ColumnInfo[i].align =="R") GridCtrl.ColAlignment(i) = flexAlignRightCenter;
+		if ( ColumnInfo[i].align =="C") GridCtrl.ColAlignment(i) = flexAlignCenterCenter;
+
+
+	}
+	
+
+	 
+	  
+	// status title setting
+	GridCtrl.TextMatrix( 0 , GridCtrl.Cols-1 ) = "Status" ;
+}
+
+// --------------------------------------------------------------------------------------------------------//
+// Cell Process for configure
+// --------------------------------------------------------------------------------------------------------//
+
+function setconfig_multiple( row , col  , bEachRow )
+{
+	GridCtrl.ComboList =  "" ;
+	if ( row!= -1 )
+	{
+		var i = new Number(GridCtrl.TextMatrix( row ,  this.ref  + DataColumnLen ) );
+		if (isNaN (i)  )
+			i = 0;
+	
+		// alert( row + "," + col );
+		GridCtrl.Cell( 2 , row , col , row , col )  = flexAlignLeftCenter;		
+	
+		this.array[i].SetConfig( row , col , true);	
+
+		if ( this.align =="R") GridCtrl.Cell( 2 , row , col , row , col ) = flexAlignRightCenter;
+		if ( this.align =="C") GridCtrl.Cell( 2 , row , col , row , col ) = flexAlignCenterCenter;
+		if ( this.align =="L") GridCtrl.Cell( 2 , row , col , row , col ) = flexAlignLeftCenter;		
+		
+		if ( this.array[i].align =="R") GridCtrl.Cell( 2 , row , col , row , col ) = flexAlignRightCenter;
+		if ( this.array[i].align =="C") GridCtrl.Cell( 2 , row , col , row , col ) = flexAlignCenterCenter;
+		if ( this.array[i].align =="L") GridCtrl.Cell( 2 , row , col , row , col ) = flexAlignLeftCenter;
+		
+
+	
+	}
+
+}
+
+function setconfig_textbox(  row , col  , bEachRow )
+{
+	GridCtrl.ComboList =  "" ;
+	if (row==-1)
+	{
+		if ( this.type == "number" )
+			GridCtrl.ColAlignment(col) = flexAlignRightCenter;
+	} else if ( bEachRow )
+	{
+		if ( this.type == "number" )
+			GridCtrl.Cell( 2 , row , col , row , col )  = flexAlignRightCenter;		
+			
+		GridCtrl.ComboList =  "" ;	
+	}
+}
+
+function setconfig_datebox(  row , col  , bEachRow )
+{
+	GridCtrl.ComboList =  "" ;
+	if (row==-1)
+	{
+		if ( this.type != "year" && this.type != "month" )
+			GridCtrl.ColComboList( col ) =  "..." ;
+		else
+			GridCtrl.ColAlignment( col ) = flexAlignCenterCenter;
+
+	} else if ( bEachRow )
+	{
+		if ( this.type != "year" && this.type != "month" )
+		{
+			GridCtrl.ComboList =  "..." ;
+		}
+		else
+		{
+			GridCtrl.Cell( 2 , row , col , row , col )  = flexAlignCenterCenter;
+			GridCtrl.ComboList =  "" ;	
+		}
+	}
+}
+
+function setconfig_htmledit(   row , col  , bEachRow )
+{
+	GridCtrl.ComboList =  "" ;
+	if (row==-1)
+	{
+		GridCtrl.ColComboList( col ) =  "..." ;
+	} else if ( bEachRow )
+	{
+		GridCtrl.ComboList =  "..." ;
+	}
+}
+
+function setconfig_checkbox(  row , col  , bEachRow )
+{
+	GridCtrl.ComboList =  "" ;
+	if (row==-1)
+	{
+		GridCtrl.ColDataType(col) = 11;	
+	} else if ( bEachRow )
+	{
+		GridCtrl.ComboList =  "#0;Unchecked|#1;Checked" ;	
+	}	
+	
+}
+
+function setconfig_radio(  row , col  , bEachRow )
+{
+	GridCtrl.ComboList =  "" ;
+	if (row==-1)
+	{
+		GridCtrl.ColComboList( col ) =  "..." ;
+	} else if ( bEachRow )
+	{
+		GridCtrl.ComboList =  "..."  ;
+	}	
+}
+
+function setconfig_list(  row , col  , bEachRow )
+{
+	GridCtrl.ComboList =  "" ;
+	if (row==-1)
+	{
+		var j;
+		var s = "";
+		for ( j = 0 ;  j < this.list.length ; j ++ )
+		{
+			if ( j > 0 ) s = s + "|";
+			
+			s = s + "#" + j + ";" + this.text[j];
+		}
+
+		GridCtrl.ColComboList( col ) = s ;
+	} else if ( bEachRow )
+	{
+		var j;
+		var s = "";
+		for ( j = 0 ;  j < this.list.length ; j ++ )
+		{
+			if ( j > 0 ) s = s + "|";
+			
+			s = s + "#" + j + ";" + this.text[j];
+		}
+		
+		GridCtrl.ComboList =  s ;
+	
+	}
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+// Cell Process for initialize
+// --------------------------------------------------------------------------------------------------------//
+
+
+
+function init_multiple( columninfo , typeinfo )
+{
+
+	var i ;
+
+	columninfo.ref = typeinfo.getAttribute("ref") ;
+	
+	if ( !columninfo.ref )  columninfo.ref  = 0;
+	else
+		columninfo.ref =  columninfo.ref  * 1.0;
+	
+	ColumnInfo[ columninfo.ref ].refee = true;
+	columninfo.array = new Array();	
+
+
+	for ( 	i = 0 ; i < typeinfo.childNodes.length ; i ++ )
+	{
+		var pTypeInfo = typeinfo.childNodes(i);
+
+		columninfo.array[i] = new Object();		
+		columninfo.array[i].celltype  =  pTypeInfo.tagName;
+
+		if (!CheckFunction( "init_" , columninfo.array[i].celltype  ))
+			columninfo.array[i].celltype = "textbox" ;
+		
+		columninfo.array[i].align = pTypeInfo.getAttribute("align");
+		if ( !columninfo.array[i].align ) columninfo.array[i].align = "";
+			
+		columninfo.array[i].type = pTypeInfo.getAttribute("type");
+		if ( !columninfo.array[i].type ) columninfo.array[i].type = "";
+		columninfo.array[i].value = pTypeInfo.getAttribute("value");
+		if ( !columninfo.array[i].value ) columninfo.array[i].value = "";
+		columninfo.array[i].format = pTypeInfo.getAttribute("format");
+		if ( !columninfo.array[i].format ) columninfo.array[i].format = "";
+	
+		eval( "init_" + columninfo.array[i].celltype  + " (columninfo.array[i] ,  pTypeInfo );" );
+		eval( "columninfo.array[i].GetPresentToValue = getptv_" + columninfo.array[i].celltype + ";" );
+		eval( "columninfo.array[i].GetValueToPresent = getvtp_" + columninfo.array[i].celltype + ";" );
+		eval( "columninfo.array[i].GetValueToEditPresent = getvtep_" + columninfo.array[i].celltype + ";" );
+		eval( "columninfo.array[i].SetConfig = setconfig_" + columninfo.array[i].celltype + ";" );
+		
+	}
+	
+
+
+/*				
+	ColumnInfo[i].celltype = list[i].childNodes(0).tagName;
+	
+	if (!CheckFunction( "init_" , ColumnInfo[i].celltype  ))
+		ColumnInfo[i].celltype = "textbox" ;
+		
+	ColumnInfo[i].type = pTypeInfo.getAttribute("type");
+	if ( !ColumnInfo[i].type ) ColumnInfo[i].type = "";
+	ColumnInfo[i].value = pTypeInfo.getAttribute("value");
+	if ( !ColumnInfo[i].value ) ColumnInfo[i].value = "";
+	ColumnInfo[i].format = pTypeInfo.getAttribute("format");
+	if ( !ColumnInfo[i].format ) ColumnInfo[i].format = "";
+
+	eval( "init_" + ColumnInfo[i].celltype  + " (ColumnInfo[i] ,  pTypeInfo );" );
+	eval( "ColumnInfo[i].GetPresentToValue = getptv_" + ColumnInfo[i].celltype + ";" );
+	eval( "ColumnInfo[i].GetValueToPresent = getvtp_" + ColumnInfo[i].celltype + ";" );
+	eval( "ColumnInfo[i].GetValueToEditPresent = getvtep_" + ColumnInfo[i].celltype + ";" );
+*/
+}
+
+function init_textbox( columninfo , typeinfo )
+{
+	if ( columninfo.type == "number"  )
+	{
+
+		columninfo.bDigitCutMethod  = 0;	// 0 : Floor , 1 : Round , 2 : Ceil
+		columninfo.bConvertNumber = false ; 
+		columninfo.nFixedPoint = -1;
+		columninfo.nStart0 = 0;
+		columninfo.nSep = 3;
+		columninfo.nSepChar = "";
+		
+		
+		var digitarea = columninfo.format;
+		
+		if ( digitarea.length > 0 )
+		{
+			var otherarea = "";
+			var i , j;
+			
+			i = digitarea.lastIndexOf( "0" );
+			j = digitarea.lastIndexOf( "#" );
+			
+			if ( i < 0 && j < 0 ) 
+			{
+				alert( "["+ digitarea + "] Format Error" );
+			}
+			
+			if ( j > i ) i = j;
+			
+			otherarea = digitarea.substring( i + 1 );
+			digitarea = digitarea.substring( 0 , i+1 );
+			
+	
+			for ( i = 0 ; i < otherarea.length ; i++ )
+			{
+				switch ( otherarea.charAt(i) )
+				{
+					case "C":
+						columninfo.bDigitCutMethod  = 2;
+	
+						break;
+					case "F":
+						columninfo.bDigitCutMethod  = 0;
+						break;
+						
+					case "R":
+						columninfo.bDigitCutMethod  = 1;
+						break;
+						
+					case "T":
+						columninfo.bConvertNumber = true; 				
+						break;
+				}
+			}	
+	
+			columninfo.nStart0 = -1; 
+			columninfo.nFixedPoint = -1;
+			columninfo.nSep = -1;
+	
+			j = 0;
+			
+			for ( i = 0 ; i < digitarea.length; i ++ )
+			{
+				var ch = digitarea.charAt(i);
+				
+				if ( ch == "0"  ) columninfo.nStart0 = j;
+				
+				if ( ch == "." ) columninfo.nFixedPoint = j
+				else
+				if ( ch == "#" || ch == "0" ) 
+					j++;
+				else
+				{
+					
+					columninfo.nSep = j;
+					columninfo.nSepChar = ch;
+				}
+			}	
+	
+	
+			if ( columninfo.nFixedPoint >= 0 ) 
+				columninfo.nFixedPoint = j - columninfo.nFixedPoint ;
+			else
+				columninfo.nFixedPoint = 0;
+	
+			if ( columninfo.nStart0 > -1 )
+			{
+				columninfo.nStart0 = ( j - columninfo.nStart0 ) - columninfo.nFixedPoint -1;
+				if ( columninfo.nStart0 >= 0 ) columninfo.nStart0 ++;
+			}
+			else
+				columninfo.nStart0 = 0;
+			
+			if ( columninfo.nSep >=0 )
+			{
+				columninfo.nSep = ( j - columninfo.nSep ) - columninfo.nFixedPoint ;
+			}
+		}		
+		
+	}
+}
+
+function init_datebox( columninfo , typeinfo )
+{
+	columninfo.acceptnull = typeinfo.getAttribute("acceptnull") == "T" ;
+
+	columninfo.lang = typeinfo.getAttribute("lang")  ;
+	if ( !columninfo.lang ) columninfo.lang = "";
+	
+	
+	if ( columninfo.format.length == 0 )
+	{
+		if ( columninfo.lang == "1" )
+		{
+			switch ( columninfo.type )
+			{
+				case "year":
+					columninfo.format = "yyyy";
+					break;
+				
+				case "month":
+					columninfo.format = "mm/yyyy";
+					break;
+					
+				case "day":
+				default:
+					columninfo.format = "dd/mm/yyyy";
+					break;
+			}
+		
+		} else
+		{
+			switch ( columninfo.type )
+			{
+				case "year":
+					columninfo.format = "yyyy";
+					break;
+				
+				case "month":
+					columninfo.format = "yyyy/mm";
+					break;
+					
+				case "day":
+				default:
+					columninfo.format = "yyyy/mm/dd";
+					break;
+			}
+		
+		}
+	} 
+}
+
+function init_htmledit(  columninfo , typeinfo )
+{
+}
+
+function init_checkbox( columninfo , typeinfo )
+{
+	columninfo.defaultvalue = typeinfo.getAttribute("defaultvalue");
+	if ( !columninfo.defaultvalue ) columninfo.defaultvalue = "T|F";
+	
+	var arr = columninfo.defaultvalue.split( "|" );
+	columninfo.valueT = arr[0];
+	columninfo.valueF = arr[1];
+	
+}
+
+function init_radio( columninfo , typeinfo )
+{
+}
+
+function init_list( columninfo , typeinfo )
+{
+	var list = typeinfo.selectNodes("option");	
+	
+	columninfo.list = new Array();
+	columninfo.text = new Array();
+	
+	for ( i = 0 ; i < list.length ; i ++ )
+	{
+		var v = list[i].getAttribute("value");
+		if ( !v ) v = "";
+		
+		columninfo.list[i] = v;
+		columninfo.text[i] = ExtractFirstTag( list[i].xml );
+	}
+	
+
+	columninfo.value = typeinfo.getAttribute("value");
+	if ( !columninfo.value ) columninfo.value = "";
+}
+
+// --------------------------------------------------------------------------------------------------------//
+
+// --------------------------------------------------------------------------------------------------------//
+// Cell Process for set value to presentation
+// --------------------------------------------------------------------------------------------------------//
+
+function getvtp_multiple( value , row , col )
+{
+	var i = new Number(GridCtrl.TextMatrix( row ,  this.ref  + DataColumnLen ) );
+	if (isNaN (i)  )
+		i = 0;
+		
+	var ret = this.array[i].GetValueToPresent( value , row , col );
+	
+	if ( this.array[i].celltype == "list" )
+	{
+		ret = this.array[i].text[ret];
+	} else if ( this.array[i].celltype == "checkbox" )
+	{
+		ret = ( ret == -1 )? "Checked":"Unchecked";
+	}
+	
+	return ret;
+
+}
+
+function getvtp_textbox( value  )
+{
+
+	if ( this.type == "number" )
+	{
+		if ( value.length == 0 ) return "";
+		var i;
+		var nm = new Number( value );
+		
+		if ( this.nFixedPoint > 0 )
+		{
+			nm = nm * Math.pow( 10 , this.nFixedPoint );
+		
+			switch ( this.bDigitCutMethod )
+			{
+				case 0 :
+					nm = Math.floor( nm );
+					break;
+				case 1:
+					nm = Math.round( nm );
+					break;
+				case 2:
+					nm = Math.ceil( nm );
+					break;
+			}
+	
+			nm = nm / Math.pow( 10 , this.nFixedPoint );
+		}
+		
+	
+	
+		var str = nm.toString();
+		
+		if ( this.nStart0 < 0 )
+		{
+			var ix = str.indexOf( "." );
+			
+			if ( ix == -1 ) ix= 0;
+			else
+				ix = str.length - ix -1;
+				
+			
+			for ( i = 0 ; i < -ix - this.nStart0  ; i++ )
+			{
+				if ( i == 0 && ix == 0 ) str += ".";
+				str += "0";
+			}
+			
+		}
+	
+		
+		if  ( this.nSepChar >= ' '  && this.nSep > 0)
+		{
+			
+			
+			var ix = str.indexOf(".");
+			
+			if ( ix < 0 ) ix = str.length;
+			
+			
+			var ss = "";
+			var j = 0;
+			
+			
+			for ( i = 0 ; i < str.length ; i++ )
+			{
+				ss += str.charAt( i );
+				if ( str.charAt( i ) != "-" )
+				{
+					 j++;
+					if (( i+1 < ix ) && ( (( ix - j) % this.nSep )==0) )
+						ss += this.nSepChar;
+					 
+				}
+				else
+					ix --;
+			}
+			str = ss;
+
+			
+		}
+		
+	
+		return str;
+
+	} else
+	{
+		return value;
+	}
+	
+}
+
+
+function ParseValueToDate( value , type ,  acceptnull )
+{
+	var today = "NaN";
+	
+	if ( value.length > 0 )
+	{
+		switch ( type )
+		{
+			case "year":
+				
+				today = new Date(  value.substring( 0, 4 ) , 0 , 1 );
+				break;
+				
+			case "month":
+			
+				today = new Date(  value.substring( 0, 4 ), value.substring( 4, 6 )-1 , 1 );
+				break;
+	
+			default:
+				//alert(value);
+				today = new Date(  value.substring( 0, 4 ) , value.substring( 4, 6 )-1 ,  value.substring( 6, 8 ) );
+				break;
+				
+		}
+	}	
+	
+	if  ( today == "NaN")
+	{
+		if ( acceptnull ) 
+			return  null;
+		else
+			today = new Date();
+	}
+	
+	return today;
+
+}
+
+function getvtp_datebox( value )
+{
+	
+	var today = ParseValueToDate( value , this.type ,  this.acceptnull );
+
+		
+	if (  today == null ) return "[not yet]";
+	
+	var y = "000" + (today.getFullYear());
+	var m = "0" + (today.getMonth()+1);
+	var d =  "0" + (today.getDate()) ;
+	
+	switch ( this.type )
+	{
+		case "year":
+						
+			return  y.substr(  y.length - 4 ) + "'Y" ;
+			break;
+			
+		case "month":
+
+						
+			if ( this.format == "yyyy/mm" ) 
+				return y.substr(  y.length - 4 ) + "/" + m.substr(  m.length - 2 ) ;
+			else
+				return m.substr(  m.length - 2 ) + "/" +  y.substr(  y.length - 4 ) ;
+				
+			break;
+
+		default:
+	
+			if ( this.format == "yyyy/mm/dd" ) 
+				return y.substr(  y.length - 4 ) + "/" +  m.substr(  m.length - 2 ) + "/" + d.substr(  d.length - 2 );
+			else
+				return d.substr(  d.length - 2 )  + "/" +  m.substr(  m.length - 2 ) + "/" + y.substr(  y.length - 4 );
+			break;
+	
+	}
+	
+
+}
+
+function getvtp_htmledit(  value )
+{
+	return value;
+}
+
+function getvtp_checkbox( value )
+{
+	if ( this.valueT == value ) return -1; 
+	
+	return 0;
+}
+
+function getvtp_radio( value )
+{
+}
+
+function getvtp_list( value )
+{
+	for ( var i = 0 ; i < this.list.length ; i ++ )
+	{
+		if ( this.list[i] == value ) return i;
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------//
+// Cell Process for set value to edit presentation
+// --------------------------------------------------------------------------------------------------------//
+
+
+function getvtep_multiple( value , row , col )
+{
+	var i = new Number(GridCtrl.TextMatrix( row ,  this.ref  + DataColumnLen ) );
+	if (isNaN (i)  )
+		i = 0;
+	
+	this.curcelltype = this.array[i].celltype;
+
+
+	var ret = this.array[i].GetValueToEditPresent( value , row , col  );
+	
+	if ( this.array[i].celltype == "list" )
+	{
+		ret = this.array[i].text[ret];
+	} else if ( this.array[i].celltype == "checkbox" )
+	{
+		ret = ( ret == -1 )? "Yes":"No";
+	}
+	
+		
+	return ret;
+
+}
+
+function getvtep_textbox( value  )
+{
+	if ( this.type == "number" )
+	{
+		return value;
+	} else
+	{
+		return value;
+	}
+}
+
+function getvtep_datebox( value )
+{
+
+	var today = ParseValueToDate( value , this.type ,  this.acceptnull );
+	
+	if (  today == null ) return "";
+	
+	var y = "000" + (today.getFullYear());
+	var m = "0" + (today.getMonth()+1);
+	var d =  "0" + (today.getDate()) ;
+	
+	switch ( this.type )
+	{
+		case "year":
+						
+			return y.substr(  y.length - 4 );
+			break;
+			
+		case "month":
+			
+			if ( this.format == "yyyy/mm" ) 
+				return y.substr(  y.length - 4 ) + "/" + m.substr(  m.length - 2 );
+			else
+				return m.substr(  m.length - 2 ) + "/" +  y.substr(  y.length - 4 ) ;
+				
+			break;
+
+		default:
+	
+			if ( this.format == "yyyy/mm/dd" ) 
+				return y.substr(  y.length - 4 ) + "/" +  m.substr(  m.length - 2 ) + "/" + d.substr(  d.length - 2 );
+			else
+				return d.substr(  d.length - 2 )  + "/" +  m.substr(  m.length - 2 ) + "/" + y.substr(  y.length - 4 );
+			break;
+	
+	}
+	
+
+}
+
+
+
+function getvtep_htmledit(  value )
+{
+	return value;
+}
+
+function getvtep_checkbox( value )
+{
+	if ( this.valueT == value ) return -1; 
+	
+	return 0;
+}
+
+function getvtep_radio( value )
+{
+}
+
+function getvtep_list( value )
+{
+	for ( var i = 0 ; i < this.list.length ; i ++ )
+	{
+		if ( this.list[i] == value ) return i;
+	}
+}
+
+// --------------------------------------------------------------------------------------------------------//
+
+// --------------------------------------------------------------------------------------------------------//
+// Cell Process for get present  to value
+// --------------------------------------------------------------------------------------------------------//
+
+function getptv_multiple( present  , row , col )
+{
+	var i = new Number(GridCtrl.TextMatrix( row ,  this.ref  + DataColumnLen ) );
+	if (isNaN (i)  )
+		i = 0;
+	
+	if ( this.array[i].celltype == "list" )
+	{
+		present =  GridCtrl.ComboData;
+	}  else if ( this.array[i].celltype == "checkbox" )
+	{
+		present = GridCtrl.ComboData == 1 ? -1 : 0;
+	}
+	
+	return this.array[i].GetPresentToValue( present , row , col );
+
+}
+
+function getptv_textbox( present )
+{
+	if ( this.type == "number" )
+	{
+		if ( present.length == 0 ) return "";
+		var i , j;
+		
+		var str="";
+		var bPoint = false;
+		
+		for ( i = 0 ; i < present.length ; i++ )	
+		{
+			var ch = present.charAt(i);
+			
+			if (( ch >= "0" && ch <= "9" ) )
+				str += ch;
+			else
+			if ( ch == "."  && !bPoint) 
+			{
+				str += ch; bPoint = true;
+			} else
+			if (ch =="-" && str.length==0) 
+			{
+				str += ch; 
+			}
+		}
+		
+		var nm = new Number( str );
+		
+		if (isNaN (nm)  )
+			nm = 0;
+		
+		if ( this.bConvertNumber ) 
+		{
+			
+			nm = nm * Math.pow( 10 , this.nFixedPoint );
+			
+			switch ( this.bDigitCutMethod )
+			{
+				case 0 :
+					nm = Math.floor( nm );
+					break;
+				case 1:
+					nm = Math.round( nm );
+					break;
+				case 2:
+					nm = Math.ceil( nm );
+					break;
+			}
+		
+			
+			nm = nm / Math.pow( 10 , this.nFixedPoint );
+			
+		}
+
+		return nm.toString();
+
+	} else
+	{
+	
+		if ( this.format.length > 0 )
+			return present.substring( 0, this.format );	
+		else
+			return present;
+	}
+	
+}
+
+function ParseDateToValue( value , type ,  acceptnull )
+{
+
+	var arr = new Array();
+	
+	if ( value.length > 0 )
+	{
+		switch ( type )
+		{
+			case "year":
+				
+				arr[0] = value.substring( 0, 4 );
+				break;
+				
+			case "month":
+				if ( this.format == "yyyy/mm" ) {
+					arr[0] = value.substring( 0, 4 );
+					arr[1] = value.substring( 4, 6 );
+				} else {
+					arr[0] = value.substring( 4, 6 );
+					arr[1] = value.substring( 0, 4 );
+				}
+				break;
+	
+			default:
+				//alert(value);
+				if ( this.format == "yyyy/mm/dd" ) {
+					arr[0] =  value.substring( 0, 4 );
+					arr[1] = value.substring( 4, 6 );
+					arr[2] =  value.substring( 6, 8 );
+				}else {
+					arr[0] =  value.substring( 6, 8 );
+					arr[1] = value.substring( 4, 6 );
+					arr[2] =  value.substring( 0, 4 );				
+				}
+				break;
+				
+		}
+	}	
+
+	return arr;
+}
+
+function getptv_datebox( present )
+{
+	
+	var today = "NaN";
+	
+	if ( present.length > 0 )
+	{
+	
+		var arr = ParseDateToValue( present, this.type ,  this.acceptnull); //present.split("/");
+		
+		switch ( this.type )
+		{
+			case "year":
+				
+				today = new Date(  arr[0] , 0 , 1 );
+				break;
+				
+			case "month":
+
+					
+				if ( arr.length >= 2 )
+					if ( this.format == "yyyy/mm" ) 
+						today = new Date(  arr[0], arr[1]-1 , 1 );
+					else
+						today = new Date(  arr[1], arr[0]-1 , 1 );
+				break;
+	
+			default:
+				if ( arr.length >= 3 )
+					if ( this.format == "yyyy/mm/dd" ) 
+						today = new Date(  arr[0], arr[1]-1 , arr[2] );
+					else
+						today = new Date(  arr[2], arr[1]-1 , arr[0] );
+				break;
+		}
+	}	
+	
+
+	if  ( today == "NaN")
+	{
+		if ( this.acceptnull ) 
+			return  "";
+		else
+			today = new Date();
+	}
+	
+	var y = "000" + (today.getFullYear());
+	var m = "0" + (today.getMonth()+1);
+	var d =  "0" + (today.getDate()) ;
+	
+	switch ( this.type )
+	{
+		case "year":
+						
+			return y.substr(  y.length - 4 );
+			break;
+			
+		case "month":
+			
+			return y.substr(  y.length - 4 )  + m.substr(  m.length - 2 );
+			break;
+
+		default:
+	
+			return y.substr(  y.length - 4 ) +  m.substr(  m.length - 2 ) + d.substr(  d.length - 2 );
+			break;
+	
+	}
+	
+	
+}
+
+function getptv_htmledit(  present )
+{
+	return present;
+}
+
+function getptv_checkbox( present )
+{
+	if ( present == -1 )
+		return this.valueT;
+	else
+		return this.valueF;
+}
+
+function getptv_radio( present )
+{
+}
+
+function getptv_list( present  )
+{
+	
+	return this.list[present];
+}
+
+
+
+
+// --------------------------------------------------------------------------------------------------------//
+
+
+function ExtractFirstTag( x )
+{
+	var tt = x.indexOf("<![CDATA[")
+	if ( tt <0  )
+	{
+		var si = x.indexOf( ">" );
+		var se = x.lastIndexOf( "<" );
+		
+		return x.substring( si+1 , se );
+	} else
+	{
+		var si = x.indexOf( "A[" );
+		var se = x.lastIndexOf( "]]" );
+		
+		return x.substring( si+2 , se );
+	
+	}	
+}
+
+// --------------------------------------------------------------------------------------------------------//
+
+var oPopupInput = null;
+
+var divPopup ;
+var divPopupIn ;
+
+function SetPopupCalendar()
+{
+	divPopup.style.display = "";
+
+	var arr = popupValue.split("/");
+	
+	var  defaultValue
+	if ( arr.length == 3 )
+	{
+		defaultValue = " year=" + arr[0] + " month= " + arr[1] + " day= " +arr[2] + " ";
+	} else
+	defaultValue = ' ';
+	
+
+	var src = 
+		'<html><style>'+
+		'.Calendar '+
+		'{'+
+		'	behavior: url(../../../system/htc/calendar.htc) ;'+
+		'	width : 33%'+
+		'}'+
+		'.smcalendar {' + Gb_smcalendar + '} '+
+		'.smcalendar_table {' + Gb_smcalendar_table + '} '+
+		'.smcalendar_header	{' + Gb_smcalendar_header + '}'+
+		'.smcalendar_content {' + Gb_smcalendar_content + '}'+
+		'.smcalendar_last {' + Gb_smcalendar_last + '}'+
+		'.smcalendar_select {' + Gb_smcalendar_select + '}'+
+		'</style>'+
+		'<body bgcolor="' + Gb_Date_BColor + '" style="' + Gb_Date_Style + '" ><table align="center" width="100%"border="0" cellpadding="0"><tr><td>'+
+		'<div  style="width:100%;"  onselect="document.body.CallSelect()" onclose="document.body.CallClose()" class="Calendar" id = "cur" ' +
+		'  gridCellEffect="flat"  monthLength="short" dayLength="short" showTitle="false" '  + defaultValue +'  img="' + System.SysImgPath  + '/delete.gif" ></div></td></tr></table>'+
+		' </body></html>'
+		;
+	
+	divPopupIn.document.close();
+	divPopupIn.document.write (src );
+	
+	
+	divPopupIn.document.body.CallClose = PopupClose ;
+	divPopupIn.document.body.CallSelect= PopupSelect;
+	divPopupIn.document.body.CallClear= PopupClear;
+}
+
+var popupValue = "";
+
+
+function PopupSelect()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = oCal.year;
+	szMonth = oCal.month;
+	szDay = oCal.day;
+
+	if ( szMonth < 10 ) szMonth = '0' + szMonth;
+	if ( szDay < 10 ) szDay = '0' + szDay;
+
+	var o = String(szYear) + String(szMonth) + String(szDay) 
+	
+	divPopup.style.display = "none";
+	
+	var row = GridCtrl.row ;
+	var col = GridCtrl.col;
+	 
+	 
+	SetRowStatusModify( row );
+	GridCtrl.TextMatrix( row , col +  DataColumnLen ) = o;	
+	GridCtrl.TextMatrix( row  , col ) = ColumnInfo[col].GetValueToEditPresent ( GridCtrl.TextMatrix( row  , col + DataColumnLen) , row , col );		
+
+}
+function PopupClear()
+{
+	divPopup.style.display = "none";
+	
+	var row = GridCtrl.row ;
+	var col = GridCtrl.col;
+	 
+	 
+	SetRowStatusModify( row );
+	GridCtrl.TextMatrix( row , col +  DataColumnLen ) = "";	
+	GridCtrl.TextMatrix( row  , col ) = ColumnInfo[col].GetValueToEditPresent ( GridCtrl.TextMatrix( row  , col + DataColumnLen) , row , col );		
+		
+}
+
+function ShowPopupCalendar( x , y )
+{
+	var w =  150 ; //globalVar.js
+	var h = 175  ;
+
+	SetPopupCalendar();
+	
+	divPopup.style.width = w;
+	divPopup.style.height = h;
+	divPopup.style.top = y ;
+	divPopup.style.left = x;
+
+	oPopupInput = null;
+		
+}
+
+// --------------------------------------------------------------------------------------------------------//
+
+function ShowPopup( x , y )
+{
+	var w =  145 ;
+	var h =  160 ;
+
+	divPopup.style.display = "";
+
+
+	var src = 
+		'<html>'+
+		'<LINK href="' + System.RootURL + '/default.css" rel="stylesheet" />' +
+		'<style>'+
+		'p  		{background-color:#FEBCBE; margin:0 0 0 0;} '+
+		'</style>'+
+		'<body style="margin:0 0 0 0;padding:2 2 2 2;border-top: 1 solid white; border-left: 1 solid #eeeeee; border-right: 1 solid #eeeeee; border-bottom: 1 solid black;overflow:auto;background-color:#FEBCBE" ><table align="center" width="100%"border="0" cellpadding="0" ><tr><td>'+
+		'<div id="idInput" CONTENTEDITABLE  >' +  popupValue +'</div></td></tr></table>'+
+		' </body></html>'
+		;
+	
+	divPopupIn.document.close();
+	divPopupIn.document.write (src );
+	
+	divPopup.style.width = w;
+	divPopup.style.height = h;
+	divPopup.style.top = y ;
+	divPopup.style.left = x;
+	
+	oPopupInput  = divPopupIn.document.body.childNodes(0).rows(0).cells(0).childNodes(0);
+	oPopupInput.focus();
+	
+}
+
+
+function PopupClose()
+{
+	divPopup.style.display = "none";
+	
+	if ( oPopupInput )
+	{
+		var o ;
+		
+		o = oPopupInput.innerHTML;
+		
+		var row = editCell.row ;
+		var col = editCell.col;
+
+				 
+		GridCtrl.TextMatrix( row , col +  DataColumnLen ) = o;	
+		GridCtrl.TextMatrix( row  , col ) = ColumnInfo[col].GetValueToEditPresent ( GridCtrl.TextMatrix( row  , col + DataColumnLen) , row , col );		
+		SetRowStatusModify( row );
+	}
+	
+	oPopupInput = null;
+}
+
+
+
+</SCRIPT>

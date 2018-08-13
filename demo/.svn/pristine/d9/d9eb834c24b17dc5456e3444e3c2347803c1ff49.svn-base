@@ -1,0 +1,2848 @@
+﻿<public:component tagname="datagrid" literalcontent="false">
+	
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="GetGridData" />
+	<PUBLIC:METHOD name="SetGridData" />
+	<PUBLIC:METHOD name="SetGridText" />
+	<PUBLIC:METHOD name="Validate" />
+	<PUBLIC:METHOD name="Subtotal" />
+	<PUBLIC:METHOD name="Cleartotal" />
+
+	<PUBLIC:METHOD name="GetGridControl" />
+	<PUBLIC:METHOD name="ClearData" />
+	<PUBLIC:METHOD name="SetComboFormat" />
+	<PUBLIC:METHOD name="AddRow" />
+	<PUBLIC:METHOD name="AddHeader" />
+	<PUBLIC:METHOD name="DeleteRow" />
+	<PUBLIC:METHOD name="UpRow" />
+	<PUBLIC:METHOD name="DownRow" />
+	<PUBLIC:METHOD name="GoToRow" />	
+	<PUBLIC:METHOD name="SetColText" />
+	
+	<PUBLIC:METHOD name="RemoveRow" />	
+	<PUBLIC:METHOD name="DeleteRowAt" />		
+	<PUBLIC:METHOD name="DeleteAll" />	
+	<PUBLIC:METHOD name="AppendComboItem" />			
+	<PUBLIC:METHOD name="RemoveComboItem" />	
+	<PUBLIC:METHOD name="GetComboItemIndex" />		
+				
+	<PUBLIC:METHOD name="CopyRow" />
+	<PUBLIC:METHOD name="PasteRow" />
+
+	<PUBLIC:METHOD name="SetRowEditable" />
+
+
+	<PUBLIC:METHOD name="SetRowStatus" />
+	<PUBLIC:METHOD name="GetRowStatus" />
+	<PUBLIC:METHOD name="SetAllRowStatusModify" />
+	
+	<PUBLIC:METHOD name="SetEnable" />
+	
+	<PUBLIC:METHOD name="SelectRow" />
+	<PUBLIC:METHOD name="DeselectRow" />
+	<PUBLIC:METHOD name="Refresh" />	
+	<PUBLIC:METHOD name="GridRefresh" />
+	
+	<PUBLIC:METHOD name="SetColEdit" />
+	<PUBLIC:METHOD name="SetEditCol" />
+	
+	<PUBLIC:METHOD name="MergeGridCols" />	
+	<PUBLIC:METHOD name="MergeByColLimit" />	
+	<PUBLIC:METHOD name="ChangeBgColorFrTo" />		
+	<PUBLIC:METHOD name="SetColComboData" />		
+	<PUBLIC:METHOD name="SetWrapText" />			
+	<PUBLIC:METHOD name="SetHeaderFont" />			
+	<PUBLIC:METHOD name="SetHeaderBold" />			
+	<PUBLIC:METHOD name="SetHeaderFontColor" />			
+	<PUBLIC:METHOD name="SetHeaderFontSize" />				
+	<PUBLIC:METHOD name="SetCellFont" />			
+	<PUBLIC:METHOD name="SetCellBold" />			
+	<PUBLIC:METHOD name="SetCellFontColor" />		
+  <PUBLIC:METHOD name="SetCellBgColor" />				
+  <PUBLIC:METHOD name="GetCellBgColor" />
+  <PUBLIC:METHOD name="MergeByCol" />					
+  <PUBLIC:METHOD name="MergeByColFree" />					
+  <PUBLIC:METHOD name="MergeByRow" />						
+  <PUBLIC:METHOD name="setFixedRows" />							
+  <PUBLIC:METHOD name="setFixedCols" />							
+	 	
+	<PUBLIC:METHOD name="UnDeleteRow" />		
+	<PUBLIC:METHOD name="UnDeleteRowAt" />			
+	<PUBLIC:METHOD name="RemoveRowAt" />			
+	<PUBLIC:METHOD name="GetColFormat" />		
+	
+	<PUBLIC:METHOD name="setHeader" />			
+	<PUBLIC:METHOD name="setFormat" />				
+	<PUBLIC:METHOD name="setAlign" />				
+	<PUBLIC:METHOD name="setWidth" />						
+	
+	<PUBLIC:METHOD name="goFirst" />
+	<PUBLIC:METHOD name="goNext" />
+	<PUBLIC:METHOD name="goLast" />
+	<PUBLIC:METHOD name="goPrevious" />
+	<PUBLIC:METHOD name="goPage" />
+
+	<PUBLIC:PROPERTY  NAME="rows"  GET="getRows" PUT="setRows"/>
+	<PUBLIC:PROPERTY  NAME="cols"   GET="getCols" PUT="setCols"/>
+	<PUBLIC:PROPERTY  NAME="row"  GET="getRow" PUT="setRow"/>
+	<PUBLIC:PROPERTY  NAME="col"   GET="getCol" PUT="setCol"/>
+	<PUBLIC:PROPERTY  NAME="selrow"  GET="getSelRow"/>
+	
+
+	<public:event id="CellButtonClick" name="oncellbuttonclick">
+	<public:event id="CellClick" name="oncellclick">
+	<public:event id="CellDblClick" name="oncelldblclick">
+	<public:event id="EnterCell" name="onentercell">
+	<public:event id="AfterEdit" name="onafteredit">
+	<public:event id="BeforeEdit" name="onbeforeedit">	
+	<public:event id="BeforeSort" name="onbeforesort">	
+	<public:event id="AfterSort" name="onaftersort">	
+	<public:event id="SelChange" name="onselchange">	
+	<public:event id="KeyDownEdit" name="onkeydownedit">
+	<public:event id="KeyUpEdit" name="onkeyupedit">
+	<public:event id="KeyPressEdit" name="onKeyPressEdit">
+	<public:event id="AfterGrouping" name="onaftergrouping">
+	<public:event id="AfterResize" name="onafterresize">
+	
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+	
+
+</public:component>
+
+<script language="Javascript">
+
+var dateFormat ="dd/mm/yyyy";
+var bModifing = false;
+var bSummary = false;
+var text;
+var ctrl = null;
+var objGroup = null;//Group button
+var obj = null;
+var obj = null; 
+var divBody = null;
+// Stores the row element currently selected
+var objRowSelected = null;
+// Stores the last used object during sort
+var objLastClick = -1;
+// 'doubleclick to Edit' mode
+var blnPointToSelect = false;
+// Full path of the blank image used to hide the sort images 
+var strBlankImage = Gb_SysPath +"/controls/images/datagrid/blank.gif";
+// Full path of the up image used on sort asc
+var strUpImage = Gb_SysPath + "/controls/images/datagrid/up.gif";  
+// Full path of the up image used on sort des
+var strDownImage = Gb_SysPath + "/controls/images/datagrid/down.gif";
+// The width of the images used to indicate the asc/des sort
+var intImgWidth = 10;
+// The height of the images used to indicate the asc/des sort
+var intImgHeight = 10;    
+var innerData  = "";
+var curRow = -1 , curCol = -1;
+var fixHeader = 1;
+var rowHeight = 20;
+var bUploadAll = false;
+var beditColColor = false;
+var bAutoSize = false;
+var clrHilight = 'blue';
+
+var editCol = new Array();
+var colDefault = new Array();
+var colHide = new Array();
+var colType = new Array();
+var colSize = new Array();
+var colCheck = new Array();
+var colAlign = new Array();
+var colSort = new Array();
+var colList = new Array();
+var colCurListVal = new Array();
+var cacheTable = new Array();
+var pageView = 30;
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+
+function GridRefresh(){
+   element.print = false;
+   event_oncontentready();
+}
+function GetColFormat( col) {
+	switch (colType[ col ]) {
+		case "4" : return "DATE";
+		case "3" : return "CHECKBOX";		
+		case "0" : return "STRING";		
+		case "2" : return "LIST";
+		default : return "UNKNOW";
+	}
+}
+
+function SetColComboData (col, val) {
+	colList[col] = val;
+	colType[col] = "2";
+}
+
+function DelDateDelimiter( s )
+{
+	if (dateFormat == "dd/mm/yyyy"){
+       return  s.substring( 6, 10 ) +  s.substring( 3, 5 ) + s.substring( 0, 2 ) ;
+	}
+	else if (dateFormat == "mm/dd/yyyy"){
+       return  s.substring( 6, 10 ) + s.substring( 0, 2 ) +  s.substring( 3, 5 ) ;
+	}
+	else{
+       return s.substring( 0, 4 ) +  s.substring( 5, 7 )  + s.substring( 8, 10 ) ;
+	}
+}
+
+function AddDateDelimiter( s ) {
+	if (dateFormat == "dd/mm/yyyy"){
+		return s.substring( 6, 8  ) +"/"+ s.substring( 4, 6 ) +"/" + s.substring( 0, 4 ) ;
+	}	
+	else if (dateFormat == "mm/dd/yyyy"){
+		return s.substring( 4, 6 ) + "/" + s.substring( 6, 8  ) +"/"+ s.substring( 0, 4 ) ;
+	}
+	else{
+	    return s.substring( 0, 4 ) +"/"+ s.substring( 4, 6 ) +"/" +  s.substring( 6, 8  ) ;
+	}	
+}
+function getColIndexByName(col_name){
+    
+    for(var i=0;i<obj.rows[0].cells.length;i++){
+        if(obj.rows[fixHeader-1].cells[i].innerText.toUpperCase() == col_name)
+        return i;
+    }
+    return -1;
+}
+function GetGridData( row , col )
+{
+   if(isNaN(col)){
+        var col_name= col.toString().toUpperCase();
+        col = getColIndexByName(col_name);
+        
+        if(col < 0 ) {
+            alert("Cannot find column '"+ col_name +"' in the datagrid '"+ element.id +"'.");
+            return;
+        }    
+   }
+   
+    var val = "";
+    if(row < 0){
+        alert("Invalid row: "+ row);
+        return;
+    }
+    if(col < 0){
+        alert("Invalid column: "+ col);
+        return;
+    }
+    
+	if (colType[col] == "0" || colType[col] == "1" || colType[col] == "")
+	{
+	    val = obj.rows[row].cells[col].innerText;
+	    if(val == "&nbsp;") val = "";
+	   
+	    return val; 
+	} 
+	else if (colType[col] == "2")
+	{
+	    return colCurListVal[col][row];
+	} 
+	else if (colType[col] == "3")
+	{
+	    var checkbox = obj.rows[row].cells[col].firstChild;
+	    if(checkbox.checked) val = "-1";
+	    else val = "0";
+	   
+	    return val; 
+	} 
+	else if (colType[col] == "4")
+	{
+	    val = obj.rows[row].cells[col].innerHTML;
+	    if(val == "&nbsp;") val = "";
+	   
+	    var arr = val.split("/");
+	
+	    if ( arr.length == 3 )
+	    {
+	          if(dateFormat == "dd/mm/yyyy"){
+		        val = "" + arr[2] + arr[1] + arr[0];
+	          }
+	          else if(dateFormat == "mm/dd/yyyy"){
+	            val = "" + arr[2] + arr[0] + arr[1];
+	          }
+	          else if(dateFormat == "yyyy/mm/dd"){
+	            val = "" + arr[0] + arr[1] + arr[2];
+	          }	
+	          else{
+	            val = "";
+	          }  
+	    } 
+	    else{
+	        val = "";
+	    }  
+	    
+	    return val; 
+	} 
+	else if (colType[col] == "5")
+	{
+	     img = obj.rows[row].cells[col].firstChild;
+	     return img.src;
+	} 
+	else{
+	    val = obj.rows[row].cells[col].innerText;
+	    if(val == "&nbsp;") val = "";
+	   
+	    return val; 
+	}
+}
+function GetData( param )
+{
+	alert("Not defined yet.");	
+}
+
+function SetGridData( row , col , data )
+{
+	if ( data )
+	{
+		SetGridText(row, col, data.text);
+	}
+	
+	if(beditColColor){
+        SetColorNotEditCol();
+    }
+}
+
+function SetGridText( row , col , data )
+{//alert(data +":"+row+":"+col+":"+colType[col])
+        if(isNaN(col)){
+            var col_name= col.toString().toUpperCase();
+            col = getColIndexByName(col_name);
+            
+            if(col < 0 ) {
+                alert("Cannot find column '"+ col_name +"'  in the datagrid  '"+ element.id +"'.");
+                return;
+            }    
+       }
+   
+		if ( colType[col] == "4" ){
+			if ( data.length > 0 ){
+				obj.rows[row].cells[col].innerHTML =  AddDateDelimiter( data);
+			}	
+			else{
+				obj.rows[row].cells[col].innerHTML = "";
+			}
+		}
+		else if(colType[col] == "3"){
+		    var check = obj.rows[row].cells[col].firstChild;
+		    if(data == "0"){
+		        check.checked = false;
+		    }
+		    else{
+		        check.checked = true;
+		    }
+		}
+		else if(colType[col] == "5"){//image
+		    var image = obj.rows[row].cells[col].firstChild;
+		    if(data){
+		        if(data.indexOf("aspx?img_pk=") > 0 && data.indexOf("http") == -1){
+		            image.src = System.RootURL + data;
+		        }
+		        else{
+		            image.src = data;
+		        }
+		    }
+		}
+		else if(colType[col] == "-0" || colType[col] == "-1" || colType[col] == "-2" || colType[col] == "-3"
+		|| colType[col] == "-4" || colType[col] == "-5" || colType[col] == "-6" || colType[col] == "-7"){//Number
+		
+		    if(data){
+		        obj.rows[row].cells[col].innerHTML = addCommas(data);
+		        obj.rows[row].cells[col].style.textAlign = "right";
+		    }
+		}
+		else if(colType[col] == "2" ){//list
+		    var aTemp = colCurListVal[col]; 
+		    
+		    if(aTemp == null){
+		       aTemp = new Array();
+		    }
+		    if(bSummary && bModifing == true){
+		        aTemp[row+1] = data;
+		    }
+		    else{
+		        aTemp[row] = data;
+		    }
+		    
+		    colCurListVal[col] = aTemp;
+		    
+		    obj.rows[row].cells[col].innerHTML =  GetListText(col, data);
+		}
+		else { 
+			obj.rows[row].cells[col].innerHTML =  data;
+		}
+	    obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML = obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML | 0x10;
+}
+function GetListText(col,val){
+   var aTemp = ""+ colList[col];
+   
+   if(aTemp.length > 0 && aTemp.charAt(0) == "#"){
+	     aTemp = aTemp.substr(1,aTemp.length-1);
+   }
+	  
+   var aTemp2 = aTemp.split("|#");
+   
+   for(var i=0;i<aTemp2.length;i++){
+      var aVal = aTemp2[i];
+      var aVal2 = aVal.split(";");
+      if(aVal2[0] == val){
+          return aVal2[1];
+      }
+   }
+   return val;
+}
+function SetData( data )
+{
+	ClearData();
+	
+	if ( data )
+	{
+		bModifing = true;
+		
+		if(typeof( element.paging ) != "undefined"){
+		        cacheTable = new Array();
+		        var row;
+		        for ( var r = 0 ;  r < data.childNodes.length ; r ++ )
+		        {
+			        row = data.childNodes(r).text ;
+			        cacheTable[cacheTable.length] = row;
+			    }   
+			    //alert(cacheTable[4])
+			    if(cacheTable.length > 0){
+			            var txtPageIdx = element.document.getElementById("_txtPageIdx"+ element.id);
+			            txtPageIdx.value = "1";
+			            var lblTotalPage = element.document.getElementById("_lblTotalPage"+ element.id);
+			            lblTotalPage.innerHTML = Math.ceil(cacheTable.length/pageView);
+			    }
+			    
+			    if(pageView <= cacheTable.length)
+			    {
+			        for ( var r = 0 ;  r < pageView ; r ++ )
+		            {
+			            row = cacheTable[r] ;
+			            var arr = row.split(CDelimiter)
+			            AddRow();
+			            for ( var i = 0 ; i < arr.length ; i++ )
+			            {
+				            if ( i < obj.rows[0].cells.length-1 )
+				            {
+					            SetGridText( r + fixHeader , i, arr[i]);
+					            obj.rows[r + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+				            }			
+			            }
+		            } 
+		       }
+		       else
+		       {
+		            for ( var r = 0 ;  r < data.childNodes.length ; r ++ )
+		            {
+			            var row = data.childNodes(r).text ;
+			            var arr = row.split(CDelimiter)
+			            AddRow();
+			            for ( var i = 0 ; i < arr.length ; i++ )
+			            {
+				            if ( i < obj.rows[0].cells.length-1 )
+				            {
+					            SetGridText( r + fixHeader , i, arr[i]);
+					            obj.rows[r + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+				            }			
+			            }
+		            }
+		       } 
+		}
+		else{
+		        for ( var r = 0 ;  r < data.childNodes.length ; r ++ )
+		        {
+			        var row = data.childNodes(r).text ;
+			        var arr = row.split(CDelimiter)
+			        AddRow();
+			        //continue;
+			        for ( var i = 0 ; i < arr.length ; i++ )
+			        {
+				        if ( i < obj.rows[0].cells.length-1 )
+				        {
+					        SetGridText( r + fixHeader , i, arr[i]);
+					        obj.rows[r + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+				        }			
+			        }
+		        }
+		}
+		bModifing = false;
+	}
+	if(beditColColor){
+        //SetColorNotEditCol();
+    }
+    if(bSummary){
+        Summary();
+    }
+    ScrollTop();
+}
+
+function ClearData()
+{
+	if(obj){
+	    var tbody = obj.tBodies[0];
+	    var i=0;
+	    while(obj.rows.length > fixHeader){
+	      tbody.childNodes[0].removeNode (true);
+	    }
+	    objRowSelected = null;
+	    curRow = -1;
+	    colCurListVal = new Array();
+	}
+}
+  
+function GetGridControl()
+{
+	return obj;
+}
+function UpRow()
+{
+	var row = obj.RowSel ;
+	if ( row > 1 )
+	{
+		ReplaceRow( row , row -1 );
+		
+	}
+
+}
+
+function DownRow()
+{
+	
+	var row = obj.RowSel ;
+	
+	if ( row > 0  && row < obj.Rows - 1 )
+	{
+		ReplaceRow( row , row +1 );
+		
+	}
+}
+
+function GoToRow(n) {
+	
+	var row = obj.RowSel ;
+	var next = row + n
+	if ( next > 0  && next < obj.Rows )
+	{
+		ReplaceRow( row , next );
+	}
+}
+function Summary(){
+    
+    if(obj.rows.length <= fixHeader) return;
+    
+    AddRow(fixHeader);
+    var sum = 0;
+    for(var i=0;i<obj.rows[0].cells.length-1;i++){
+        if(colType[i].charAt(0) == "-" || colType[i].charAt(0) == "1"){
+            for(var j=fixHeader+1;j<obj.rows.length;j++){
+                var n = removeCommas(GetGridData(j,i));
+                
+                if(!isNaN(n)){
+                    sum += Number(n);
+                }
+            }
+            SetGridText(fixHeader,i,sum);
+        }
+    }
+    
+    SetCellBgColor(fixHeader, 0, fixHeader, obj.rows[0].cells.length-1, "#FFCC33");
+    SetCellBold(fixHeader, 0, fixHeader, obj.rows[0].cells.length-1, "bold");
+    ScrollTop();
+}
+function AddHeader(s)
+{
+	if ( obj ) 
+	{
+	    var tHead = obj.tHead;
+		var arr = s.split( "|" );
+		var newTR = tHead.insertRow();
+		newTR.style.lineHeight = "20px";
+		for ( var i = 0 ; i < arr.length; i++ )
+		{
+			    var newTD = newTR.insertCell();
+			    newTD.style.whiteSpace = "nowrap";
+			    newTD.style.textAlign="center";
+			    newTD.setAttribute("id", "_Header");
+				newTD.style.backgroundColor = "#BDE9FF";
+				newTD.style.fontSize = "9pt";
+				newTD.innerHTML = arr[i];
+				colHide[i] = 0;
+				//hide column
+				if ( arr[i].substr( 0, 1 ) == "_" ){
+				    colHide[i] = 1;
+					if ( element.debug != "true" ) 
+						newTD.style.display = "none";
+				}
+				
+				editCol[i] = 1;
+		}
+		
+	    var newTD = newTR.insertCell();
+	    newTD.innerHTML = "_Status";
+	    newTD.width = 1;
+	    
+	    fixHeader++;
+	} 
+	
+	initSortImages();
+}
+
+function AddRow(idx)
+{
+	if ( obj ) 
+	{
+	    var newTR = null; 
+	    if(idx >= fixHeader){
+	   	    newTR = obj.insertRow(idx);
+	   	}
+	   	else{
+	   	    newTR = obj.insertRow();
+	   	}
+	   	//alert(rowHeight)
+		newTR.style.lineHeight = rowHeight + "px";
+		for(var i=0; i < obj.rows[0].cells.length-1;i++)
+		{
+		    if(colType[i] == null || colType[i] == "") colType[i] = "0";//process last column, status coloumn
+		    
+		    if(colType[i] == 0 || colType[i] == 1 || colType[i] == "" || colType[i].charAt(0) == "-" )
+		    {
+		        var newTD = newTR.insertCell();
+		        newTD.innerHTML = "&nbsp;";
+		        newTD.style.background = "white"; 
+		        if(colDefault.length > i){
+		            if(colDefault[i] != "" || colDefault[i] != null){
+		                newTD.innerHTML = colDefault[i] + "";
+		            }
+		        }
+		    }
+		    else if(colType[i] == 2)
+		    {
+		        var newTD = newTR.insertCell();
+		        newTD.innerHTML = "&nbsp;";
+		        newTD.style.background = "white"; 
+		    }
+		    else if(colType[i] == 3)
+		    {
+		        var newTD = newTR.insertCell();
+		        newTD.innerHTML = "";
+		        newTD.style.background = "white"; 
+		        
+		        var objInput = document.createElement ("INPUT");
+                objInput.style.width = "100%";//srcElem.clientWidth;
+                objInput.type = "checkbox";
+                objInput.attachEvent ("onchange", focusLost);
+                newTD.insertAdjacentElement ("beforeEnd", objInput);
+                
+                if(colDefault.length > i){
+		            if(colDefault[i] == "-1"){
+		            var check = newTD.firstChild;
+		                check.checked = true;
+		            }
+		        }
+		    }
+		    else if(colType[i] == 4)
+		    {
+		        var newTD = newTR.insertCell();
+		        newTD.innerHTML = "&nbsp;";
+		        newTD.style.background = "white"; 
+		    }
+		    else if(colType[i] == 5)
+		    {
+		        var newTD = newTR.insertCell();
+		        newTD.innerHTML = "";
+		        newTD.style.background = "white"; 
+		        var oImage = document.createElement ("IMAGE");
+                oImage.style.width = rowHeight*2+"px";
+                oImage.style.height = rowHeight*2+"px";
+                oImage.src = "/Ctl/system/images/photo_X.gif";
+                newTD.insertAdjacentElement ("beforeEnd", oImage);
+                
+		    }
+		    //hide colunm
+		    if(colHide[i] == 1 && element.debug != "true"){
+		        newTD.style.display = "none";
+		    }
+		    
+		    if(colAlign[i] == "1"){
+		        newTD.style.textAlign="center";
+			}
+			else if(colAlign[i] == "3"){
+			    newTD.style.textAlign="right";
+			}
+	        newTD.style.fontWeight="normal";
+	        newTD.style.fontSize = "9pt";
+	        //alert(obj.rows[0].cells.length-1)
+		}
+		//status column
+		var newTD = newTR.insertCell();
+		newTD.innerHTML = newTD.innerHTML | 0x20;
+	} 
+	if(!bModifing){
+	  ScrollBottom();
+	}
+	//window.clipboardData.setData( "Text", element.innerHTML);
+}
+function ScrollBottom(){
+    var panel = element.parentNode;
+	if(panel.tagName == "DIV"){
+	    panel.scrollTop = panel.scrollHeight;
+	}
+}
+function ScrollToY(y){
+    var panel = element.parentNode;
+	if(panel.tagName == "DIV"){
+	    panel.scrollTop = y;
+	}
+}
+function ScrollTop(){
+    var panel = element.parentNode;
+	if(panel.tagName == "DIV"){
+	    panel.scrollTop = 0;
+	}
+}
+function addCommas(nStr)
+{
+	nStr += '';
+	x = nStr.split('.');
+	x1 = x[0];
+	x2 = x.length > 1 ? '.' + x[1] : '';
+	var rgx = /(\d+)(\d{3})/;
+	while (rgx.test(x1)) {
+		x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	}
+	return x1 + x2;
+}
+function removeCommas(nStr)
+{
+    return nStr.replace(/[^\d\.\-\ ]/g, '');
+}
+function RemoveRow(){
+    
+    if(curRow <= 0) return;
+    
+    if(!obj) return;
+    
+    var tbody = obj.tBodies [0];
+    if (!tbody) return;
+
+    removeTextNodes (tbody);
+    tbody.childNodes[curRow-1].removeNode (true);
+    objRowSelected=null;
+    curRow = -1;
+    curCol = -1;
+    //resizeDivs ();
+}
+
+function RemoveRowAt( idx ){
+    if(idx <=0) return;
+    if(obj.rows.length <=1) return;
+    
+    var tbody = obj.tBodies [0];
+    if (!tbody) return;
+
+    removeTextNodes (tbody);
+    tbody.childNodes[idx-1].removeNode (true);
+    
+    objRowSelected=null;
+    curRow = -1;
+    curCol = -1;
+}
+
+
+function DeleteRow()
+{
+   if(curRow > 0 ){
+        for(var i=0;i<obj.rows[0].cells.length-1;i++)
+          {
+            objRowSelected.cells[i].style.backgroundColor = 0xeeeeee;//delete background color
+            objRowSelected.cells[i].style.color = 0x808080;//delete text color
+            obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML = obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML | 0x40;
+          }        
+   }
+}
+
+function DeleteRowAt(idxNo)
+{
+	if(idxNo > 0 ){
+        for(var i=0;i<obj.rows[0].cells.length-1;i++)
+          {
+            obj.rows[idxNo].cells[i].style.backgroundColor = 0xeeeeee;//delete background color
+            obj.rows[idxNo].cells[i].style.color = 0x808080;//delete text color
+            obj.rows[idxNo].cells[obj.rows[0].cells.length-1].innerHTML = obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML | 0x40;
+          }        
+   }		
+}
+
+function UnDeleteRow () {
+	
+	if(curRow > 0 ){
+        for(var i=0;i<obj.rows[0].cells.length-1;i++)
+          {
+            objRowSelected.cells[i].style.backgroundColor = "white";//white background color
+            objRowSelected.cells[i].style.color = "black";//black text color
+            obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML = 0x0;
+          }        
+   }
+   
+}
+
+function UnDeleteRowAt (idxNo) {
+	if(idxNo > 0 ){
+        for(var i=0;i<obj.rows[0].cells.length-1;i++)
+          {
+            obj.rows[idxNo].cells[i].style.backgroundColor = "white";//white background color
+            obj.rows[idxNo].cells[i].style.color = "black";//black text color
+            obj.rows[idxNo].cells[obj.rows[0].cells.length-1].innerHTML = 0x0;
+          }        
+   }	
+}
+
+function DeleteAll()
+{
+	var row, i;
+	for ( i =  1 ; i < obj.Rows ; i ++ )
+	{
+		row = i;
+		if ( row > 0 )
+		{		
+			obj.TextMatrix( row , obj.Cols - 1 ) = obj.TextMatrix( row , obj.Cols - 1 ) | 0x40;
+			obj.Cell( 6 , row , 0 , row, obj.Cols - 1 ) = 0xeeeeee;
+			obj.Cell( 7 , row , 0 , row, obj.Cols - 1 ) = 0x808080;
+		}		
+	}
+}
+
+function SetColText( col , data )
+{
+	var i ; 
+	
+	for ( i = 1 ; i < obj.Rows  ; i++ )
+		obj.TextMatrix( i , col ) = data;
+}
+
+function SetRowStatus( row , data )
+{
+	obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML = data;
+}
+
+function GetRowStatus( row )
+{
+    if(row < fixHeader)   return 0;
+    
+	return obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML;
+}
+
+function SetAllRowStatusModify( )
+{
+	var i;
+	for ( i = obj.FixedRows; i < obj.Rows  ; i++ )
+		obj.TextMatrix( i ,  obj.cols -1 ) |= 0x10;
+}
+
+
+function SetComboFormat( col  , s )
+{
+	/*colList = new Array();
+	
+	if(s.charAt(0) == "#") s = s.substr(1,s.length-1);
+	
+	var arr = s.split("|#");
+	var aTemp = new Array();
+	
+	for(var i=0;i<arr.length;i++){
+	   var s1 = arr[i];
+	   var aTemp1 = s1.split(";");
+	   aTemp[i] = aTemp1;
+	}
+	colList[col] = aTemp;
+	//alert(colList)
+	*/
+	colType[col] = "2";
+	colList[col] = s;
+}
+
+function AppendComboItem(col, data) {
+	var s;
+	var str;
+
+	arr = data.split("|");
+	if (arr.length == 2) {
+		s = "#" + arr[0] + ";" + arr[1];
+	}
+	str = obj.ColComboList(col);
+	if (str != "") {
+		s = "|" + s;
+	}
+	str = str + s;
+	obj.ColComboList( col ) = str ;
+}
+
+function Refresh() {
+	var i;
+	for (i =0;i<obj.Rows;i++ ){
+		if (obj.isSelected(i) == true)
+			obj.isSelected(i) = false;
+	}
+}
+
+function DeselectRow (n) {
+	obj.RowSel = 0;
+	obj.isSelected (n) = false;
+}
+//
+// Copy Row Data to Clipboard
+//
+function CopyRow()
+{
+	var data = "";
+	var r,i;
+	for ( r = 1 ; r < obj.rows.length  ; r ++ )
+	{
+			var s = "";
+			for ( var i = 0 ; i < obj.rows[0].cells.length -1 ; i ++ )
+			{
+				// shouldnt get hidden column
+				//if (colHide[i] == 0) {
+					if ( s == "" ){
+					   s += GetGridData(r,i);
+					}	
+					else{
+					   s += '\t'+ GetGridData(r,i);
+					}
+			}
+			
+			if ( data == "" ){
+				data += s ;
+			}	
+			else{
+				data += "\n" + s;
+			}	
+	}				
+	//alert(data)
+	window.clipboardData.setData( "Text", data);
+	alert("Grid data was copied to clipboard.");
+}
+
+//
+// Paste Row Data from Clipboard
+//
+function Trim(sent){
+	var S=new String(sent);
+	S=S.replace(/^\s+/,"");
+	return S.replace(/\s+$/,"")
+}
+function PasteRow()
+{
+	var data= window.clipboardData.getData("Text") ;
+	var oldRow = -1;
+	var arr = Trim(data).split ( "\n");
+	var r2;
+	var i,j, k, str;
+	var arr2, rows;
+	
+	i = 0;
+	str = "";
+	//if (curCol <0 ) curCol = 0;
+	
+	if (curRow < 0) {
+		return;
+	}
+	else 
+	{
+		if (confirm("Are you sure you want to paste data to grid ?")) {
+			oldRow = curRow;
+			rows = obj.rows.length;
+			//System.ShowProgress2();
+			//setTimeout("System.ShowProgress2()", 100);
+
+			for (i=0;i<arr.length-(rows - curRow);i++) {
+				AddRow();
+			}
+			
+			i = 0;
+			while (i<arr.length) 
+			{
+				str = arr[i];
+				arr2 = str.split("\t");	
+				j = k = 0;
+				while ( ( j<arr2.length ) && (k < obj.rows[0].cells.length) ) 
+				{
+					//if (colHide[curCol + k] == 0) {
+						SetGridText(curRow, k, arr2[j]);
+						j++;
+					//}
+					k++;
+				} 			
+				i ++;
+				curRow ++;
+			}		
+			curRow = oldRow;
+			//System.HideProgress2();
+		}
+	}
+}
+var flagCol = -1;
+function MergeByCol( col ) {
+    var numRowSpan=1;
+    var iSum=0;
+    if (bSummary) iSum = 1;
+    
+    if(col >= 0)
+    {
+      if(flagCol == -1) flagCol = col;
+      
+      for (var j = fixHeader + iSum ; j < obj.rows.length-1 ; j++)
+      {       
+	    if (numRowSpan<=1)
+	    {
+		    var currentRow = obj.rows[j];
+		    var currentCell= currentRow.cells[col];             
+		    var currentCellData = currentCell.childNodes[0].data;
+	    }
+	    if (j < obj.rows.length-1)
+	    {
+		    if (obj.rows[j+1])
+		    {
+			    var nextRow = obj.rows[j+1];
+			    var nextCell = nextRow.cells[col];
+			    var bMerge = true;
+			    if(flagCol >= 0 && col != flagCol){
+			      var lastMergeCell = nextRow.cells[flagCol];
+			      if(lastMergeCell.style.display != 'none') 
+			        bMerge = false;
+			    }
+			    var nextCellData = nextCell.childNodes[0].data;
+			    // compare the current cell and the next cell             
+			    if (currentCellData == nextCellData && bMerge) 
+			    {
+				    numRowSpan += 1;
+				    currentCell.rowSpan = numRowSpan;
+				    nextCell.style.display = 'none';   //disappear the next cell             
+			    } 
+			    else 
+			    {
+				    numRowSpan = 1;
+			    }
+		    }
+	    }
+     }	
+    numRowSpan = 1;
+   }
+}
+function MergeByColFree( col ) {
+    var numRowSpan=1;
+    var iSum=0;
+    if (bSummary) iSum = 1;
+    
+    if(col >= 0)
+    {
+      for (var j = fixHeader + iSum ; j < obj.rows.length-1 ; j++)
+      {       
+	    if (numRowSpan<=1)
+	    {
+		    var currentRow = obj.rows[j];
+		    var currentCell= currentRow.cells[col];             
+		    var currentCellData = currentCell.childNodes[0].data;
+	    }
+	    if (j < obj.rows.length-1)
+	    {
+		    if (obj.rows[j+1])
+		    {
+			    var nextRow = obj.rows[j+1];
+			    var nextCell = nextRow.cells[col];
+			    var nextCellData = nextCell.childNodes[0].data;
+			    // compare the current cell and the next cell             
+			    if (currentCellData == nextCellData) 
+			    {
+				    numRowSpan += 1;
+				    currentCell.rowSpan = numRowSpan;
+				    nextCell.style.display = 'none';   //disappear the next cell             
+			    } 
+			    else 
+			    {
+				    numRowSpan = 1;
+			    }
+		    }
+	    }
+     }	
+    numRowSpan = 1;
+   }
+}
+function MergeByRow ( row, col, colspan ) {
+     if(row <= fixHeader){
+        var row_merge = obj.tHead.childNodes(row);
+        var cell = row_merge.cells[col];
+        cell.colSpan = colspan;
+        cell.style.textAlign = "center";
+        for(var i=col+1; i <(col+colspan); i++){
+            row_merge.cells[i].style.display = "none";
+        }
+     }
+}
+function MergeByColLimit( col, from, to ) {
+    var numRowSpan=1;
+    
+    if(col >= 0)
+    {
+      for (var j = from; j <= to ; j++)
+      {       
+	    if (numRowSpan<=1)
+	    {
+		    var currentRow = obj.rows[j];
+		    var currentCell= currentRow.cells[col];             
+		    var currentCellData = currentCell.childNodes[0].data;
+	    }
+	    if (j < obj.rows.length-1)
+	    {
+		    if (obj.rows[j+1])
+		    {
+			    var nextRow = obj.rows[j+1];
+			    var nextCell = nextRow.cells[col];
+			    var nextCellData = nextCell.childNodes[0].data;
+			    // compare the current cell and the next cell             
+			    if (currentCellData == nextCellData) 
+			    {
+				    numRowSpan += 1;
+				    currentCell.rowSpan = numRowSpan;
+				    nextCell.style.display = 'none';   //disappear the next cell             
+			    } 
+			    else 
+			    {
+				    numRowSpan = 1;
+			    }
+		    }
+	    }
+     }	
+    numRowSpan = 1;
+   }
+}
+function SetWrapText ( bWraped ) {
+	obj.WordWrap = bWraped;
+}
+
+function MergeGridCols () {
+	var i ;
+	obj.MergeCells = 1;
+	for (i=0;i<obj.Cols;i++) {
+		obj.MergeCol(i) = true;
+	}
+	SetWrapText(true);
+	//ChangeBgColorFrTo(1,5,0xFEBCBE);
+}
+
+function ChangeBgColorFrTo(col1, col2, color ) {
+	var i,j;
+	for (i=1;i<obj.Rows;i++) {
+		for (j=col1;j<=col2;j++) {
+			if (obj.TextMatrix(i,j) != "") {
+				obj.Cell (6, i,j) = color;
+			}
+		}
+	}
+}
+
+function SetHeaderFont( fnt) {
+	for(var j=0;j<obj.rows[0].cells.length;j++)
+    {
+        obj.rows[0].cells[j].style.fontFamily = fnt;
+    }
+}
+
+function SetHeaderBold( bBold ) {
+
+    for(var j=0;j<obj.rows[0].cells.length;j++)
+    {
+        obj.rows[0].cells[j].style.fontWeight = "bold";
+    }
+}
+			
+function SetHeaderFontSize(sz) {
+	for(var j=0;j<obj.rows[0].cells.length;j++)
+    {
+        obj.rows[0].cells[j].style.fontSize = sz;
+    }
+}
+
+function SetHeaderFontColor( color ) {
+	for(var j=0;j<obj.rows[0].cells.length;j++)
+    {
+        obj.rows[0].cells[j].style.color = color;
+    }
+}
+
+function SetCellFont(row1, col1, row2, col2, fnt) {
+	for(var i=row1;i<=row2;i++){
+	    for(var j=col1;j<=col2;j++){
+	        var cell = obj.rows[i].cells[j];
+	        cell.style.fontFamily = fnt;
+	    }
+	}
+}
+function SetCellBold( row1, col1, row2, col2, bBold ) {
+	for(var i=row1;i<=row2;i++){
+	    for(var j=col1;j<=col2;j++){
+	        var cell = obj.rows[i].cells[j];
+	        cell.style.fontWeight = "bold";
+	    }
+	}
+}			
+
+function SetCellFontColor(row1, col1, row2, col2, color ) {
+	for(var i=row1;i<=row2;i++){
+	    for(var j=col1;j<=col2;j++){
+	        var cell = obj.rows[i].cells[j];
+	        cell.style.color = color;
+	    }
+	}
+}
+
+function SetCellBgColor(row1, col1, row2, col2, color) {
+	for(var i=row1;i<=row2;i++){
+	    for(var j=col1;j<=col2;j++){
+	        var cell = obj.rows[i].cells[j];
+	        cell.style.backgroundColor = color;
+	    }
+	}
+}
+function GetCellBgColor(row1, col1, row2, col2) {
+	return obj.Cell(6,row1, col1, row2, col2 );
+}
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function getRow()
+{
+	return curRow;
+}
+function setRow(val)
+{
+	return obj.Row = val;
+}
+function getCol()
+{
+	return curCol;
+}
+function setCol(val)
+{
+	return obj.Col = val;
+}
+function getRows()
+{
+   return obj.rows.length - fixHeader + 1;
+}
+function setRows(val)
+{
+	return obj.Rows = val;
+}
+function getCols()
+{
+	return obj.rows[0].cells.length;
+}
+function setCols(val)
+{
+	return obj.Cols = val;
+}
+function getSelRow()
+{
+   if(obj)
+	return obj.RowSel;
+   else 
+      return -1;	
+}
+
+
+// ************ Property Setting *****************
+
+var bOldValue = false;
+var DataColumnLen = 0;
+function setHeader( s )
+{
+	if ( obj ) 
+	{
+	    var tHead = document.createElement ("thead");
+	    obj.insertAdjacentElement ("afterBegin", tHead);
+	    
+		var arr = s.split( "|" );
+		var newTR = tHead.insertRow();
+		newTR.style.lineHeight = "20px";
+		for ( i = 0 ; i < arr.length; i++ )
+		{
+			    var newTD = newTR.insertCell();
+			    newTD.style.whiteSpace = "nowrap";
+			    newTD.style.textAlign = "center";
+			    newTD.setAttribute("id", "_Header");
+				newTD.style.backgroundColor = "#BDE9FF";
+				newTD.style.fontSize = "9pt";
+				newTD.innerHTML = arr[i];
+				colHide[i] = 0;
+				//hide column
+				if ( arr[i].substr( 0, 1 ) == "_" ){
+				    colHide[i] = 1;
+					if ( element.debug != "true" ) 
+						newTD.style.display = "none";
+				}
+				
+				editCol[i] = 1;
+		}
+		
+	    var newTD = newTR.insertCell();
+	    newTD.innerHTML = "_Status";
+	    newTD.width = 1;
+		//alert(newTR.innerHTML)
+		//window.clipboardData.setData( "Text", element.innerHTML);
+	} 
+}
+function setDefaults( s )
+{
+	if ( obj ) 
+	{
+		var arr = s.split( "|" );
+		var i;
+		
+		if(s == "")
+		{
+		    for ( i =0 ; i < obj.rows[0].cells.length-2 ; i++ )
+		    {
+				colDefault[i] = "";
+		    }
+		    return;
+		}
+		
+		
+		for ( i =0 ; i < arr.length; i++ )
+		{
+		    if (i >= obj.rows[0].cells.length-1) return;
+		    
+		    colDefault[i] = arr[i];
+		}
+	} 
+}
+function setWidth( s )
+{
+	if ( obj ) 
+	{
+		var arr = s.split( "|" );
+		var i;
+		
+		if(s == "")
+		{
+		    for ( i =0 ; i < obj.rows[0].cells.length-2 ; i++ )
+		    {
+		        var td = obj.tHead.childNodes[0].childNodes[i];
+				 
+				td.width = "50";
+				colSize[i]=50;
+		    }
+		    return;
+		}
+		
+		
+		for ( i =0 ; i < arr.length; i++ )
+		{
+		    if (i >= obj.rows[0].cells.length-1) return;
+		    
+		    var td = obj.tHead.childNodes[0].childNodes[i];
+		    
+			switch (arr[i])
+			{
+				case "0":
+				case "": 
+				     td.width = "50";
+				     colSize[i]=0;
+					break;
+				default : 
+				    td.width = arr[i];
+				    colSize[i]=arr[i];
+					break;
+			}
+		}
+	} 
+}
+/* 
+  0:string, 1:number, 2:combobox, 3:check box, 4:calendar, 5:image 
+*/
+function setFormat( s )
+{
+	if ( obj ) 
+	{
+	    if( s == "")
+	    {
+	        for ( var i =0 ; i < obj.rows[0].cells.length ; i++ )
+		    {
+			    colType[i] = arr[i];
+		    }  
+	    }
+        else
+        {	  
+		    var arr = s.split( "|" );
+		    for ( var i =0 ; i < arr.length ; i++ )
+		    {
+			    colType[i] = arr[i];
+		    }
+		}
+	} 
+}
+function setCheck( s )
+{
+	if ( obj ){
+	
+		var arr = s.split( "|" );
+		
+		for ( var i =0 ; i < arr.length ; i++ ){
+			colCheck[i] = arr[i];
+			
+		}
+	} 
+}
+function setAlign( s )
+{
+	if ( obj ) 
+	{
+	
+		var arr = s.split( "|" );
+		for ( i =0 ; i < arr.length ; i++ )
+		{
+			switch (arr[i])
+			{
+				case "1" : 
+					obj.rows[0].cells[i].style.textAlign = "center";
+					break;
+				case "" :
+				case "0" :
+				case "2" :
+					obj.rows[0].cells[i].style.textAlign="center";
+					break;
+	
+				case "3" :
+					obj.rows[0].cells[i].style.textAlign="center";
+					break;
+			}
+			colAlign[colAlign.length] = arr[i];
+		}
+		//alert(obj.innerHTML)
+	} 
+}
+
+
+//
+//
+// editFunc
+//	0 : No Edit
+//  1 : Edit
+//	2 : Insert Only Edit
+//	3 : Modify Only Edit
+
+function SetColEdit( col , editFunc )
+{
+	editCol[col] = editFunc;
+}
+
+function setEditCol( s )
+{
+	if ( obj ) 
+	{
+		var arr = s.split( "|" );
+		for ( i =0 ; i < arr.length ; i++ )
+		{
+			if ( arr[i].length   >0 )
+			{
+				if (arr[i]=="F" )
+					editCol[i] = 0;
+				else
+					editCol[i] = arr[i] * 1.0;
+			}
+		}
+	} 
+}
+
+function setFixedCols( s )
+{
+	if ( obj ) 
+		obj.FixedCols = s;
+}
+
+function setFixedRows( s )
+{
+	if ( obj ) 
+		obj.FixedRows = s;
+}
+
+function setSorting( s )
+{
+	if ( obj ) 
+	{
+	    var arr = s.split( "|" );
+	    
+		for ( i =0 ; i < arr.length ; i++ )
+		{
+			if (arr[i] == "F" )
+				colSort[i] = 0;
+			else
+				colSort[i] = 1;
+		}
+	} 
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+function OnClick()
+{
+
+    PopupClose();
+    
+    if(curRow > 0 && curCol >=0)
+    {
+        clearCurrentCell(curRow,curCol);  
+    }
+    
+    getEventCell();
+    OnEnterCell();
+    if(curRow > 0){
+        selectRow();
+    }
+    else if(curRow == -2){
+        sort ();
+    } 
+}
+
+function OnSelChange()
+{
+	var evObj = createEventObject();
+	evObj.row = curRow;
+	evObj.col = curCol;
+	SelChange.fire( evObj );
+}
+
+function OnDblClick()
+{
+    var srcElem = getEventRow ();
+    if(srcElem.rowIndex < 0 ) return;
+    if (srcElem.tagName != "TR") return;
+    
+    //alert(curRow +":"+ curCol)
+    if(curRow > 0 && curCol >=0 )
+    {
+       cellEdit(curRow, curCol);
+    }
+    
+    //raise event
+	var evObj = createEventObject();
+	evObj.row = curRow ;
+	evObj.col = curCol;
+	CellDblClick.fire( evObj );
+}
+  var txtOld;
+  var editing = false;
+  function cellEdit(row, col)
+  {
+    if(editCol[col] == 0) return;
+    if(editing) return;
+    
+    var cell = obj.rows[row].cells[col];
+    var type = "" + colType[col];
+    
+    if(type == "0" || type == "1" || type == "" || type.charAt(0) == "-")
+    {
+        txtOld = cell.innerText;
+        if(txtOld == " ") txtOld="";
+        cell.innerHTML = ""; 
+    
+        var objInput = document.createElement ("INPUT");
+        objInput.style.width = "100%";//srcElem.clientWidth;
+        objInput.type = "text";
+        objInput.style.fontSize ="10pt";
+        //objInput.style.fontFamily ="Tahoma";
+        objInput.style.border = "0px";
+        //alert(txtOld)
+        if(colType[col].charAt(0) == "-"){
+            objInput.value = removeCommas(Trim(txtOld));
+        }
+        else{
+            objInput.value = Trim(txtOld);
+        }
+        objInput.attachEvent ("onfocusout", focusLost);
+        //the above onfocusout works fine in IE 6 but not in IE 5 so...
+        objInput.attachEvent ("onblur", focusLost);
+        objInput.attachEvent ("onkeypress", checkForEnter);
+
+        cell.insertAdjacentElement ("beforeEnd", objInput);
+
+        objInput.select ();
+        editing = true;
+        obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML = obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML | 0x10;
+    }
+    else if(type == "2")
+    {
+        /*
+        txtOld = cell.innerHTML;
+        if(txtOld == "&nbsp;" ) txtOld="";
+        cell.innerHTML = "";
+        
+        var oSelect = element.document.createElement ("SELECT");
+        
+        SetComboFormat(6, "#9;9A|#18;18B|#27;27C|#36;36D|#45;45E|#54;54F");
+        
+        var list = colList[col];
+        for(var i=0;i<list.length;i++){
+            var aTemp = list[i];
+            var oOption = element.document.createElement("OPTION");
+		    oOption.value = aTemp[0];
+		    oOption.text = aTemp[1];
+		    oOption.style.fontSize =6;
+		    oSelect.options.add(oOption);
+        }
+        oSelect.style.width = "100%";//srcElem.clientWidth;
+        //oSelect.attachEvent ("onfocusout", focusLost);
+        oSelect.attachEvent ("onblur", focusLost);
+        //oSelect.attachEvent ("onchange", OnListChange);
+        oSelect.attachEvent ("onkeypress", checkForEnter);
+        //oSelect.value = "18"
+        cell.insertAdjacentElement ("beforeEnd", oSelect);
+        oSelect.focus();
+        editing = true;
+        
+        obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML = obj.rows[row].cells[obj.rows[0].cells.length-1].innerHTML | 0x10;
+        */
+        FnOnCellListBoxClick();
+    }
+    else if(colType[col] == "3")
+    {
+        
+    }
+    else if(colType[col] == "4")
+    {
+        FnOnCellButtonClick();
+    }
+    //window.clipboardData.setData( "Text", obj.innerHTML);
+  }
+  function OnListChange()
+  {
+     focusLost();
+  }
+  /*\
+  |*| This function is called when focus is lost on the text box
+  |*| that is used to read user input. Validate the contents of the
+  |*| input box and write them back to the table cell
+  \*/
+  function focusLost ()
+  {
+    var objSrcElm = window.event.srcElement; 
+    
+    if(objSrcElm.type == "checkbox")
+    {
+       //update modify status when user click checkbox
+       obj.rows[curRow].cells[obj.rows[0].cells.length-1].innerHTML = obj.rows[curRow].cells[obj.rows[0].cells.length-1].innerHTML | 0x10;
+    }
+    else
+    {
+        if(colType[curCol].charAt(0) == "-"){
+            objSrcElm.parentNode.innerHTML = addCommas(Trim(objSrcElm.value));
+        }else{
+            objSrcElm.parentNode.innerHTML = objSrcElm.value;
+            //obj.rows[curRow].cells[curCol].fireEvent("onclick");
+            //obj.rows[curRow].cells[curCol].focus();
+        }
+    }
+    editing = false;
+    OnAfterEdit(curRow, curCol);
+  }
+  /*\
+  |*| This will be called on everkeypress event of the input box
+  |*| This raises the focuslost event if the user hits enter
+  \*/
+  var first = true;
+  function checkForEnter ()
+  { //alert(event.keyCode)
+    
+    if (event.keyCode == 13)
+    { 
+        if(first)
+        {
+            first = false;
+        }
+        else
+        {
+            first = true;
+            focusLost ();
+        }
+        
+    }
+    
+  }
+  function getEventCell ()
+  {
+    var srcElem = window.event.srcElement;
+    
+    if(srcElem.tagName == "datagrid" || srcElem.tagName == "DIV"){
+        curRow = -2;
+        return srcElem;
+    }
+     
+    //crawl up the tree to find the table col
+    while (srcElem.tagName != "TD" && srcElem.tagName != "TABLE")
+    {
+      srcElem = srcElem.parentNode;
+    }
+    
+    curCol = srcElem.cellIndex;
+    var row = srcElem.parentNode;
+    
+    if(srcElem.id == "_Header"){
+       curRow = -2;
+    }
+    else{
+        curRow = row.rowIndex;
+    }
+    
+    return srcElem;
+  }
+function getEventRow ()
+{
+    var srcElem = window.event.srcElement;
+    //crawl up to find the row
+    while (srcElem.tagName != "TR" && srcElem.tagName != "TABLE")
+    {
+      srcElem = srcElem.parentNode;
+    }
+    return srcElem;
+}
+  /*\
+  |*| This will only be called once during initIALIZATION
+  |*| This will create the DIV elems at the end of each col and
+  |*| attach all the functions needed to resize the coloumns
+  \*/
+  function initDiv ()
+  {
+    var objLast = obj, objDiv;
+    
+    //removeTextNodes (obj.tBodies[0]);
+    
+    for (var i = 1; i <= obj.rows[0].cells.length-1; i++)
+    {  
+      objDiv = document.createElement ("DIV");
+      objDiv.setAttribute ('id', "DragMark" + (i - 1));
+      objDiv.setAttribute ('name',  i);    //Used to track the TDs that have to be moved
+      objDiv.style.position = "absolute";
+      objDiv.style.top = 0; 
+
+      var objTD = obj.tHead.childNodes[0].childNodes[i-1];
+      
+      if (!objTD || objTD.tagName != "TD") return;
+      
+      var intColWidth = (getRealPos (objTD) - 0) + (objTD.width - 0);
+      //alert(intColWidth)
+      objDiv.style.top = obj.style.top - 10;
+      objDiv.style.left = intColWidth + i - 2;//=border width
+      objDiv.style.width = 6;//+ parseInt(element.border);
+      objDiv.style.height =  objTD.offsetHeight + 10;//(obj.tBodies[0].childNodes.length + 1) *
+        
+      // for debugging only
+      //objDiv.style.backgroundColor = clrHilight;
+        
+      //To make it more beautiful in IE 6  
+      if (navigator.appVersion.indexOf ("MSIE 6.0") != -1)
+        objDiv.style.cursor = "col-resize";
+      else
+        objDiv.style.cursor = "crosshair";
+
+      objDiv.attachEvent ('onmouseover', flagTrue);
+      objDiv.attachEvent ('onmousedown', captureMouse);
+      objDiv.attachEvent ('onmousemove', resizeColoumn);
+      objDiv.attachEvent ('onmouseup', releaseMouse);
+      objDiv.attachEvent ('onmouseout', flagFalse);
+
+      objLast.insertAdjacentElement ("afterEnd", objDiv);
+      objLast = objDiv;
+      //alert(obj.innerHTML);
+    }
+  }
+
+  /*\
+  |*| This function will be fired onmouseover of the DIVs
+  |*| Set the flag to true indicating that the mouse is over the DIV
+  \*/
+  var blnMouseOver = false;
+  function flagTrue ()
+  {
+    blnMouseOver = true;
+  }
+
+  /*\
+  |*| This function will be fired onmousedown on the DIVs
+  |*| Capture all the mosue events if mousedown is fired inside the DIV
+  \*/
+  function captureMouse ()
+  {
+    if (blnMouseOver)
+    {
+      objDivToMove = window.event.srcElement;
+      objDivToMove.setCapture ();
+    }
+  }
+
+  /*\
+  |*| This function will be fired onmousemove of the DIVs
+  |*| This will be used as a ondrag function... thanks to IE 5
+  \*/
+  // Stores the div being moved
+  var objDivToMove = null;
+  function resizeColoumn ()
+  {
+    //If mouse button is down, objDivToMove will be valid... we can move/resize
+    if (!objDivToMove) return;
+
+    var intTDNum = objDivToMove.name - 1;
+    var thead = obj.tHead;
+    
+    if (!thead) return;
+
+    var objTD = thead.childNodes[0].childNodes[intTDNum];
+
+    if (!objTD || objTD.tagName != "TD") return;
+
+    var intCurWidth = objTD.offsetWidth;
+    var newX = window.event.clientX;
+    //var newX = window.event.x;
+    var intNewWidth = newX - objTD.offsetLeft;
+    //alert(intNewWidth)
+    //TODO: who decided that the minimum col widhth is 50px?
+    if (intNewWidth < 50) return;
+    //Check to see if the table widht is more than the width of the window
+    //Need that 20px buffer in IE to prevent scroll bars from appearing
+    
+    //if (element.document.body.offsetWidth - 20 < element.offsetWidth - intCurWidth + intNewWidth) return;
+
+    objTD.style.width = intNewWidth;
+    
+    /*if(obj){
+        var tbody = obj.tBodies[0].childNodes(0).childNodes(0).childNodes(0).childNodes(0).tBodies[0];
+        
+        var objTD2 = tbody.childNodes[0].childNodes[intTDNum];
+        
+        objTD2.style.width = intNewWidth;
+    }
+    */
+    var objDiv = objDivToMove;
+    //Will be ? 1 depending on which side the mouse moved
+    //will be used to move all the DIVs remaining on the right
+    var intDivMove = newX - objDiv.offsetLeft;
+    objDiv.style.left = newX;
+
+    //Move all the remaining DIVs on the right
+    for (var i = 1; i < obj.rows[0].cells.length - 1 - intTDNum; i++)
+    {        
+      objDiv = objDiv.nextSibling;
+      objDiv.style.left = objDiv.offsetLeft + intDivMove ;
+    }
+  }
+
+  /*\
+  |*| This function will be fired onmouseup
+  |*| Release all the mouse events of the DIV
+  \*/
+  function releaseMouse ()
+  {
+    if(objDivToMove)
+    {
+        objDivToMove.releaseCapture ();
+        objDivToMove = null;
+    }
+  }
+
+  /*\
+  |*| This function will be fired onmouseout of the DIV
+  |*| Set the flag indicating that the mouse is NOT over the DIV
+  \*/
+  function flagFalse ()
+  {
+    blnMouseOver = false;
+  }
+  /*\
+  |*| Need this as IE 5 doesnt give the offsetLeft property properly
+  \*/
+  function getRealPos (elm)
+  {
+    intPos = 0;
+    elm = elm.previousSibling;
+    while ((elm!= null) && (elm.tagName!="BODY"))
+    {
+       intPos += elm.width - 0;
+      elm = elm.previousSibling;
+    }
+    return intPos;
+  }
+/*\
+  |*| This function removes the textnodes from the table rows.
+  |*| This cleanup work is needed to get rid of the EXTRA textnodes that NN gives
+  \*/
+
+  function removeTextNodes (t)
+  {
+    for (var i = 0; t.childNodes[i] ; i++)
+    {
+      if (!t.childNodes[i].tagName)
+      {
+         t.childNodes[i].parentNode.removeChild (t.childNodes[i]);
+      }
+      else
+      {
+        for (var j = 0; t.childNodes[i].childNodes[j] ; j++)
+        {
+          if (!t.childNodes[i].childNodes[j].tagName) 
+            t.childNodes[i].childNodes[j].parentNode.removeChild (t.childNodes[i].childNodes[j]);
+        }
+      }
+    }
+
+  }    
+  /*\
+  |*| Hilights the row on mouseover. This also sets the "previous row selected" to normal
+  \*/
+  function selectRow ()
+  {
+    
+    var srcElem = getEventRow ();
+    
+    if (srcElem.tagName != "TR") return;
+    
+    if (objRowSelected)
+    {
+       
+          for(var i=0;i<obj.rows[0].cells.length;i++)
+          {
+             if(objRowSelected.cells[obj.rows[0].cells.length-1].innerHTML < 64){
+                objRowSelected.cells[i].style.backgroundColor = 'white';
+             }
+             else{
+                objRowSelected.cells[i].style.backgroundColor = 0xeeeeee;
+             }
+          }
+          objRowSelected = null;
+    }
+    
+    if (srcElem.rowIndex >= 0)
+    {
+          for(var i=0;i<obj.rows[0].cells.length-1;i++)
+          {
+            srcElem.cells[i].style.backgroundColor = 0xE1EFF7;//select color
+          }
+          
+          objRowSelected = srcElem;
+          setCurrentCell(srcElem.rowIndex,curCol);  
+      
+          var evObj = createEventObject();
+          evObj.row = srcElem.rowIndex;
+          evObj.col = curCol;
+          curRow = srcElem.rowIndex;
+          CellClick.fire( evObj );
+	
+    }
+    
+  }  
+  /*\
+  |*|  This function is called when there is a click event on the top
+  |*|  row
+  \*/
+  function sort ()
+  {
+    var srcElem = getEventCell ();
+    
+    if (srcElem.tagName != "TD") return;
+
+    var thead = obj.tHead;  
+    // clear the sort images in the head
+    var imgcol = thead.getElementsByTagName ("IMG");
+    for (var x = 0; x < imgcol.length; x++) 
+    {
+      imgcol[x].setAttribute('src', strBlankImage);
+    }
+
+    if (objLastClick == srcElem.selectIndex)
+    {
+      if (reverse == false)
+      {
+        srcElem.childNodes[0].setAttribute ('src', strDownImage);
+        reverse = true;
+      }
+      else 
+      {
+        srcElem.childNodes[0].setAttribute ('src', strUpImage);
+        reverse = false;
+      }
+    }
+    else
+    {
+      reverse = false;
+      objLastClick = srcElem.selectIndex;
+      srcElem.childNodes[0].setAttribute ('src', strUpImage);
+
+    }
+    if(obj){
+        tbody = obj.tBodies[0];
+        insertionSort (tbody, tbody.rows.length-1, reverse, srcElem.selectIndex);
+    }
+  }
+  /*\
+  |*| This is THE function which does all the real sorting of the rows
+  |*| First get rid of all the text-node elements that NN returns for spaces in the tables
+  |*| then sort the contents based on which coloumn is clicked
+  \*/
+  function insertionSort (t, iRowEnd, fReverse, iColumn)
+  {
+    var textRowInsert, textRowCurrent, eRowInsert, eRowWalk;
+    removeTextNodes (t);
+    for (var iRowInsert = 1 ; iRowInsert <= iRowEnd ; iRowInsert++)
+    {
+      if (iColumn)
+      {
+        if (typeof (t.rows[iRowInsert].cells[iColumn]) != "undefined")
+           textRowInsert = t.rows[iRowInsert].cells[iColumn].innerText;
+        else
+          textRowInsert = "";
+      }
+      else
+      {
+        textRowInsert = t.childNodes[iRowInsert].innerText;
+      }
+
+      for (var iRowWalk = 0 ; iRowWalk < iRowInsert ; iRowWalk++)
+      {
+        if (iColumn)
+        {
+          if (typeof (t.rows[iRowWalk].cells[iColumn]) != "undefined")
+            textRowCurrent = t.rows[iRowWalk].cells[iColumn].innerText;
+          else
+            textRowCurrent = "";
+        }
+        else
+        {
+          textRowCurrent = t.rows[iRowWalk].innerText;
+        }
+        
+        if ((!fReverse && textRowInsert < textRowCurrent) || (fReverse && textRowInsert > textRowCurrent))
+        {
+          eRowInsert = t.childNodes[iRowInsert];
+          eRowWalk = t.childNodes[iRowWalk];
+          //alert(eRowInsert.innerHTML)
+          t.insertBefore (eRowInsert, eRowWalk);
+          iRowWalk = iRowInsert; // done
+        }
+        
+      }
+    }
+  }
+
+function OnEnterCell()
+{
+   if (curRow > 0) 
+   {
+	    var evObj = createEventObject();
+	    evObj.row = curRow;
+        evObj.col = curCol;
+	    EnterCell.fire( evObj );
+	}
+}	
+// More function for new combobox
+function FnOnCellListBoxClick()
+{
+	var evObj = createEventObject();
+  	CellButtonClick.fire(evObj);
+	
+	if ( colType[curCol] == "2" && editCol[curCol] == 1) 
+	{
+		curListValue = colCurListVal[col][curRow];
+		//alert(colList[curCol])
+		popupValue = colList[curCol];
+		
+		var maxX, maxY;
+
+		maxX = obj.offsetWidth - 20;
+		maxY = obj.offsetHeight - 20;
+		
+	    var x = Math.round((curCol/obj.rows[0].cells.length)*maxX)+100;
+		var y = Math.round((curRow/obj.rows.length)*maxY);
+		
+		if ((x+400)>maxX) x = maxX - 400;
+		if ((y+250)>maxY) y = maxY - 250;
+		if(y < 0) y = 40;
+		if(x < 0) x = 0;
+		
+	    ShowPopupListBox( x-15, y-15);		//position of cell
+	}
+}
+function ShowPopupListBox( x , y )
+{
+	var w =  400 ;
+	var h =  250 ;
+	
+	SetPopupListBox();
+	
+	divPopup.style.width = w;
+	divPopup.style.height = h;
+	divPopup.style.top = y ;
+	divPopup.style.left = x;
+}
+function SetPopupListBox()
+{
+	divPopup.style.display = "";
+	
+	var defaultValue = " curText=''    curValue='" + curListValue + "' data='" + popupValue + "' ";
+	 
+	var src = 
+		'<html><style>'+
+		'.Listbox '+
+		'{'+
+		'	behavior: url(../../../system/htc/listbox.htc) ;'+
+		'	width : 100%'+
+		'}'+
+		'</style>'+
+		'<body bgcolor="#81D7F3" style="" >'+
+		'<div id="_divListBox" style="background-color:yellow;" onselect="document.body.CallSelect();" onclose="document.body.CallClose()" class="Listbox" id = "cur" '+ defaultValue +'></div>'+
+		' </body></html>'
+		;
+	divPopupIn.document.close();
+	divPopupIn.document.write (src );
+	
+	divPopupIn.document.body.CallClose = PopupClose ;
+	divPopupIn.document.body.CallSelect= PopupListBoxSelect;
+	divPopupIn.document.body.CallClear= PopupClear;
+	
+}
+function PopupListBoxSelect()
+{
+	var oList = divPopupIn.document.all( "_divListBox" );
+	
+	var lstText = oList.curText;
+	var lstValue = oList.curValue;
+	
+	PopupClose();
+	
+	SetGridText(curRow,curCol,lstValue);
+	
+	OnAfterEdit(curRow, curCol);
+			
+}
+
+// More function for new calendar
+function FindFrame( name )
+{
+	var i;
+	var list = element.document.frames;
+	
+	for ( i = 0 ;  i< list.length ; i ++ )
+	{
+		if ( list(i).name == name )
+		{
+			return list(i);
+		}
+	}
+	return false;
+}
+
+var popupValue = "";
+var curListValue = "";
+var divPopup ;
+var divPopupIn ;
+
+function PopupClose()
+{
+	divPopup.style.display = "none";
+}
+
+function PopupSelect()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	var szYear = ""+ oCal.year;
+	var szMonth = ""+ oCal.month;
+	var szDay = ""+ oCal.day;
+
+	if ( szMonth < 10 ) szMonth = '0' + szMonth;
+	if ( szDay < 10 ) szDay = '0' + szDay;
+
+	var o= szYear + szMonth + szDay;
+	
+	PopupClose();
+	
+	if ( o )
+	{
+		SetGridText(curRow,curCol,o);
+		
+		OnAfterEdit(curRow, curCol);
+	}
+			
+}
+function PopupClear()
+{
+	var oCal = divPopupIn.document.all( "cur" );
+	
+	PopupClose();
+	
+	SetGridText(curRow,curCol,"");
+	
+	OnAfterEdit(curRow, curCol);
+}
+function SetPopupCalendar()
+{
+	divPopup.style.display = "";
+	//alert (popupValue);
+	var arr = popupValue.split("/");
+	
+	var  defaultValue;
+	if ( arr.length == 3 )
+	{
+	    defaultValue = " year=" + arr[0] + " month=" + arr[1] + " day=" +arr[2] + " ";
+	} 
+	else{
+	  defaultValue = ' ';
+	}  
+	
+	var src = 
+		'<html><style>'+
+		'.Calendar '+
+		'{'+
+		'	behavior: url(../../../system/htc/calendar.htc) ;'+
+		'	width : 33%'+
+		'}'+
+		'.smcalendar {' + Gb_smcalendar + '} '+
+		'.smcalendar_table {' + Gb_smcalendar_table + '} '+
+		'.smcalendar_header	{' + Gb_smcalendar_header + '}'+
+		'.smcalendar_content {' + Gb_smcalendar_content + '}'+
+		'.smcalendar_last {' + Gb_smcalendar_last + '}'+
+		'.smcalendar_select {' + Gb_smcalendar_select + '}'+
+		'</style>'+
+		'<body bgcolor="' + Gb_Date_BColor + '" style="' + Gb_Date_Style + '" ><table align="center" width="100%"border="0" cellpadding="0"><tr><td>'+
+		'<div  style="width:100%;" onselect="document.body.CallSelect()" onclose="document.body.CallClose()" class="Calendar" id = "cur"  gridCellEffect="flat"  monthLength="short" dayLength="short" showTitle="false" img="' + System.SysImgPath  + '/delete.gif" ' + defaultValue +'></div></td></tr></table>'+
+		' </body></html>'
+		;
+	divPopupIn.document.close();
+	divPopupIn.document.write (src );
+	
+	divPopupIn.document.body.CallClose = PopupClose ;
+	divPopupIn.document.body.CallSelect= PopupSelect;
+	divPopupIn.document.body.CallClear= PopupClear;
+}
+
+function ShowPopupCalendar( x , y )
+{
+	var w =  150 ;
+	var h =  175 ;
+	
+	SetPopupCalendar();
+	
+	divPopup.style.width = w;
+	divPopup.style.height = h;
+	divPopup.style.top = y ;
+	divPopup.style.left = x;
+}
+
+//------------------------------ End new function of calendar ------------------------------------------
+
+function FnOnCellButtonClick()
+{
+	var evObj = createEventObject();
+  	CellButtonClick.fire(evObj);
+	
+	if ( colType[curCol] == "4" && editCol[curCol] == 1) 
+	{
+		
+		var s, s_date;
+		
+		var d = new Date();
+		
+		s_date = GetGridData(curRow , curCol );
+		
+		if ( s_date.length > 0 ) {
+			s_date = s_date.substring(0,4) + "/" + s_date.substring(4,6) + "/" + s_date.substring(6,8);	
+		}
+		
+		popupValue = s_date;
+		
+		var maxX, maxY;
+
+		maxX = obj.offsetWidth - 20;
+		maxY = obj.offsetHeight - 20;
+		
+	    var x = Math.round((curCol/obj.rows[0].cells.length)*maxX)+150;
+		var y = Math.round((curRow/obj.rows.length)*maxY);
+		
+		if ((x+140)>maxX) x = maxX - 140;
+		if ((y+160)>maxY) y = maxY - 140;
+		
+		if(y < 0) y = 40;
+		if(x < 0) x = 0;
+		
+		ShowPopupCalendar( x+10, y+15);		//position of cell
+	}
+}
+
+function OnAfterEdit( row , col )
+{
+	if ( !bModifing )
+	{
+		var evObj = createEventObject();
+		evObj.row = row;
+		evObj.col = col;
+	    AfterEdit.fire(evObj);
+	}
+}
+
+function OnBeforeEdit( row , col , cancel )
+{
+	oldR = row;
+	oldC = col;
+	
+	var evObj = createEventObject();
+	evObj.row = row;
+	evObj.col = col;
+	
+    BeforeEdit.fire(evObj);
+	 
+}
+
+function OnAfterResize(row, col) {
+	var evObj = createEventObject();
+	evObj.row = row;
+	evObj.col = col;
+  	AfterResize.fire(evObj);
+}
+
+function SetColorNotEditCol(){
+    if(obj.Rows <2) return;
+    for(var i=0;i<obj.Cols-1;i++){
+        if(editCol[i] == 0 || editCol[i] == "F"){
+            SetCellBgColor(obj.FixedRows, i, obj.Rows-1, i, 0xd9d9d9);
+        }
+    }    
+}
+function OnKeyDown()
+{ //alert(event.keyCode)
+   if(editing == true) return;
+   
+   if(curCol < 0) return;
+   
+  var rows = getRows();
+  var cols = getCols();
+  
+     //move left
+     if ( event.keyCode == 37 )
+	 {
+	    if(curCol > 0)
+	    {
+	        clearCurrentCell(curRow, curCol);
+	        curCol -= 1;
+	        setCurrentCell(curRow, curCol);
+	        OnEnterCell();
+	    }
+	 }
+	 else if(event.keyCode == 39 )//move right
+	 {  //must minus hiden columns
+	    if(curCol < cols-2)
+	    {
+	        clearCurrentCell(curRow, curCol);
+	        curCol += 1;
+	        setCurrentCell(curRow, curCol);
+	        OnEnterCell();
+	    }
+	 }
+     else if(event.keyCode == 38 )//move up
+	 {
+	    if(curRow > 1)
+	    {
+	        clearCurrentCell(curRow, curCol);
+	        curRow -= 1;
+	        setCurrentCell(curRow, curCol);
+	        setCurrentRow(curRow);
+	        OnEnterCell();
+	        OnSelChange();
+	    }
+	 }
+     else if(event.keyCode == 40 )//move down
+	 {
+	    if(curRow < rows-1)
+	    {
+	        clearCurrentCell(curRow, curCol);
+	        curRow += 1;
+	        setCurrentCell(curRow, curCol);
+	        setCurrentRow(curRow);
+	        OnEnterCell();
+	        OnSelChange();
+	    }
+	 }
+	 else if(event.keyCode == 13 )//enter key
+	 {
+	    if(curRow > 0 && curCol >=0 )
+	    {
+	        cellEdit(curRow, curCol);
+	    }
+	 }
+	 else if(event.keyCode == 32 )//space bar key
+	 {  
+	    if(curRow > 0 && curCol >= 0)
+	    {
+	        var cell = obj.rows[curRow].cells[col];
+	        if(colType[col] == 3)
+	        {
+	            if(cell.firstChild.tagName == "INPUT"){
+	                var input = cell.firstChild;
+	                if(input.type == "checkbox"){
+	                    input.checked = !(input.checked);
+	                    //update modify status when user change checkbox value
+                        obj.rows[curRow].cells[obj.rows[0].cells.length-1].innerHTML = obj.rows[curRow].cells[obj.rows[0].cells.length-1].innerHTML | 0x10;
+                        OnAfterEdit(curRow, curCol);
+	                }
+	            }
+	        
+	        }
+	    }
+	 }
+	 else if(event.keyCode == 67 && event.ctrlKey){
+	    //CopyRow();
+	 }
+	 else if(event.keyCode == 86 && event.ctrlKey){
+	    //PasteRow();
+	 }
+}
+function setCurrentRow(row)
+{
+     var rows = getRows();
+     if(row >= rows || row < 0) return;
+     
+     if(objRowSelected)
+     {
+          for(var i=0;i<obj.rows[0].cells.length;i++){
+             if(objRowSelected.cells[obj.rows[0].cells.length-1].innerHTML < 64){
+                objRowSelected.cells[i].style.backgroundColor = 'white';
+             }
+             else{
+                objRowSelected.cells[i].style.backgroundColor = 0xeeeeee;
+             }
+          }   
+             objRowSelected = null;
+      }
+      objRowSelected = obj.rows[row];
+      for(var i=0;i<obj.rows[0].cells.length;i++)
+      {
+        objRowSelected.cells[i].style.backgroundColor = 0xE1EFF7;//select color
+      }
+      //raise event change seleted row
+     // OnSelChange();
+}
+function setCurrentCell(row, col)
+{
+    if(row > 0 && col >=0)
+    {
+        var cell = obj.rows[row].cells[col];
+        cell.style.borderWidth = "1px";
+        cell.style.borderStyle = "dashed";
+    }
+}
+
+function clearCurrentCell(row, col)
+{//alert(row +":"+col)
+    if(row > 0 && col >=0)
+    {
+        var cell = obj.rows[row].cells[col];
+        cell.style.borderWidth = "0px";
+        cell.style.borderStyle = "none";
+    }
+}
+
+/* validate data that user input in the grid (user must setup attribute check=||||||||| at the grid control)
+   0:must input, n:must be number, -: can not be negative, > 1 and < 4000: maximun allow character
+   example:check=||1|-||1||n|200||||||
+-	0:cot bat buoc phai nhap
+-	n:cot chi chap nhan gia tri la so
+-	-:cot chi chap nhan so duong
+-	0n:cot chi chap nhan la so va bat buoc phai nhap
+-	0-:cot chi chap nhan so duong va bat buoc phai nhap
+-   1 den 4000: so ky tu toi da ma cot co the chap nhan
+*/
+
+function Validate(r , c){
+    
+    if(colCheck.length == 0) return true;
+    
+    var headerName = GetGridData(0,c);
+    var data = Trim(GetGridData(r,c));
+    var checkType = colCheck[c];
+    
+    if(checkType == null || checkType == "") return true;
+    
+	if(checkType.charAt(0) == "0" ){
+	    if(data == "" || data == null){
+	        alert("Please input data for column '"+ headerName +"' at row " + r 
+	        + ".\n\nBạn phải nhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r );
+	        return false;
+	    }
+	     
+	}	
+	
+	if(checkType == "n" || checkType == "0n"){
+	    if(isNaN(data)){
+	        alert("The input data for column '"+ headerName +"' at row " + r 
+	        + " must be a number.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số.");
+	        return false;
+	    }
+	    
+	}
+	else if(checkType == "-" || checkType == "0-"){
+	    if(data.charAt(0) == "-"){
+	        alert("The input data for column '"+ headerName +"' at row " + r
+	        + " must be a number that can not be negative.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số dương.");
+	        return false;
+	    }
+	    if(isNaN(data)){
+	        alert("The input data for column '"+ headerName +"' at row " + r
+	        + " must be a number.\n\nNhập dữ liệu cho cột '"+ headerName +"' ở dòng số " + r +" phải là số.");
+	        return false;
+	    }
+	}
+	else if(checkType > 1 && checkType <=4000){
+	    if(data.length > checkType){
+	        alert("The input data for column '"+ headerName +"' at row " + r 
+	        + " that too long (maximun length must be "+ checkType +").\n\nNhập dữ liệu cho cột '"
+	        + headerName +"' ở dòng số " + r +" vượt quá số ký tự cho phép (tối đa là "+ checkType +" ký tự).");
+	        return false;
+	    }
+	
+	}
+	
+	return true;
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+function event_oncontentready()
+{
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		obj.style.height="";
+		return;
+	}
+	element.print = true;
+	innerData = element.innerHTML;
+	//Get no for frame
+	var no = 1;
+	while ( FindFrame( "frmCal" + no ) )	no ++; 
+	
+	if ( typeof( element.acceptNullDate ) != "undefined" ||  typeof( element.acceptnulldate ) != "undefined" )
+		bAllowDateNull = true;
+	else bAllowDateNull = false;
+	bAllowCopyPaste = true;
+    element.innerHTML = "<table id='idInternalTable' cellpadding='1' cellspacing='1' style='table-layout:fixed;background-color:#81D7F3;width:"
+    + element.style.width + "' ></table><xml style='display:none'>"+ innerData +  "</xml><iframe name='frmCal" + no 
+    +"'  frameborder=0 id='iddiv'  style='z-index:30'></iframe>" ;
+	
+	//For calendar-------------------------------
+	divPopup = 	element.childNodes(element.childNodes.length-1);
+	divPopupIn =  FindFrame( "frmCal" + no );
+	divPopup.style.position = "absolute";
+	divPopup.style.display = "none";	
+	//-----------------------------------------
+	obj = element.childNodes(0);
+	
+	if ( typeof( element.dateformat ) != "undefined" ) 
+		dateFormat = element.dateformat;
+  
+    if ( typeof( element.editcolcolor ) != "undefined" ) 
+		beditColColor = true;
+		
+	if ( typeof( element.summary ) != "undefined" ) 
+		bSummary = true;	
+		
+	if ( typeof( element.check ) != "undefined" ) 
+		setCheck( element.check );
+		
+	if ( typeof( element.header ) != "undefined" ) 
+		setHeader( element.header );
+	
+	if ( typeof( element.format ) != "undefined" ) 
+		setFormat( element.format );
+	else setFormat( "" );	
+	
+	if ( typeof( element.aligns ) != "undefined" ) 
+		setAlign( element.aligns );
+
+    if ( typeof( element.defaults ) != "undefined" ) 
+		setDefaults( element.defaults );
+
+	if ( typeof( element.widths ) != "undefined" ) 
+		setWidth( element.widths );
+	else setWidth( "" );	
+
+	if ( typeof( element.fixedcols ) != "undefined" ) 
+		setFixedCols( element.fixedcols );
+
+	if ( typeof( element.fixedrows ) != "undefined" ) 
+		setFixedRows( element.fixedrows );
+
+	if ( typeof( element.sorting ) != "undefined" ) 
+		setSorting( element.sorting );
+	
+	if ( typeof( element.editcol ) != "undefined" ) 
+		setEditCol( element.editcol );
+		
+    if ( typeof( element.rowheight ) != "undefined" ) 
+		rowHeight = element.rowheight;		
+	
+	if ( typeof( element.autosize ) != "undefined" ) 
+	{
+		bAutoSize = true;
+	}
+    
+    if ( typeof( element.paging ) != "undefined" ) 
+	{
+		setPaging();
+	}
+	
+	if ( typeof( element.pageview ) != "undefined" ) 
+	{
+		pageView = pageview;
+	}
+    
+    SetHeaderBold(true);
+	SetHeaderFontSize(11);
+	
+	//add tag div to process resize column
+	initDiv();
+	initSortImages();
+	
+	//-------------attach events----------------------------------
+    element.attachEvent ('onclick', OnClick);
+    element.attachEvent ('ondblclick', OnDblClick);
+    //element.attachEvent ("onfocusout", elFocusLost);
+    
+    obj.document.attachEvent ('onkeydown' , OnKeyDown);
+    //element.attachEvent ('onkeydown' , OnKeyDown);
+}
+function setPaging(){
+    var htmlPaging = "<div id='divPaging' style='background-color:#99FFFF;'><a href='#' onclick='"+ element.id +".goFirst();'>|<</a>&nbsp;&nbsp;&nbsp;<a href='#' onclick='"+ element.id +".goPrevious();'><<</a>&nbsp;&nbsp;&nbsp; <input id='_txtPageIdx" + element.id +"' type='text' style='width=30px;text-align:right' onchange='"+ element.id +".goPage(this)'/>";
+        htmlPaging += "&nbsp;&nbsp;/&nbsp;&nbsp;<label id='_lblTotalPage"+ element.id +"'></label>&nbsp;&nbsp;&nbsp;<a href='#' onclick='"+ element.id +".goNext();'>>></a>&nbsp;&nbsp;&nbsp;<a href='#' onclick='"+ element.id +".goLast();'>>|</a>&nbsp;&nbsp;&nbsp;<a href='#' onclick='"+ element.id +".CopyRow();'>Copy</a>&nbsp;&nbsp;&nbsp;<a href='#' onclick='"+ element.id +".PasteRow();'>Paste</a></div>";
+        //alert(htmlPaging)
+       element.parentElement.insertAdjacentHTML ("afterEnd", htmlPaging);                  
+}
+function goFirst(){
+    var txtPageIdx = element.document.getElementById("_txtPageIdx"+ element.id);
+    var curPage = parseInt(txtPageIdx.value,10);
+    var totalPage =  Math.ceil(cacheTable.length/pageView);
+    
+    if(curPage == 1) return;  
+    
+    ClearData();
+    var j=0;
+    txtPageIdx.value = "1";
+    bModifing = true;
+    for ( var r = 0;  r < pageView ; r ++ )
+    {
+        if(r >= cacheTable.length) break;
+        
+        xxx = cacheTable[r] ;
+        var arr = xxx.split(CDelimiter)
+        AddRow();
+        for ( var i = 0 ; i < arr.length ; i++ )
+        {
+            if ( i < obj.rows[0].cells.length-1 )
+            {
+	            SetGridText( j + fixHeader , i, arr[i]);
+	            obj.rows[j + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+            }			
+        }
+        j++;
+    } 
+    bModifing = false;
+   
+   if(bSummary){
+        Summary();
+    }
+}  
+function goLast(){
+    var txtPageIdx = element.document.getElementById("_txtPageIdx"+ element.id);
+    var curPage = parseInt(txtPageIdx.value,10);
+    var totalPage =  Math.ceil(cacheTable.length/pageView);
+     
+    if(curPage >= totalPage) return;  
+    
+    if(curPage != totalPage) curPage = totalPage;
+    ClearData();
+    var j=0;
+    txtPageIdx.value = curPage + "";
+    bModifing = true;
+    for ( var r = (curPage-1)*pageView ;  r < curPage*pageView ; r ++ )
+    {
+        if(r >= cacheTable.length) break;
+        
+        xxx = cacheTable[r] ;
+        var arr = xxx.split(CDelimiter)
+        AddRow();
+        for ( var i = 0 ; i < arr.length ; i++ )
+        {
+            if ( i < obj.rows[0].cells.length-1 )
+            {
+	            SetGridText( j + fixHeader , i, arr[i]);
+	            obj.rows[j + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+            }			
+        }
+        j++;
+    } 
+    bModifing = false;
+    
+    if(bSummary){
+        Summary();
+    }
+}  
+function goPrevious(){
+    var txtPageIdx = element.document.getElementById("_txtPageIdx"+ element.id);
+    var curPage = parseInt(txtPageIdx.value,10);
+    var totalPage =  Math.round(cacheTable.length/pageView);
+    if(curPage == "") curPage = 1;
+     
+    if(curPage <= 1) return;  
+    
+    ClearData();
+    var j=0;
+    curPage -= 1;
+    txtPageIdx.value = curPage + "";
+    bModifing = true;
+    for ( var r = (curPage-1)*pageView ;  r < curPage*pageView ; r ++ )
+    {
+        if(r >= cacheTable.length) break;
+        
+        xxx = cacheTable[r] ;
+        var arr = xxx.split(CDelimiter)
+        AddRow();
+        for ( var i = 0 ; i < arr.length ; i++ )
+        {
+            if ( i < obj.rows[0].cells.length-1 )
+            {
+	            SetGridText( j + fixHeader , i, arr[i]);
+	            obj.rows[j + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+            }			
+        }
+        j++;
+    } 
+    bModifing = false;
+    
+    if(bSummary){
+        Summary();
+    }
+}  
+function goNext(){
+    var txtPageIdx = element.document.getElementById("_txtPageIdx"+ element.id);
+    var curPage = parseInt(txtPageIdx.value,10);
+    var totalPage =  Math.ceil(cacheTable.length/pageView);
+    if(curPage == "") curPage = 1;
+     
+    if(curPage >= totalPage) return;  
+    
+    ClearData();
+    var j=0;
+    txtPageIdx.value = (curPage+1)+"";
+    bModifing = true;
+    for ( var r = curPage*pageView ;  r < (curPage+1)*pageView ; r ++ )
+    {
+        if(r >= cacheTable.length) break;
+        
+        xxx = cacheTable[r] ;
+        var arr = xxx.split(CDelimiter)
+        AddRow();
+        for ( var i = 0 ; i < arr.length ; i++ )
+        {
+            if ( i < obj.rows[0].cells.length-1 )
+            {
+	            SetGridText( j + fixHeader , i, arr[i]);
+	            obj.rows[j + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+            }			
+        }
+        j++;
+    } 
+    bModifing = false;
+    
+    if(bSummary){
+        Summary();
+    }
+}  
+function goPage(objCurrPage){
+
+    var txtPageIdx = element.document.getElementById("_txtPageIdx"+ element.id);
+    var curPage = parseInt(objCurrPage.value,10);
+    var totalPage =  Math.ceil(cacheTable.length/pageView);
+    
+    if(curPage == "") curPage = 1;
+     
+    if(curPage > totalPage || curPage <=0) return;  
+    
+    ClearData();
+    var j=0;
+    txtPageIdx.value = curPage + "";
+    bModifing = true;
+    for ( var r = (curPage-1)*pageView ;  r < curPage*pageView ; r ++ )
+    {
+        if(r >= cacheTable.length) break;
+        
+        xxx = cacheTable[r] ;
+        var arr = xxx.split(CDelimiter)
+        AddRow();
+        for ( var i = 0 ; i < arr.length ; i++ )
+        {
+            if( i < obj.rows[0].cells.length-1 )
+            {
+	            SetGridText( j + fixHeader , i, arr[i]);
+	            obj.rows[j + fixHeader].cells[obj.rows[0].cells.length-1].innerHTML = 0;//orginal
+            }			
+        }
+        j++;
+    } 
+    bModifing = false;
+    
+    if(bSummary){
+        Summary();
+    }
+}  
+
+  function initSortImages()
+  {
+    if (!obj.tHead) return;
+    removeTextNodes (obj.tHead);
+    var theadrow = obj.tHead.childNodes[fixHeader-1]; //Assume just one Head row
+    
+    theadrow.style.cursor = "hand";
+     
+    removeTextNodes (theadrow.parentNode);
+    intColCount = theadrow.childNodes.length;
+    
+    for (var i = 0; i < obj.rows[0].cells.length-1; i++) 
+    {
+      var objImg = document.createElement ("IMG");
+
+      objImg.setAttribute ("src", strBlankImage);
+      objImg.setAttribute ("id", "srtImg" + i);
+      objImg.setAttribute ("width", intImgWidth);
+      objImg.setAttribute ("height", intImgHeight);
+      objImg.setAttribute ("align", "right");
+      objImg.setAttribute ("valign", "middle");
+      objImg.setAttribute ("border", 0);
+
+      var clickCell = theadrow.childNodes[i];
+      clickCell.selectIndex = i;
+      clickCell.insertAdjacentElement ("afterBegin", objImg);
+      clickCell.style.width = clickCell.width;
+    }
+    
+  }
+</script>
+

@@ -1,0 +1,500 @@
+
+
+<PUBLIC:COMPONENT tagName="treeview" lightweight = true  >
+
+	<public:method name="GetCurrentNode" >
+	<public:method name="GetParentNode" >
+	<public:method name="GetFirstNode" >
+	<public:method name="FindNode" >
+	<public:method name="RefreshNode" >
+
+
+	<public:property put=fnPutURL            name="url" >
+	<public:event id="onclicknode"          name="onclicknode">
+
+
+	
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+
+
+	
+</PUBLIC:COMPONENT>
+
+
+<SCRIPT Language="Javascript">
+
+
+
+var imgNone =0;
+var imgOpen = 1;
+var imgClose = 2;
+var path = System.SysImgPath;
+
+/*if ( System.SysDfPath != "T") {
+	path = System.RootURL + "/" + path;
+}*/
+
+var imgList = new Array( path + "/tree/vline01.gif" , path + "/tree/plus01.gif" , path + "/tree/minus01.gif"  
+			,path + "/tree/vline02.gif" , path + "/tree/plus02.gif" , path + "/tree/minus02.gif"  );
+var innerString  ;
+
+var  nodeRoot = null;
+var nodeDownload = null;
+var nodeDefault = null;
+var nodeDefaultChild = null;
+
+var pURL = null;
+
+
+var currentNode = null;
+
+// When it's refresh, Find currentnode again.
+var latecurrentid = null;
+var latecurrentitem = null;
+
+var oldWeight;
+var oldColor;
+
+// for Drag & Drop
+var nodeDragIcon = null;
+var bDragMode = false;
+
+// ------------------------------------------------------------------------------------//
+// Public Method
+// ------------------------------------------------------------------------------------//
+
+function SetDataDownload( s )
+{
+	nodeCanvas = nodeRoot;
+	nodeDownload.innerHTML = s;
+	Parse( nodeCanvas , nodeDownload );	
+}
+
+
+function GetCurrentNode()
+{
+
+	if ( currentNode != null  )
+	{
+	
+		if ( currentNode.childNodes.length == 0 )
+			currentNode = null;
+	}
+
+	return currentNode ;
+}
+
+
+function FindNode( id , item )
+{
+	var list = element.all("idnode");
+
+	
+	for ( i = 0 ; i< list.length ; i ++)
+	{
+		if ( list[i].oid == id && list[i].item == item )
+			return list[i];
+	}
+	return null;
+	
+}
+	
+function RefreshNode( nd )
+{
+
+	if ( currentNode )
+	{
+		latecurrentid = currentNode.oid ;
+		latecurrentitem = currentNode.item ;
+	}
+	
+	nd.childNodes( nd.childNodes.length -1 ).innerHTML =  "";
+	
+	nd.read = "no";
+	GetURL( nd );
+}	
+
+function GetParentNode( nd )
+{
+	if ( nd == nodeRoot ) return null;
+	else
+		return nd.parentNode.parentNode;
+}
+
+function GetFirstNode()
+{
+	return nodeRoot.childNodes(0);
+}
+
+
+
+
+
+// ------------------------------------------------------------------------------------//
+
+//
+//  Parsing 
+// <div>  --> node implementation
+// 		<span> </span>  --> presentation
+//		<div>      </div> --> children 
+// </div>
+//  ....
+//
+//  We'll make
+// <div> --> ndNodeCanvas
+// <div> --> ndNode
+// 		<nobr> 
+//			<span>   </span>
+//			XXX. --> presentation
+//		</nobr>
+//		<div> --> nodeCanvas
+//			<div ...> --> Node
+//			<div ...> --> Node
+//		</div>
+
+
+function Parse( nodeCanvas , dataNode )
+{
+
+
+	var nodeParent = GetParentNodeFromCanvas( nodeCanvas );
+	var depth = 0;
+	var startN = 0;
+	var i ;
+	
+	for ( i = 0 ; i < dataNode.childNodes.length ; i++ )
+	{
+		if ( typeof( dataNode.childNodes(i).oid ) != "undefined" )
+		{
+			startN = i;
+			break;
+		}
+	}
+
+
+	if ( dataNode.childNodes.length ==0 || dataNode.childNodes(startN).oid   == "-1"  )
+	{
+		if ( nodeCanvas != nodeRoot ) 
+		{
+			SetImage( nodeCanvas.parentNode ,  imgNone );	
+		}
+		nodeCanvas.style.display="none";
+		return;
+	}
+
+	nodeCanvas.style.display="block";
+	
+	if ( nodeParent )
+	{
+		depth = nodeParent.depth  + 1;
+		nodeParent.read = "yes";
+		SetImage( nodeParent , imgClose );		
+	}
+	
+	var ndChildren = dataNode.childNodes;
+
+	nodeCanvas.innerHTML = "";
+	
+	for ( i = startN ; i < ndChildren.length ; i ++ )
+	{
+		var ndChild = ndChildren(i);
+		
+		
+		var oDiv=nodeDefault.cloneNode();
+		
+		nodeCanvas.appendChild(oDiv);
+		
+		
+		var is="";
+
+		if ( nodeParent != null )
+		{
+				
+			var p = nodeParent;
+			for ( var j = 0 ; j < nodeParent.depth + 1 ; j++)
+			{
+				if ( p.lastnode )
+					is = "<img align=\"absMiddle\"  border=0 src=\"" + System.SystemURL + "/images/tree/none.gif\">" + is;
+				else
+					is = "<img align=\"absMiddle\"  border=0 src=\"" + System.SystemURL + "/images/tree/vline.gif\">" + is;
+					
+				p = GetParentNode( p );
+			} 
+		}
+		
+		oDiv.depth = depth;
+		oDiv.lastnode = ( i == ndChildren.length - 1 );
+		oDiv.url = ndChild.url;
+		oDiv.oid = ndChild.oid;
+		
+		if ( typeof( ndChild.clicktype )  == "undefined" )  
+			oDiv.clicktype = "";
+		else
+		{
+			oDiv.clicktype = ndChild.clicktype;
+			
+		}
+
+		if ( typeof( ndChild.item )  == "undefined" )  
+			oDiv.item = "";
+		else
+			oDiv.item = ndChild.item;
+
+		var imgid = imgOpen;
+		if ( ndChild.child == "no" ) 
+			imgid = imgNone;
+		if ( ndChild.childNodes.length > 1 )
+			imgid = imgClose;
+
+		if ( oDiv.lastnode )
+			s = imgList[ imgid ];
+		else
+			s = imgList[ imgid + 3 ];
+
+		if ( oDiv.clicktype != "" )
+			ndChild.childNodes(0).className = "tree_clicknode";
+		
+		var sPresent = ndChild.childNodes(0).outerHTML;
+
+		oDiv.innerHTML = 
+			"<nobr internals=\"yes\">" + is + "<img types=\"openclose\" align=\"absMiddle\" style=\"cursor:hand\" src=\"" + s  + "\" border=0 >" + sPresent + "</nobr>";
+		
+		var oDivChild = nodeDefaultChild.cloneNode();
+		oDiv.appendChild(oDivChild);		
+		
+		if ( ndChild.childNodes.length > 1 )
+		{
+			oDiv.read = "yes";
+			Parse( oDivChild , ndChild.childNodes(1) );
+		} else
+		{
+			
+			if ( ndChild.child == "no" ) 
+				oDiv.read = "none";			
+			else
+				oDiv.read = "no";			
+			oDivChild.style.display = "none";
+		}	
+	}
+}
+
+
+
+function SetImage( node , imgid )
+{
+	if (!( node.lastnode ) )
+		imgid += 3;
+		
+	node.childNodes(0).childNodes( node.depth ).src = imgList[ imgid ] ;
+}
+
+// ------------------------------------------------------------------------------------//
+// Internal Util Functions
+// ------------------------------------------------------------------------------------//
+
+function GetParentNodeFromCanvas( nd )
+{
+	if ( nd == nodeRoot ) return null;
+	else
+		return nd.parentNode;
+}
+
+
+function fnPutURL(s)
+{
+
+	if ( nodeRoot )
+	{
+		if ( currentNode )
+		{
+			latecurrentid = currentNode.oid ;
+			latecurrentitem = currentNode.item ;
+		}
+	
+		sURL = s;	  
+		nodeCanvas = nodeRoot;
+		nodeDownload.startDownload(s, fnDownloadDone);
+	} else
+		pURL = s;
+}
+
+
+function fnDownloadDone(s)
+{
+	if ( element.debug )
+		 alert( s );
+		 
+	nodeDownload.innerHTML = s;
+	Parse( nodeCanvas , nodeDownload );
+	
+	if ( latecurrentid != null)
+	{
+		var nd = 	FindNode( latecurrentid , latecurrentitem );
+		
+		if ( nd != null )
+			SetCurrentNode( nd );
+		
+		
+		latecurrentid = null;
+	}
+		
+}
+
+
+
+function SetCurrentNode( node )
+{
+	var p ;
+
+	if (currentNode == node ) return;
+	
+	
+	if ( currentNode != null  )
+	{
+	
+		if ( currentNode.childNodes.length >0 )
+		{
+			p = currentNode.childNodes(0);
+			p.style.color = oldColor;
+			p.style.fontWeight = oldWeight;	
+		}
+	}
+	
+	currentNode = node ;
+	
+	if ( currentNode )
+	{
+		p = currentNode.childNodes(0);
+		
+		oldColor = p.style.color;
+		oldWeight = p.style.fontWeight;
+		// p.style.color = "yellow";
+		p.style.fontWeight = "bold";
+		
+		
+	}
+	
+	
+}
+
+function GetURL( node )
+{
+	var e = node.childNodes(0).childNodes(0);
+	
+	
+	if ( node.read == "none" ) return;
+
+	if ( node.read == "no" )
+	{
+		nodeCanvas = node.childNodes( node.childNodes.length -1 ) ;
+		
+		if ( node.url.indexOf( "?" ) == - 1 )
+			szUrl = node.url +"?ID=" + node.oid + "&item=" + node.item ;
+		else
+			szUrl = node.url +"&ID=" + node.oid + "&item=" + node.item ;
+			
+		// alert( szUrl );
+		nodeDownload.startDownload(szUrl , fnDownloadDone);
+		
+		if ( element.debug )
+			alert( szUrl );
+		
+	}  else
+	{
+		if ( node.childNodes( node.childNodes.length -1 ).style.display != "none" )
+		{
+			node.childNodes( node.childNodes.length -1 ).style.display="none";
+			SetImage( node , imgOpen );
+		} else
+		{
+			// node.childNodes( node.childNodes.length -1 ).style.display = "block";
+			
+			node.childNodes( node.childNodes.length -1 ).style.display="block";
+			SetImage( node , imgClose );
+		}
+	}
+
+}
+
+// ------------------------------------------------------------------------------------//
+
+
+function fnOnClick()
+{
+  var e = window.event.srcElement;
+	//alert('types = ' + e.types + ' _ read = ' + e.parentNode.parentNode.read);
+	
+  if (e.types == "openclose" && e.parentNode.parentNode.read ) 
+  {
+	  
+		GetURL( e.parentNode.parentNode ); 
+
+  } else
+  {
+  	while ( e && e != element && e.internals != "yes" )
+  		e = e.parentNode;
+		if ( !e ) return;
+
+  	if ( e.internals == "yes")
+  	{
+  		SetCurrentNode( e.parentNode );
+  		
+  		
+  		if ( currentNode.clicktype == "openclose" )
+  		{
+				GetURL( currentNode );
+				
+  		} 
+  		
+  		
+		var evObj = createEventObject();
+		onclicknode.fire(evObj);
+  	}
+		
+  }
+  
+}
+
+
+// ------------------------------------------------------------------------------------//
+
+
+//
+//	Constructor
+//
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) return;
+	element.print = true;
+
+	innerString = element.innerHTML;
+
+	element.innerHTML = 
+	  '<div class="tree_canvas" onselectstart="return false"></div>'  
+	  +   '<div  STYLE="behavior:url(#default#download);color:white;display:none" ></div><div id="idnode" class="tree_node" ></div><div class="tree_child" ></div>'
+	  + '<div style="position:absolute;display:none"></div>'
+	   ;
+	
+	
+	nodeRoot = element.childNodes(0);
+	nodeDownload = element.childNodes(1);
+	nodeDefault = element.childNodes(2);
+	nodeDefaultChild = element.childNodes(3);
+	
+
+	element.attachEvent("onclick", fnOnClick)
+	
+	if ( innerString.length >0 )
+	{
+		 SetDataDownload( innerString );
+	} else
+	if ( pURL )
+		fnPutURL ( pURL );
+	
+}
+
+
+
+</SCRIPT>

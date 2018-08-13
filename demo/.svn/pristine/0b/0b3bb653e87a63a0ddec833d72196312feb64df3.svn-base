@@ -1,0 +1,362 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Menu</title>
+<link rel="stylesheet" href="style.css" type="text/css" />
+<!--script type="text/javascript" src="script.js"></script-->
+<script type="text/javascript" src="menu.js"></script>
+<script>
+    var size = "400px";
+    function SetSizeMenu(size) {
+        self.frameElement.style.height = size;
+        //parent.SetSize("/GSYS/form/ag/co/agco0010.aspx", "Common Code Entry(new)", "Common Code Entry(new)", "Common Code Entry(new)", "AGCO0010");
+    }
+
+    function On_Active(obj) {
+        for (var idx = 0; idx < document.getElementsByName("folder").length; idx++) {
+            document.getElementsByName("folder")[idx].className = document.getElementsByName("folder")[idx].className.replace(/(?:^|\s)active(?!\S)/, '');
+        }
+        obj.className += " active";
+
+        for (var idx = 0; idx < document.getElementById("sub_content").childNodes.length; idx++) {
+            document.getElementById("sub_content").childNodes[idx].style.display = "none";
+        }
+        var str_group = "";
+        str_group = obj.id.toString();
+        str_group = str_group.replace("fd", "");
+        var obj_sub = document.getElementById("sub" + str_group);
+        obj_sub.style.display = "";
+        //document.getElementsByName("folder")[idx] += " MyClass";
+    }
+</script>
+</head>
+<body onmouseout="SetSizeMenu('75px')">
+<div id="header">
+    <div id="main_navi" />
+</div>
+<div id="content" onmouseover="SetSizeMenu(size)">
+    <table cellpadding="0" cellspacing="0" style="width:100%">
+        <tr>
+            <td style="height:1px;background-color:White">
+                <img src="dot_transparent.gif" style="height:1px"/>
+            </td>
+        </tr>
+    </table>
+    <div id="sub_content">
+        <ul class="sub" id="sub1" style="display:none;">
+            <li>
+                <a>Employee 1</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Time & Attendance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Payroll Admin</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Insurance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="sub" id="sub2" style="display:none;">
+            <li>
+                <a>Employee 2</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Time & Attendance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Payroll Admin</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Insurance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="sub" id="sub3" style="display:none;">
+            <li>
+                <a>Employee 3</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Time & Attendance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Payroll Admin</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Insurance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="sub" id="sub4" style="display:none;">
+            <li>
+                <a>Employee 4</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Time & Attendance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Payroll Admin</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+            <li>
+                <a>Insurance</a>
+                <ul>
+                    <li class="topline"><a href="#">1. Employee Entry</a></li>
+                    <li class="topline"><a href="#">2. Employee Management</a></li>
+                    <li class="topline"><a href="#">3. Employee Reports</a></li>
+                    <li class="topline"><a href="#">4. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">5. Labour Contract</a></li>
+                    <li class="topline"><a href="#">6. WT Allowance</a></li>
+                    <li class="topline"><a href="#">7. Print time Card</a></li>
+                    <li class="topline"><a href="#">8. Employee Entry</a></li>
+                    <li class="topline"><a href="#">9. Employee Management</a></li>
+                    <li class="topline"><a href="#">10. Employee Reports</a></li>
+                    <li class="topline"><a href="#">11. Daily Employee Status</a></li>
+                    <li class="topline"><a href="#">12. Labour Contract</a></li>
+                    <li class="topline"><a href="#">13. WT Allowance</a></li>
+                    <li class="topline"><a href="#">14. Print time Card</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">bindMenu(document.getElementById('main_navi')); document.getElementById('fd1').className += " active"; document.getElementById('sub1').style.display = "";</script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<PUBLIC:COMPONENT tagName="list" lightweight = true  >
+
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="Validate" />
+
+	<PUBLIC:METHOD name="GetText" />
+	<PUBLIC:METHOD name="AppendItem" />			
+	<PUBLIC:METHOD name="RemoveItem" />	
+	<PUBLIC:METHOD name="GetItemIndex" />		
+	<PUBLIC:METHOD name="ClearData" />		
+	<PUBLIC:METHOD name="GetControl" />	
+
+	<PUBLIC:PROPERTY  NAME="value"   PUT="setValue" GET="getValue"/>	
+	
+	<PUBLIC:METHOD name="SetFireEvent" />
+	
+	<public:event id="onChange" name="onchange">
+	<PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="event_oncontentready()" >
+
+<SCRIPT Language="Javascript">
+
+var dsoid = null; 
+var type = null;
+
+var obj = null;
+var pValue  = null;
+
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function Validate()
+{
+   return true;
+}
+function ClearData() {
+	var i;
+	data = "";
+	for (i=obj.options.length-1;i>=0;i--) {
+		obj.options.remove(i);
+	}
+}
+
+function AppendItem(data) {
+	arr = data.split("|");
+	if (arr.length == 2) {
+		var oOption = element.document.createElement("OPTION");
+		oOption.value = arr[0];
+		oOption.style.fontSize =6;
+		oOption.text = arr[1];
+		obj.options.add(oOption);	
+	}
+}
+
+function RemoveItem(idx) {
+	obj.options.remove(idx);
+}
+
+function GetItemIndex(value, byValue) {
+	var i;
+	var val;
+	var item;
+	
+	for (i=0;i<obj.options.length;i++) {
+		item = obj.options.item(i);
+		if (byValue=="T") {
+			val = item.value;
+		} else {
+			val = item.text;
+		}
+		if (val == value) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+function GetControl() {
+	return obj;
+}
+
+function GetData()
+{
+	return obj.value;
+}
+
+function GetText()
+{
+	if (obj.options.selectedIndex >= 0) { 
+		return obj.options.item(obj.options.selectedIndex).text ;
+	} else {
+		return "";
+	}
+}
+
+function SetData( datao  )
+{
+	if ( datao )
+	{
+		SetDataText( datao.text );
+	}
+	
+}
+
+
+function SetDataText( txt )
+{
+	data = new String(txt);
+	
+	var arr = data.split( "|" );
+
+	if ( arr.length > 2  || arr[0] == "DATA" ) 
+	{
+	
+		while ( obj.options.length > 0 )
+		{
+			obj.options.remove(0);
+		}
+		for ( var i = 1 ; i < arr.length ; i += 2 )
+		{
+		
+			var oOption = element.document.createElement("OPTION");
+			
+			obj.options.add(oOption); 
+			//oOption.style.fontSize = "6px";
+			//alert(oOption.style);
+			//exit;
+			oOption.innerText = arr[i+1];
+			oOption.value = arr[i] ;
+		}
+	
+	} else
+	{
+		obj.value = arr[0] ;
+	}
+}
+
+function SetEnable( bEnable )
+{
+	obj.disabled = !bEnable;
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Property
+// --------------------------------------------------------------------------------------------------------//
+
+function setValue (vValue)
+{
+   if ( obj ) obj.value = vValue;
+   else
+   	pValue = vValue;
+}
+
+function getValue()
+{
+	 return obj.value;
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+function SetFireEvent( p_dsoid , p_type )
+{
+	dsoid = p_dsoid;
+	type = p_type;	
+}
+
+function OnChangeSelect()
+{
+
+	if ( dsoid && !element.disabled )
+	{
+		ControlEventHandle( dsoid , type );
+	} 
+
+	var evObj = createEventObject()
+  	onChange.fire(evObj)
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+
+function event_oncontentready()
+{
+	
+	if ( element.print  ) 
+	{
+		obj = element.childNodes(0);
+		return;
+	}
+		
+	element.print = true;
+    
+    var style = Gb_Text_DefStyle; //global
+	
+    if (element.csstype) { // for css type
+		switch (element.csstype.toLowerCase()) {
+			case "filter" : {	
+				style = Gb_Text_FltStyle;
+				break;
+			}
+			case "mandatory" : {	
+				style = Gb_Text_ManStyle;
+				break;
+			}
+			case "general" : {	
+				style = Gb_Text_GenStyle;
+				break;
+			}						
+		}
+	} 
+	var innerData  = element.innerHTML;
+	
+	element.innerHTML = "<select style=';font-size:9pt;width:100%;" + style + element.styles +"'></select><xml style='display:none'>"+ innerData +  "</xml>";
+	
+	obj = element.childNodes(0);
+	
+	obj.attachEvent("onchange", OnChangeSelect);
+
+	if ( innerData.length > 0 )
+	{
+		var xxx = element.childNodes(1);
+		SetData( xxx.childNodes(0) );
+		innerData = "";
+	}
+	
+	if ( pValue ) setValue ( pValue );
+
+	if ( element.style.display != "none" )
+		element.style.display = "block";
+}
+
+
+
+</SCRIPT>
+
+</PUBLIC:COMPONENT>

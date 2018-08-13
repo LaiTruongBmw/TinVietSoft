@@ -1,0 +1,587 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"
+    xmlns="http://www.w3.org/TR/REC-html40">
+<% Response.ContentType = "application/x-excel" %>
+<!-- #include file="../db1.inc"  -->
+<%
+  ConnectDBApp
+%>
+<%
+   
+    dim from_date, to_date
+  
+    from_date =Request.QueryString("from_date")
+    to_date =Request.QueryString("to_date")
+  
+    dim SQL 
+
+    SQL = SQL & "SELECT a.takeout_date, c.att02 inspec_date, d.po_details_no, d.so_item_no, "
+    SQL = SQL & "       comm.sf_get_buspartner_name (d.bill_to_pk) buyer, d.item_etd, "
+    SQL = SQL & "       sale.sf_get_dsbs00013_2 ('1', b.tco_item_pk) spec_name, "
+    SQL = SQL & "          sale.sf_get_dsbs00013_2 ('2', b.tco_item_pk) "
+    SQL = SQL & "       || '*' "
+    SQL = SQL & "       || sale.sf_get_dsbs00013_2 ('3', b.tco_item_pk) spec, "
+    SQL = SQL & "       d.pattern, "
+    SQL = SQL & "          sale.sf_get_dsbs00013_2 ('6', b.tco_item_pk) "
+    SQL = SQL & "       || '/' "
+    SQL = SQL & "       || sale.sf_get_dsbs00013_2 ('7', b.tco_item_pk) color, "
+    SQL = SQL & "       b.req_unit, c.lot_no, d.order_type, '' roll_no, b.req_qty, '' sqm, "
+    SQL = SQL & "       '' SQL, '' reprint, "
+    SQL = SQL & "       (NVL (b.req_qty, 0) - NVL (b.out_qty, 0)) balance, "
+    SQL = SQL & "       comm.sf_get_codename ('SAAB0030', d.deli_method) deli_method, '' harg, "
+    SQL = SQL & "       d.dest_nation, d.forwarder "
+    SQL = SQL & "  FROM sale.tsa_sotakeoutreq a, "
+    SQL = SQL & "       sale.tsa_sotakeoutreqd b, "
+    SQL = SQL & "       prod.tpr_lotno c, "
+    SQL = SQL & "       (SELECT b1.order_type, b1.deli_method, b1.dest_nation, "
+    SQL = SQL & "               b1.att03 forwarder, b1.bill_to_pk, a1.pk tsa_saleorderd_pk, "
+    SQL = SQL & "               a1.so_item_no, a1.att02 po_details_no, a1.item_etd, "
+    SQL = SQL & "               a1.att05 pattern "
+    SQL = SQL & "          FROM sale.tsa_saleorderd a1, sale.tsa_saleorder b1 "
+    SQL = SQL & "         WHERE a1.del_if = 0 AND b1.del_if = 0 AND a1.tsa_saleorder_pk = b1.pk) d "
+    SQL = SQL & " WHERE a.del_if = 0 "
+    SQL = SQL & "   AND b.del_if = 0 "
+    SQL = SQL & "   AND c.del_if(+) = 0 "
+    SQL = SQL & "   AND a.close_yn = 'N' "
+    SQL = SQL & "   AND b.close_yn = 'N' "
+    SQL = SQL & "   AND c.close_yn(+) = 'N' "
+    SQL = SQL & "   AND a.pk = b.tsa_sotakeoutreq_pk "
+    SQL = SQL & "   AND b.tpr_lotno_pk = c.pk(+) "
+    SQL = SQL & "   AND b.tsa_saleorderd_pk = d.tsa_saleorderd_pk(+) "
+    SQL = SQL & "   AND a.takeout_date BETWEEN '"& from_date &"' AND '"& to_date &"' "
+
+    TableReadOpen rs, SQL
+    
+    
+	
+%>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="ProgId" content="Excel.Sheet">
+    <meta name="Generator" content="Microsoft Excel 11">
+    <link rel="File-List" href="DAILY_PRODUCTION_REQUEST_files/filelist.xml">
+    <link rel="Edit-Time-Data" href="DAILY_PRODUCTION_REQUEST_files/editdata.mso">
+    <link rel="OLE-Object-Data" href="DAILY_PRODUCTION_REQUEST_files/oledata.mso">
+    <!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>hacmiu</o:Author>
+  <o:LastAuthor>hacmiu</o:LastAuthor>
+  <o:LastPrinted>2008-05-17T09:14:52Z</o:LastPrinted>
+  <o:Created>2008-05-17T03:31:46Z</o:Created>
+  <o:LastSaved>2008-05-19T06:16:30Z</o:LastSaved>
+  <o:Company>Vinagenuwin</o:Company>
+  <o:Version>11.5606</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+    <style>
+<!--table
+	{mso-displayed-decimal-separator:"\.";
+	mso-displayed-thousand-separator:"\,";}
+@page
+	{margin:.4in 0in 1.0in 0in;
+	mso-header-margin:.36in;
+	mso-footer-margin:.5in;
+	mso-page-orientation:landscape;
+	mso-horizontal-page-align:center;}
+tr
+	{mso-height-source:auto;}
+col
+	{mso-width-source:auto;}
+br
+	{mso-data-placement:same-cell;}
+.style0
+	{mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	white-space:nowrap;
+	mso-rotate:0;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	border:none;
+	mso-protection:locked visible;
+	mso-style-name:Normal;
+	mso-style-id:0;}
+td
+	{mso-style-parent:style0;
+	padding-top:1px;
+	padding-right:1px;
+	padding-left:1px;
+	mso-ignore:padding;
+	color:windowtext;
+	font-size:10.0pt;
+	font-weight:400;
+	font-style:normal;
+	text-decoration:none;
+	font-family:Arial;
+	mso-generic-font-family:auto;
+	mso-font-charset:0;
+	mso-number-format:General;
+	text-align:general;
+	vertical-align:bottom;
+	border:none;
+	mso-background-source:auto;
+	mso-pattern:auto;
+	mso-protection:locked visible;
+	white-space:nowrap;
+	mso-rotate:0;}
+.xl24
+	{mso-style-parent:style0;
+	font-size:8.0pt;}
+.xl25
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	text-align:center;
+	vertical-align:middle;
+	border:.5pt solid windowtext;}
+.xl26
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	text-align:center;
+	vertical-align:middle;}
+.xl27
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;}
+.xl28
+	{mso-style-parent:style0;
+	text-align:center;}
+.xl29
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	text-align:center;}
+.xl30
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	text-align:left;
+	vertical-align:middle;
+	border:.5pt solid windowtext;}
+.xl31
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:.5pt solid windowtext;
+	border-bottom:none;
+	border-left:.5pt solid windowtext;}
+.xl32
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:none;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:.5pt solid windowtext;}
+.xl33
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	text-align:center;
+	vertical-align:middle;
+	border:.5pt solid windowtext;}
+.xl34
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	text-align:center;
+	vertical-align:middle;}
+.xl35
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	text-align:left;
+	vertical-align:middle;
+	border:.5pt solid windowtext;}
+.xl36
+	{mso-style-parent:style0;
+	font-size:8.0pt;
+	text-align:right;
+	vertical-align:middle;
+	border:.5pt solid windowtext;}
+.xl37
+	{mso-style-parent:style0;
+	font-size:14.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;}
+.xl38
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:none;
+	border-bottom:.5pt solid windowtext;
+	border-left:.5pt solid windowtext;}
+.xl39
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:none;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+.xl40
+	{mso-style-parent:style0;
+	font-size:7.0pt;
+	font-family:Arial, sans-serif;
+	mso-font-charset:0;
+	text-align:center;
+	vertical-align:middle;
+	border-top:.5pt solid windowtext;
+	border-right:.5pt solid windowtext;
+	border-bottom:.5pt solid windowtext;
+	border-left:none;}
+-->
+</style>
+    <!--[if gte mso 9]><xml>
+ <x:ExcelWorkbook>
+  <x:ExcelWorksheets>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet1</x:Name>
+    <x:WorksheetOptions>
+     <x:FitToPage/>
+     <x:FitToPage/>
+     <x:Print>
+      <x:FitHeight>0</x:FitHeight>
+      <x:ValidPrinterInfo/>
+      <x:PaperSizeIndex>9</x:PaperSizeIndex>
+      <x:Scale>79</x:Scale>
+      <x:HorizontalResolution>300</x:HorizontalResolution>
+      <x:VerticalResolution>300</x:VerticalResolution>
+     </x:Print>
+     <x:PageBreakZoom>60</x:PageBreakZoom>
+     <x:Selected/>
+     <x:LeftColumnVisible>8</x:LeftColumnVisible>
+     <x:Panes>
+      <x:Pane>
+       <x:Number>3</x:Number>
+       <x:ActiveRow>19</x:ActiveRow>
+       <x:ActiveCol>15</x:ActiveCol>
+      </x:Pane>
+     </x:Panes>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet2</x:Name>
+    <x:WorksheetOptions>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+   <x:ExcelWorksheet>
+    <x:Name>Sheet3</x:Name>
+    <x:WorksheetOptions>
+     <x:ProtectContents>False</x:ProtectContents>
+     <x:ProtectObjects>False</x:ProtectObjects>
+     <x:ProtectScenarios>False</x:ProtectScenarios>
+    </x:WorksheetOptions>
+   </x:ExcelWorksheet>
+  </x:ExcelWorksheets>
+  <x:WindowHeight>10365</x:WindowHeight>
+  <x:WindowWidth>13260</x:WindowWidth>
+  <x:WindowTopX>120</x:WindowTopX>
+  <x:WindowTopY>60</x:WindowTopY>
+  <x:ProtectStructure>False</x:ProtectStructure>
+  <x:ProtectWindows>False</x:ProtectWindows>
+ </x:ExcelWorkbook>
+</xml><![endif]-->
+</head>
+<body link="blue" vlink="purple">
+    <table x:str border="0" cellpadding="0" cellspacing="0" width="1278" style='border-collapse: collapse;
+        table-layout: fixed; width: 961pt'>
+        <col class="xl28" width="52" style='mso-width-source: userset; mso-width-alt: 1901;
+            width: 39pt'>
+        <col width="52" span="2" style='mso-width-source: userset; mso-width-alt: 1901; width: 39pt'>
+        <col width="68" style='mso-width-source: userset; mso-width-alt: 2486; width: 51pt'>
+        <col width="103" style='mso-width-source: userset; mso-width-alt: 3766; width: 77pt'>
+        <col width="53" style='mso-width-source: userset; mso-width-alt: 1938; width: 40pt'>
+        <col width="116" style='mso-width-source: userset; mso-width-alt: 4242; width: 87pt'>
+        <col width="39" style='mso-width-source: userset; mso-width-alt: 1426; width: 29pt'>
+        <col width="58" style='mso-width-source: userset; mso-width-alt: 2121; width: 44pt'>
+        <col width="128" style='mso-width-source: userset; mso-width-alt: 4681; width: 96pt'>
+        <col width="33" style='mso-width-source: userset; mso-width-alt: 1206; width: 25pt'>
+        <col width="62" style='mso-width-source: userset; mso-width-alt: 2267; width: 47pt'>
+        <col width="36" style='mso-width-source: userset; mso-width-alt: 1316; width: 27pt'>
+        <col width="39" style='mso-width-source: userset; mso-width-alt: 1426; width: 29pt'>
+        <col width="37" style='mso-width-source: userset; mso-width-alt: 1353; width: 28pt'>
+        <col width="35" style='mso-width-source: userset; mso-width-alt: 1280; width: 26pt'>
+        <col width="29" style='mso-width-source: userset; mso-width-alt: 1060; width: 22pt'>
+        <col width="42" style='mso-width-source: userset; mso-width-alt: 1536; width: 32pt'>
+        <col width="41" style='mso-width-source: userset; mso-width-alt: 1499; width: 31pt'>
+        <col width="42" span="2" style='mso-width-source: userset; mso-width-alt: 1536; width: 32pt'>
+        <col width="52" style='mso-width-source: userset; mso-width-alt: 1901; width: 39pt'>
+        <col width="67" style='mso-width-source: userset; mso-width-alt: 2450; width: 50pt'>
+        <tr height="11" style='mso-height-source: userset; height: 8.25pt'>
+            <td height="11" class="xl28" width="52" style='height: 8.25pt; width: 39pt'>
+            </td>
+            <td width="52" style='width: 39pt'>
+            </td>
+            <td width="52" style='width: 39pt'>
+            </td>
+            <td width="68" style='width: 51pt'>
+            </td>
+            <td width="103" style='width: 77pt'>
+            </td>
+            <td width="53" style='width: 40pt'>
+            </td>
+            <td width="116" style='width: 87pt'>
+            </td>
+            <td width="39" style='width: 29pt'>
+            </td>
+            <td width="58" style='width: 44pt'>
+            </td>
+            <td width="128" style='width: 96pt'>
+            </td>
+            <td width="33" style='width: 25pt'>
+            </td>
+            <td width="62" style='width: 47pt'>
+            </td>
+            <td width="36" style='width: 27pt'>
+            </td>
+            <td width="39" style='width: 29pt'>
+            </td>
+            <td width="37" style='width: 28pt'>
+            </td>
+            <td width="35" style='width: 26pt'>
+            </td>
+            <td width="29" style='width: 22pt'>
+            </td>
+            <td width="42" style='width: 32pt'>
+            </td>
+            <td width="41" style='width: 31pt'>
+            </td>
+            <td width="42" style='width: 32pt'>
+            </td>
+            <td width="42" style='width: 32pt'>
+            </td>
+            <td width="52" style='width: 39pt'>
+            </td>
+            <td width="67" style='width: 50pt'>
+            </td>
+        </tr>
+        <tr height="24" style='height: 18.0pt'>
+            <td colspan="23" height="24" class="xl37" style='height: 18.0pt'>
+                DAILY LOGISTIC REQUEST</td>
+        </tr>
+        <tr class="xl24" height="20" style='mso-height-source: userset; height: 15.0pt'>
+            <td height="20" class="xl29" style='height: 15.0pt'>
+            </td>
+            <td colspan="22" class="xl24" style='mso-ignore: colspan'>
+            </td>
+        </tr>
+        <tr class="xl27" height="20" style='mso-height-source: userset; height: 15.0pt'>
+            <td rowspan="2" height="40" class="xl31" style='border-bottom: .5pt solid black;
+                height: 30.0pt'>
+                Deli Date</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Inspection</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                PO N0</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Order No</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Buyer</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                ETD</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Item</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Spec</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Pattern</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Color</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Unit</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Stock No</td>
+            <td class="xl31" style='border-left: none'>
+                S</td>
+            <td colspan="4" class="xl38" style='border-right: .5pt solid black; border-left: none'>
+                Qty</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                &nbsp;</td>
+            <td rowspan="2" class="xl31" style='border-bottom: .5pt solid black'>
+                Balance</td>
+            <td colspan="4" class="xl38" style='border-right: .5pt solid black; border-left: none'>
+                Shipping Way</td>
+        </tr>
+        <tr class="xl26" height="20" style='mso-height-source: userset; height: 15.0pt'>
+            <td height="20" class="xl32" style='height: 15.0pt; border-left: none'>
+                O</td>
+            <td class="xl30" style='border-top: none; border-left: none'>
+                Roll No</td>
+            <td class="xl25" style='border-top: none; border-left: none'>
+                Ord</td>
+            <td class="xl25" style='border-top: none; border-left: none'>
+                SQM</td>
+            <td class="xl25" style='border-top: none; border-left: none'>
+                SPL</td>
+            <td class="xl25" style='border-top: none; border-left: none'>
+                WAY</td>
+            <td class="xl30" style='border-top: none; border-left: none'>
+                HARG</td>
+            <td class="xl30" style='border-top: none; border-left: none'>
+                SHIP TO</td>
+            <td class="xl25" style='border-top: none; border-left: none'>
+                FORWARDER</td>
+        </tr>
+        <% 
+				while not rs.eof
+        %>
+        <tr class="xl34" height="20" style='mso-height-source: userset; height: 15.0pt'>
+            <td height="20" class="xl33" style='height: 15.0pt; border-top: none'>
+                <%=rs(0) %>
+            </td>
+            <td class="xl33" style='border-top: none; border-left: none'>
+                <%=rs(1) %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'>
+                <%=rs(2) %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'>
+                <%=rs(3) %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'>
+                <%=rs(4) %>
+            </td>
+            <td class="xl33" style='border-top: none; border-left: none'>
+                <%=rs(5) %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'>
+                <%=rs(6) %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'>
+                <%=rs(7) %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'>
+                <%=rs(8) %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'>
+                <%=rs(9) %>
+            </td>
+            <td class="xl33" style='border-top: none; border-left: none'>
+                <%=rs(10) %>
+            </td>
+            <td class="xl33" style='border-top: none; border-left: none'>
+                <%=rs(11) %>
+            </td>
+            <td class="xl33" style='border-top: none; border-left: none'>
+                <%=rs(12) %>
+            </td>
+            <td class="xl36" style='border-top: none; border-left: none'>
+                <%=rs(13) %>
+            </td>
+            <td class="xl36" style='border-top: none; border-left: none'>
+                <%=rs(14) %>
+            </td>
+            <td class="xl36" style='border-top: none; border-left: none'>
+                <%=rs(15) %>
+            </td>
+            <td class="xl36" style='border-top: none; border-left: none'>
+              <%=rs(16)
+              %></td>
+            <td class="xl33" style='border-top: none; border-left: none'>
+              <%=rs(17)
+              %></td>
+            <td class="xl36" style='border-top: none; border-left: none'><%=rs(18)
+              %>
+            </td>
+            <td class="xl33" style='border-top: none; border-left: none'><%=rs(19)
+              %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'><%=rs(20)
+              %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'><%=rs(21)
+              %>
+            </td>
+            <td class="xl35" style='border-top: none; border-left: none'><%=rs(22)
+              %>
+            </td>
+        </tr>
+        <% 
+				rs.movenext
+			wend
+        %>
+        <tr class="xl24" height="15" style='height: 11.25pt'>
+            <td height="15" class="xl29" style='height: 11.25pt'>
+            </td>
+            <td colspan="22" class="xl24" style='mso-ignore: colspan'>
+            </td>
+        </tr>
+        <![if supportMisalignedColumns]>
+        <tr height="0" style='display: none'>
+            <td width="52" style='width: 39pt'>
+            </td>
+            <td width="52" style='width: 39pt'>
+            </td>
+            <td width="52" style='width: 39pt'>
+            </td>
+            <td width="68" style='width: 51pt'>
+            </td>
+            <td width="103" style='width: 77pt'>
+            </td>
+            <td width="53" style='width: 40pt'>
+            </td>
+            <td width="116" style='width: 87pt'>
+            </td>
+            <td width="39" style='width: 29pt'>
+            </td>
+            <td width="58" style='width: 44pt'>
+            </td>
+            <td width="128" style='width: 96pt'>
+            </td>
+            <td width="33" style='width: 25pt'>
+            </td>
+            <td width="62" style='width: 47pt'>
+            </td>
+            <td width="36" style='width: 27pt'>
+            </td>
+            <td width="39" style='width: 29pt'>
+            </td>
+            <td width="37" style='width: 28pt'>
+            </td>
+            <td width="35" style='width: 26pt'>
+            </td>
+            <td width="29" style='width: 22pt'>
+            </td>
+            <td width="42" style='width: 32pt'>
+            </td>
+            <td width="41" style='width: 31pt'>
+            </td>
+            <td width="42" style='width: 32pt'>
+            </td>
+            <td width="42" style='width: 32pt'>
+            </td>
+            <td width="52" style='width: 39pt'>
+            </td>
+            <td width="67" style='width: 50pt'>
+            </td>
+        </tr>
+        <![endif]>
+    </table>
+</body>
+</html>

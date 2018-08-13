@@ -1,0 +1,201 @@
+<public:component tagname="checkbox" lightweight="true">
+	
+	<PUBLIC:METHOD name="GetData" />
+	<PUBLIC:METHOD name="SetData" />
+	<PUBLIC:METHOD name="SetDataText" />
+	<PUBLIC:METHOD name="SetEnable" />
+	<PUBLIC:METHOD name="SetFireEvent" />
+	<PUBLIC:METHOD name="Validate" />
+		
+	<PUBLIC:PROPERTY  NAME="value"   GET="getValue" PUT="setValue" />	
+	<public:event id="onChange" name="onchange" />	
+	<PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="event_oncontentready()" >
+<SCRIPT Language="Javascript">
+
+var dsoid = null; 
+var type = null;
+
+var obj = null;
+var pValue = null;
+var bmodeTF = true;
+var defaultvalue = "";
+// --------------------------------------------------------------------------------------------------------//
+//  Method
+// --------------------------------------------------------------------------------------------------------//
+function Validate()
+{
+   return true;
+}
+function GetData()
+{
+	if ( bmodeTF )
+	{
+		if (obj.checked)
+			return TValue ;
+		else
+			return FValue;
+	} else
+	{
+		if (obj.checked)
+			return "-1" ;
+		else
+			return "0";	
+	}
+}
+
+function SetData( datao  )
+{
+	if ( datao )
+	{
+		SetDataText( datao.text );
+	} else
+	{
+		obj.checked  = false;		
+	}
+}
+
+function SetDataText( txt )
+{
+	if ( bmodeTF )
+	{
+		if ( txt == TValue )
+			obj.checked  = true;
+		else
+			obj.checked  = false;
+	} else
+	{
+		if ( txt != "0" )
+			obj.checked  = true;
+		else
+			obj.checked  = false;	
+	}
+}
+
+
+function SetEnable( bEnable )
+{
+	
+	element.disabled = !bEnable;
+	
+}
+
+function SetFireEvent( p_dsoid , p_type )
+{
+	dsoid = p_dsoid;
+	type = p_type;	
+	
+}
+
+
+// --------------------------------------------------------------------------------------------------------//
+//  Properties
+// --------------------------------------------------------------------------------------------------------//
+
+function setValue (vValue)
+{
+	if ( obj )
+	{
+		if ( bmodeTF )
+		{
+			if ( vValue == TValue )
+			{
+				obj.checked  = true;
+			}
+			else
+			{
+				obj.checked  = false;
+			}
+		} else
+		{
+			if ( vValue == "0" )
+				obj.checked = false;
+			else
+				obj.checked = true;
+		}
+			
+	} else
+   		pValue = vValue;
+}
+
+function getValue()
+{
+	if ( bmodeTF )
+		 return (obj.checked ? TValue : FValue );
+	else
+		 return (obj.checked ? "-1" : "0" );
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Event
+// --------------------------------------------------------------------------------------------------------//
+
+var oldValue = "";
+
+function OnChangeSelect()
+{
+	if ( oldValue != getValue() )
+	{
+		if ( dsoid && !element.disabled )
+		{
+			ControlEventHandle( dsoid , type );
+		} 
+		
+		var evObj = createEventObject()
+	  	onChange.fire(evObj)
+	  	
+	  	oldValue = getValue();
+	 }
+}
+
+// --------------------------------------------------------------------------------------------------------//
+//  Constructor
+// --------------------------------------------------------------------------------------------------------//
+
+if ( element.print  ) 
+{	
+	obj = element.childNodes(0);
+}
+
+var TValue = "T";
+var FValue = "F";
+
+function event_oncontentready()
+{
+
+	if ( element.print  ) 
+	{	
+		obj = element.childNodes(0);
+		return;
+	}
+	
+	element.print = true;
+	
+	if ( typeof (element.defaultvalue) != "undefined" )
+	{	
+		var arr = element.defaultvalue.split("|");
+		TValue = arr[0];
+		FValue = arr[1];
+		defaultvalue = element.defaultvalue;
+	}	
+
+
+	if ( typeof (element.mode) != "undefined" )
+	{
+		bmodeTF = !( element.mode == "01" );
+	}
+    
+	var innerData  = element.innerHTML;
+   
+	element.innerHTML = "<input type='checkbox' style='"+ element.styles +"'>" + innerData ;
+	
+	obj = element.childNodes(0);
+    
+	obj.attachEvent("onclick", OnChangeSelect);
+	
+    if(pValue) setValue( pValue );
+	oldValue = getValue();
+}
+
+</SCRIPT>
+
+</public:component>
